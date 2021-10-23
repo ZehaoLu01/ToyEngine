@@ -7,6 +7,9 @@
 #include "VBO.h"
 #include "EBO.h"
 #include "VAO.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -69,15 +72,29 @@ int main()
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f,0.0f,1.0f,0.0f,0.0f,0.0f, // bottom left  
-         0.5f, -0.5f, 0.0f,1.0f,0.0f,0.0f,1.0f,0.0f, // bottom right 
-        -0.5f,  0.5f, 0.0f,0.0f,0.0f,1.0f,0.0f,1.0f, // top left
-         0.5f,  0.5f, 0.0f,1.0f,1.0f,1.0f,1.0f,1.0f  // top right   
+        -0.5f, -0.5f, 0.5f,0.0f,0.0f,0.0f,0.0f,0.0f, 
+         0.5f, -0.5f, 0.5f,0.0f,0.0f,0.0f,0.0f,0.0f,
+         0.5f, -0.5f, -0.5f,0.0f,0.0f,0.0f,0.0f,0.0f,
+        -0.5f, -0.5f, -0.5f,0.0f,0.0f,0.0f,0.0f,0.0f,
+        -0.5f, 0.5f, 0.5f,0.0f,0.0f,0.0f,0.0f,0.0f,
+         0.5f, 0.5f, 0.5f,0.0f,0.0f,0.0f,0.0f,0.0f,
+         0.5f, 0.5f, -0.5f,0.0f,0.0f,0.0f,0.0f,0.0f,
+        -0.5f, 0.5f, -0.5f,1.0f,1.0f,0.0f,0.0f,0.0f,
     };
 
     unsigned int indices[] = {
         0,1,2,
-        1,2,3
+        0,3,2,
+        3,7,6,
+        3,2,6,
+        2,6,5,
+        2,1,5,
+        1,5,4,
+        1,0,4,
+        0,4,7,
+        0,3,7,
+        4,5,6,
+        4,7,6,
     };
 
     VAO vao;
@@ -104,7 +121,7 @@ int main()
 
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
+    glEnable(GL_DEPTH_TEST);
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -113,16 +130,31 @@ int main()
         // -----
         processInput(window);
 
+
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
         // draw our first triangle
         shaderProgram.useProgram();
+
+        glm::mat4 rotation = glm::mat4(1.0f);
+        rotation = glm::rotate(rotation, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        shaderProgram.setUniformM4f("rotation", rotation);
+        glm::mat4 model = glm::mat4(1.0f);
+        model= glm::translate(model, glm::vec3(0.0f, -5.0f, -3.0f));
+        shaderProgram.setUniformM4f("model", model);
+        glm::mat4 view = glm::mat4(1.0f);
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, 0.0f));
+        shaderProgram.setUniformM4f("view", view);
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.001f, 1000.0f);
+        shaderProgram.setUniformM4f("projection", projection);
+
         glBindTexture(GL_TEXTURE_2D, texture);
         vao.bind(); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
