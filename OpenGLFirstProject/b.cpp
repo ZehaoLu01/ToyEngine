@@ -4,9 +4,14 @@
 #include<glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "Shader.h"
+#include "VBO.h"
+#include "EBO.h"
+#include "VAO.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+void windowInit(GLFWwindow* &window, bool& retflag);
+void gladInit(GLFWwindow* window, bool& retflag);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -29,27 +34,19 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    GLFWwindow* window=NULL;
+    bool retflag=true;
 
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
+    windowInit(window, retflag);
+    if (!retflag)return -1;
+
+    gladInit(window, retflag);
+    if (!retflag)return -1;
 
     //read picture for texturing.
     int width, height, nrChannels;
     //Need to flip vertically because OpenGL assume that y axis is at the bottom of the picture, but actually many pictures have their axis at the bottom. Add this statement before loading picture.
+    
     stbi_set_flip_vertically_on_load(true);
     unsigned char* data = stbi_load("FunnyPicture.jpg", &width, &height, &nrChannels, 0);
     unsigned int texture;
@@ -76,7 +73,6 @@ int main()
          0.5f, -0.5f, 0.0f,1.0f,0.0f,0.0f,1.0f,0.0f, // bottom right 
         -0.5f,  0.5f, 0.0f,0.0f,0.0f,1.0f,0.0f,1.0f, // top left
          0.5f,  0.5f, 0.0f,1.0f,1.0f,1.0f,1.0f,1.0f  // top right   
-
     };
 
     unsigned int indices[] = {
@@ -84,33 +80,26 @@ int main()
         1,2,3
     };
 
-    unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    VAO vao;
+    VBO vbo;
+    EBO ebo;
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    glBindVertexArray(VAO);
+    vao.bind();
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    vbo.inputData(sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    ebo.inputData(sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
+    vbo.linkAttrPtr(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    vbo.linkAttrPtr(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    vbo.linkAttrPtr(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    vao.unbind();
 
     // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    glBindVertexArray(0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 
 
     // uncomment this call to draw in wireframe polygons.
@@ -132,7 +121,7 @@ int main()
         // draw our first triangle
         shaderProgram.useProgram();
         glBindTexture(GL_TEXTURE_2D, texture);
-        glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+        vao.bind(); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -140,16 +129,42 @@ int main()
         glfwPollEvents();
     }
 
-    // optional: de-allocate all resources once they've outlived their purpose:
-    // ------------------------------------------------------------------------
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
+}
+
+// Window Initialization
+void windowInit(GLFWwindow* &window, bool& retflag)
+{
+    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    retflag = true;
+    if (!window)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        retflag = false;
+        return;
+    }
+    return;
+}
+
+// GLAD Initialization
+void gladInit(GLFWwindow* window, bool& retflag) {
+    retflag = true;
+    glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    // glad: load all OpenGL function pointers
+    // ---------------------------------------
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        retflag = false;
+        return;
+    }
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
