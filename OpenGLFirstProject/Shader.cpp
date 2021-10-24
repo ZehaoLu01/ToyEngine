@@ -62,7 +62,7 @@ Shader::Shader(const std::string& vertexShaderAddress, const std::string& fragme
 void Shader::setUniformM4f(const char* name, glm::mat4 mat)
 {
 	GLint myUniformLocation = glGetUniformLocation(programID, name);
-	glUniformMatrix4fv(myUniformLocation, 1, GL_TRUE, glm::value_ptr(mat));
+	glUniformMatrix4fv(myUniformLocation, 1,GL_FALSE , glm::value_ptr(mat));
 }
 
 void Shader::useProgram()

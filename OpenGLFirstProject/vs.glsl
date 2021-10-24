@@ -12,7 +12,7 @@ uniform mat4 projection;
 
 void main()
 {
-   gl_Position = projection*model*rotation*vec4(aPos.x, aPos.y, aPos.z, 1.0);
+   gl_Position = projection*view*model*rotation*vec4(aPos.x, aPos.y, aPos.z, 1.0);
    ourColor=aColor;
    textureCoord=aTexCord;
 }
