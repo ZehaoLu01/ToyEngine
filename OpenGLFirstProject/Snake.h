@@ -9,6 +9,9 @@
 #include "VBO.h"
 #include "EBO.h"
 #include "VAO.h"
+
+void Terminate();
+
 class Snake
 {
 public:
@@ -58,11 +61,13 @@ public:
 	//When the snake eat something, this function will be called.
 	void eat();
 
-	void checkEating(unsigned int row, unsigned int col);
+	bool checkEating(unsigned int row, unsigned int col);
 
 	void render(VAO bodyVAO,Shader shaderProgram);
 
 	void changeDirection(DIRECTION direction);
+
+	void die();
 };
 
 glm::vec3 rowColConversion(unsigned int row, unsigned int col);

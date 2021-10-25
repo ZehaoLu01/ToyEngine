@@ -11,18 +11,23 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Snake.h"
+#include "Food.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void windowInit(GLFWwindow* &window, bool& retflag);
+void foodVAOCfg(VAO& foodVAO, float  foodVertices[64], unsigned int  foodIndices[36], unsigned int verticesSize, unsigned int indicesSize);
+void tableVAOCfg(VAO& tableVAO, float  tableVertices[64], unsigned int  tableIndices[36], unsigned int verticesSize, unsigned int indicesSize);
+void bodyVAOCfg(VAO& bodyVAO, float  vertices[64], unsigned int  indices[36], unsigned int verticesSize, unsigned int indicesSize);
 void gladInit(GLFWwindow* window, bool& retflag);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-int MAX_ROW = 100;
-int MAX_COL = 100;
+int MAX_ROW = 20;
+int MAX_COL = 20;
+bool isOver = false;
 
 Snake::DIRECTION keyboardDirection = Snake::DIRECTION::UP;
 
@@ -88,22 +93,6 @@ int main()
         -6.5f, 0.5f,0.5f,64.0f,191.0f,64.0f,0.0f,0.0f,
     };
 
-    unsigned int tableIndices[] = {
-        3,6,7,
-        3,6,2,
-        2,5,6,
-        2,5,1,
-        1,4,5,
-        1,4,0,
-        0,7,4,
-        0,7,3,
-        2,0,3,
-        2,0,1,
-        7,5,4,
-        7,5,6,
-    };
-
-
     float vertices[] = {
         -0.5f, -0.5f, 0.5f,0.0f,0.0f,0.0f,0.0f,0.0f, 
          0.5f, -0.5f, 0.5f,0.0f,0.0f,0.0f,0.0f,0.0f,
@@ -113,6 +102,17 @@ int main()
          0.5f, 0.5f, 0.5f,0.0f,0.0f,0.0f,0.0f,0.0f,
          0.5f, 0.5f, -0.5f,0.0f,0.0f,0.0f,0.0f,0.0f,
         -0.5f, 0.5f, -0.5f,1.0f,1.0f,0.0f,0.0f,0.0f,
+    };
+
+    float foodVertices[] = {
+        -0.5f, -0.5f, 0.5f,1.0f,0.0f,0.0f,0.0f,0.0f,
+         0.5f, -0.5f, 0.5f,1.0f,0.0f,0.0f,0.0f,0.0f,
+         0.5f, -0.5f, -0.5f,1.0f,0.0f,0.0f,0.0f,0.0f,
+        -0.5f, -0.5f, -0.5f,1.0f,0.0f,0.0f,0.0f,0.0f,
+        -0.5f, 0.5f, 0.5f,1.0f,0.0f,0.0f,0.0f,0.0f,
+         0.5f, 0.5f, 0.5f,1.0f,0.0f,0.0f,0.0f,0.0f,
+         0.5f, 0.5f, -0.5f,1.0f,0.0f,0.0f,0.0f,0.0f,
+        -0.5f, 0.5f, -0.5f,1.0f,0.0f,0.0f,0.0f,0.0f,
     };
 
     unsigned int indices[] = {
@@ -130,101 +130,125 @@ int main()
         4,7,6,
     };
 
-    VAO vao;
-    VBO vbo;
-    EBO ebo;
-    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    vao.bind();
+    unsigned int foodIndices[] = {
+        0,1,2,
+        0,3,2,
+        3,7,6,
+        3,2,6,
+        2,6,5,
+        2,1,5,
+        1,5,4,
+        1,0,4,
+        0,4,7,
+        0,3,7,
+        4,5,6,
+        4,7,6,
+    };
 
-    vbo.inputData(sizeof(vertices), vertices, GL_STATIC_DRAW);
+    unsigned int tableIndices[] = {
+        3,6,7,
+        3,6,2,
+        2,5,6,
+        2,5,1,
+        1,4,5,
+        1,4,0,
+        0,7,4,
+        0,7,3,
+        2,0,3,
+        2,0,1,
+        7,5,4,
+        7,5,6,
+    };
 
-    ebo.inputData(sizeof(indices), indices, GL_STATIC_DRAW);
-
-    vbo.linkAttrPtr(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    vbo.linkAttrPtr(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    vbo.linkAttrPtr(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    vao.unbind();
+    VAO bodyVAO;
+    bodyVAOCfg(bodyVAO, vertices, indices, sizeof(vertices), sizeof(indices));
 
     // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
 
     VAO tableVAO;
-    EBO tableEBO;
-    VBO tableVBO;
-    tableVAO.bind();
-
-    tableVBO.inputData(sizeof(tableVertices), tableVertices, GL_STATIC_DRAW);
-    tableEBO.inputData(sizeof(tableIndices), tableIndices, GL_STATIC_DRAW);
-    tableVBO.linkAttrPtr(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    tableVBO.linkAttrPtr(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    tableVBO.linkAttrPtr(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-
-    tableVAO.unbind();
+    tableVAOCfg(tableVAO, tableVertices, tableIndices, sizeof(tableVertices), sizeof(tableIndices));
     
+
+    VAO foodVAO;
+    foodVAOCfg(foodVAO, foodVertices, foodIndices, sizeof(foodVertices), sizeof(foodIndices));
 
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     glEnable(GL_DEPTH_TEST);
     
     Snake snake;
+    Food food;
+    double currTime = glfwGetTime();
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(window) && !isOver)
     {
-        // input
-        // -----
-        processInput(window);
+        double temp = glfwGetTime();
+        if (glfwGetTime() - currTime > 0.07) {
 
-        shaderProgram.useProgram();
+            currTime = glfwGetTime();
 
-        // render
-        // ------
+            // input
+            // -----
+            processInput(window);
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+            shaderProgram.useProgram();
 
-        // -------------------------------------------------------------------------------
-        glm::mat4 rotation = glm::mat4(1.0f);
-        //rotation = glm::rotate(rotation, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        shaderProgram.setUniformM4f("rotation", rotation);
-        glm::mat4 model = glm::mat4(1.0f);
-        model= glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-        shaderProgram.setUniformM4f("model", model);
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::rotate(view, glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        glm::mat4 view_t(1);
-        view_t = glm::translate(view_t, glm::vec3(0.0f, -7.0f, -20.0f));
-        view = view_t * view;
-        shaderProgram.setUniformM4f("view", view);
-        glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.001f, 1000.0f);
-        shaderProgram.setUniformM4f("projection", projection);
+            // render
+            // ------
 
-        glBindTexture(GL_TEXTURE_2D, texture);
-        vao.bind(); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        // -------------------------------------------------------------------------------
-        model = glm::mat4(1.0f);
-        rotation = glm::mat4(1.0f);
-        shaderProgram.setUniformM4f("model", model);
-        shaderProgram.setUniformM4f("view", view);
-        shaderProgram.setUniformM4f("rotation", rotation);
-        shaderProgram.setUniformM4f("projection", projection);
-        tableVAO.bind();
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        // -------------------------------------------------------------------------------
-        snake.render(vao,shaderProgram);
-        snake.changeDirection(keyboardDirection);
-        snake.move();
+            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // -------------------------------------------------------------------------------
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+            // -------------------------------------------------------------------------------
+            glm::mat4 rotation = glm::mat4(1.0f);
+            //rotation = glm::rotate(rotation, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            shaderProgram.setUniformM4f("rotation", rotation);
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+            shaderProgram.setUniformM4f("model", model);
+            glm::mat4 view = glm::mat4(1.0f);
+            view = glm::rotate(view, glm::radians(70.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+            glm::mat4 view_t(1);
+            view_t = glm::translate(view_t, glm::vec3(0.0f, -5.0f, -15.0f));
+            view = view_t * view;
+            shaderProgram.setUniformM4f("view", view);
+            glm::mat4 projection = glm::mat4(1.0f);
+            projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.001f, 1000.0f);
+            shaderProgram.setUniformM4f("projection", projection);
+
+            model = glm::mat4(1.0f);
+            rotation = glm::mat4(1.0f);
+            shaderProgram.setUniformM4f("model", model);
+            shaderProgram.setUniformM4f("view", view);
+            shaderProgram.setUniformM4f("rotation", rotation);
+            shaderProgram.setUniformM4f("projection", projection);
+            tableVAO.bind();
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            // -------------------------------------------------------------------------------
+            snake.render(bodyVAO, shaderProgram);
+            snake.changeDirection(keyboardDirection);
+            snake.move();
+            // -------------------------------------------------------------------------------
+            food.render(shaderProgram,foodVAO);
+            // -------------------------------------------------------------------------------
+
+
+            bool isEaten = snake.checkEating(food.row, food.col);
+            if (isEaten) {
+                food.regenerate();
+            }
+            // -------------------------------------------------------------------------------
+            // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+            // -------------------------------------------------------------------------------
+            glfwSwapBuffers(window);
+            glfwPollEvents();
+        }
+
+        
     }
 
 
@@ -232,6 +256,56 @@ int main()
     // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
+}
+
+void bodyVAOCfg(VAO& bodyVAO, float  vertices[64], unsigned int  indices[36], unsigned int verticesSize, unsigned int indicesSize)
+{
+    VBO bodyVBO;
+    EBO bodyEBO;
+    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+    bodyVAO.bind();
+
+    auto temp = sizeof(vertices);
+    bodyVBO.inputData(verticesSize, vertices, GL_STATIC_DRAW);
+    bodyEBO.inputData(indicesSize, indices, GL_STATIC_DRAW);
+
+    bodyVBO.linkAttrPtr(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    bodyVBO.linkAttrPtr(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    bodyVBO.linkAttrPtr(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+
+    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+    bodyVAO.unbind();
+}
+
+void tableVAOCfg(VAO& tableVAO, float  tableVertices[64], unsigned int  tableIndices[36], unsigned int verticesSize, unsigned int indicesSize)
+{
+    EBO tableEBO;
+    VBO tableVBO;
+    tableVAO.bind();
+
+    tableVBO.inputData(verticesSize, tableVertices, GL_STATIC_DRAW);
+    tableEBO.inputData(indicesSize, tableIndices, GL_STATIC_DRAW);
+    tableVBO.linkAttrPtr(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    tableVBO.linkAttrPtr(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    tableVBO.linkAttrPtr(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+
+    tableVAO.unbind();
+}
+
+void foodVAOCfg(VAO& foodVAO, float  foodVertices[64], unsigned int  foodIndices[36], unsigned int verticesSize, unsigned int indicesSize)
+{
+    EBO foodEBO;
+    VBO foodVBO;
+    foodVAO.bind();
+
+    foodVBO.inputData(verticesSize, foodVertices, GL_STATIC_DRAW);
+    foodEBO.inputData(indicesSize, foodIndices, GL_STATIC_DRAW);
+
+    foodVBO.linkAttrPtr(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    foodVBO.linkAttrPtr(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    foodVBO.linkAttrPtr(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+
+    foodVAO.unbind();
 }
 
 // Window Initialization
@@ -298,4 +372,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         keyboardDirection = Snake::DIRECTION::DOWN;
     }
         
+}
+
+void Terminate() {
+    isOver = true;
 }

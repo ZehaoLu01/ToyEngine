@@ -34,9 +34,11 @@ Snake::Snake()
 bool Snake::checkHeadOutBound()
 {
 	if (head->row > MAX_ROW - 1 || head->row < 0) {
+		die();
 		return false;
 	}
 	if (head->col > MAX_COL - 1 || head->col < 0) {
+		die();
 		return false;
 	}
 	return true;
@@ -63,7 +65,6 @@ void Snake::move()
 	popBack();
 	//check
 	bool result = checkHeadOutBound();
-	if (!result)return;
 }
 
 bool Snake::find(unsigned int row, unsigned col)
@@ -86,14 +87,23 @@ Snake::~Snake()
 	}
 }
 
-void Snake::checkEating(unsigned int row, unsigned int col)
+bool Snake::checkEating(unsigned int row, unsigned int col)
 {
-	if (head->row == row && head->col == col) eat();
+	if (head->row == row && head->col == col) {
+		eat();
+		return true;
+	}
+	return false();
 }
 
 void Snake::changeDirection(DIRECTION direction)
 {
 	curr_dir = direction;
+}
+
+void Snake::die()
+{
+	Terminate();
 }
 
 void Snake::render(VAO bodyVAO, Shader shaderProgram)
@@ -132,12 +142,14 @@ void Snake::eat()
 	/// <returns></returns>
 	glm::vec3 rowColConversion(unsigned int row, unsigned int col)
 	{
-		if (row > MAX_ROW - 1 || col > MAX_COL - 1)std::cout << "WARNING: row/col is out of bound!";
+		if (row > MAX_ROW - 1 || col > MAX_COL - 1) {
+			std::cout << "WARNING: row/col is out of bound!";
+		}
 		//fixed 100 rows and coloums
 		float singleRowOffset = -10.5f / (float)(MAX_ROW - 1);
-		float singleColOffset = 10.5 / (float)(MAX_COL - 1);
+		float singleColOffset = 10.5f / (float)(MAX_COL - 1);
 		
-		return glm::vec3(-5.5 + (float)col * singleColOffset, 1.0f, -0.5 + (float)row * singleRowOffset);
+		return glm::vec3(-5.5f + (float)col * singleColOffset, 1.0f, -0.5f + (float)row * singleRowOffset);
 	}
 
 	Snake::Node::Node(int row, int col)
@@ -160,7 +172,7 @@ void Snake::eat()
 
 		shaderProgram.setUniformM4f("model", model);
 		glm::mat4 view = glm::mat4(1.0f);
-		view = glm::rotate(view, glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		view = glm::rotate(view, glm::radians(70.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::mat4 view_t(1);
 		view_t = glm::translate(view_t, glm::vec3(0.0f, -5.0f, -15.0f));
 		view = view_t * view;
