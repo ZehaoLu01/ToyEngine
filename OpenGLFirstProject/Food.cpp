@@ -31,7 +31,9 @@ void Food::render(Shader shaderProgram, VAO foodVAO)
 
 	glm::vec3 translation = rowColConversion(row, col);
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, translation);
+	glm::mat4 model1 = glm::scale(model, glm::vec3(10.5 / MAX_ROW, 10.5 / MAX_ROW, 10.5 / MAX_ROW));
+	glm::mat4 model2 = glm::translate(model, translation);
+	model = model2 * model1;
 
 	shaderProgram.setUniformM4f("model", model);
 	glm::mat4 view = glm::mat4(1.0f);

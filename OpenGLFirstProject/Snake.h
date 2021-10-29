@@ -50,6 +50,8 @@ private:
 	DIRECTION curr_dir;
 	//Check if the snake head is out of the game spot.
 	bool checkHeadOutBound();
+
+	bool find(unsigned int row, unsigned col, Node* from);
 public:
 	Snake();
 	~Snake();
@@ -61,6 +63,12 @@ public:
 	//When the snake eat something, this function will be called.
 	void eat();
 
+	/// <summary>
+	/// Check if the head is biting the body!
+	/// </summary>
+	/// <returns>True if head's position is the same as one part of the body </returns>
+	bool checkSelfEating();
+
 	bool checkEating(unsigned int row, unsigned int col);
 
 	void render(VAO bodyVAO,Shader shaderProgram);
@@ -70,5 +78,11 @@ public:
 	void die();
 };
 
+/// <summary>
+/// Convert (row col) to the coordinate of bottom left corner of the square in the world frame.
+/// </summary>
+/// <param name="row"></param>
+/// <param name="col"></param>
+/// <returns></returns>
 glm::vec3 rowColConversion(unsigned int row, unsigned int col);
 

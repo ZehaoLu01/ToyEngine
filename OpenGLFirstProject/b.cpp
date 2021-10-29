@@ -115,6 +115,15 @@ int main()
         -0.5f, 0.5f, -0.5f,1.0f,0.0f,0.0f,0.0f,0.0f,
     };
 
+
+    float borderVertices[] ={
+        -5.5,1.0,-0.5,
+        -5.5, 1.0, -(10.5*20/(MAX_ROW - 1.0)+0.5),
+        -5.5 + 10.5 * 20 / (MAX_ROW - 1.0), 1.0,-(10.5 * 20 / (MAX_ROW - 1.0) + 0.5),
+        -5.5 + 10.5 * 20 / (MAX_ROW - 1.0),1.0,- 0.5,
+        -5.5,1.0,-0.5,
+    };
+
     unsigned int indices[] = {
         0,1,2,
         0,3,2,
@@ -160,6 +169,7 @@ int main()
         7,5,6,
     };
 
+
     VAO bodyVAO;
     bodyVAOCfg(bodyVAO, vertices, indices, sizeof(vertices), sizeof(indices));
 
@@ -172,6 +182,15 @@ int main()
 
     VAO foodVAO;
     foodVAOCfg(foodVAO, foodVertices, foodIndices, sizeof(foodVertices), sizeof(foodIndices));
+
+    VAO borderVAO;
+    VBO borderVBO;
+    borderVAO.bind();
+    borderVBO.bind();
+    borderVBO.inputData(sizeof(borderVertices), borderVertices, GL_STATIC_DRAW);
+    borderVBO.linkAttrPtr(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    borderVBO.unbind();
+    borderVAO.unbind();
 
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -229,18 +248,21 @@ int main()
             tableVAO.bind();
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             // -------------------------------------------------------------------------------
+
+            borderVAO.bind();
+            glDrawArrays(GL_LINE_STRIP, 0, 5);
+            // -------------------------------------------------------------------------------
             snake.render(bodyVAO, shaderProgram);
             snake.changeDirection(keyboardDirection);
             snake.move();
             // -------------------------------------------------------------------------------
             food.render(shaderProgram,foodVAO);
             // -------------------------------------------------------------------------------
-
-
             bool isEaten = snake.checkEating(food.row, food.col);
             if (isEaten) {
                 food.regenerate();
             }
+            snake.checkSelfEating();
             // -------------------------------------------------------------------------------
             // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
             // -------------------------------------------------------------------------------

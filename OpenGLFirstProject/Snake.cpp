@@ -44,6 +44,14 @@ bool Snake::checkHeadOutBound()
 	return true;
 }
 
+bool Snake::find(unsigned int row, unsigned col, Node* from)
+{
+	for (Node* p = from; p != NULL; p = p->next) {
+		if (p->row == row && p->col == col)return true;
+	}
+	return false;
+}
+
 void Snake::move()
 {
 	switch (curr_dir)
@@ -103,7 +111,7 @@ void Snake::changeDirection(DIRECTION direction)
 
 void Snake::die()
 {
-	Terminate();
+	//Terminate();
 }
 
 void Snake::render(VAO bodyVAO, Shader shaderProgram)
@@ -134,18 +142,20 @@ void Snake::eat()
 	}
 }
 
-	/// <summary>
-	/// Convert (row col) to the coordinate of bottom left corner of the square in the world frame.
-	/// </summary>
-	/// <param name="row"></param>
-	/// <param name="col"></param>
-	/// <returns></returns>
+bool Snake::checkSelfEating()
+{
+	if (find(head->row, head->col, head->next)) {
+		std::cout << "eating itself!!" << std::endl;
+		//die();
+	};
+	return false;
+}
+
 	glm::vec3 rowColConversion(unsigned int row, unsigned int col)
 	{
-		if (row > MAX_ROW - 1 || col > MAX_COL - 1) {
+		if (row > MAX_ROW || col > MAX_COL) {
 			std::cout << "WARNING: row/col is out of bound!";
 		}
-		//fixed 100 rows and coloums
 		float singleRowOffset = -10.5f / (float)(MAX_ROW - 1);
 		float singleColOffset = 10.5f / (float)(MAX_COL - 1);
 		
@@ -168,7 +178,9 @@ void Snake::eat()
 
 		glm::vec3 translation = rowColConversion(this->row, this->col);
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, translation);
+		glm::mat4 model1 = glm::scale(model, glm::vec3(10.5 / MAX_ROW, 10.5 / MAX_ROW, 10.5 / MAX_ROW));
+		glm::mat4 model2 = glm::translate(model, translation);
+		model = model2 * model1;
 
 		shaderProgram.setUniformM4f("model", model);
 		glm::mat4 view = glm::mat4(1.0f);
