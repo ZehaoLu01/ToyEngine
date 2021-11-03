@@ -67,6 +67,14 @@ void Shader::setUniformM4f(const char* name, glm::mat4 mat)
 	glUniformMatrix4fv(myUniformLocation, 1,GL_FALSE , glm::value_ptr(mat));
 }
 
+void Shader::setUniformM3f(const char* name, glm::mat3 mat) {
+	GLint myUniformLocation = glGetUniformLocation(programID, name);
+	glUniformMatrix3fv(myUniformLocation, 1, GL_FALSE, glm::value_ptr(mat));
+}
+void Shader::setUniformV3f(const char* name, glm::vec3 vec) {
+	GLint myUniformLocation = glGetUniformLocation(programID, name);
+	glUniform3fv(myUniformLocation, 1, glm::value_ptr(vec));
+}
 //Enable this shader program.
 void Shader::useProgram()
 {	
