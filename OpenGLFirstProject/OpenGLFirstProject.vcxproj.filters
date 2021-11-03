@@ -18,7 +18,7 @@
     <ClCompile Include="a.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="b.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="STB_image_implementation.cpp">

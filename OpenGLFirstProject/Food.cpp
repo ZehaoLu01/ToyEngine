@@ -18,12 +18,14 @@ Food::Food(unsigned int row, unsigned int col)
 	this->col = col;
 }
 
+// Generate a random position(row,col). [0,MAX_ROL-1]
 void Food::regenerate()
 {
 	row = rand() % MAX_ROW;
 	col = rand() % MAX_COL;
 }
 
+//Render the food.
 void Food::render(Shader shaderProgram, VAO foodVAO)
 {
 	glm::mat4 rotation = glm::mat4(1.0f);

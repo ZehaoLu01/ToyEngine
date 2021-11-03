@@ -19,6 +19,7 @@ void windowInit(GLFWwindow* &window, bool& retflag);
 void foodVAOCfg(VAO& foodVAO, float  foodVertices[64], unsigned int  foodIndices[36], unsigned int verticesSize, unsigned int indicesSize);
 void tableVAOCfg(VAO& tableVAO, float  tableVertices[64], unsigned int  tableIndices[36], unsigned int verticesSize, unsigned int indicesSize);
 void bodyVAOCfg(VAO& bodyVAO, float  vertices[64], unsigned int  indices[36], unsigned int verticesSize, unsigned int indicesSize);
+void borderVAOCfg(VAO& borderVAO, float  borderVertices[15], unsigned int size);
 void gladInit(GLFWwindow* window, bool& retflag);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
@@ -59,8 +60,8 @@ int main()
     //read picture for texturing.
     int width, height, nrChannels;
     //Need to flip vertically because OpenGL assume that y axis is at the bottom of the picture, but actually many pictures have their axis at the bottom. Add this statement before loading picture.
-    
     stbi_set_flip_vertically_on_load(true);
+    //Load the texture picture.
     unsigned char* data = stbi_load("FunnyPicture.jpg", &width, &height, &nrChannels, 0);
     unsigned int texture;
     if (!data) {
@@ -69,7 +70,6 @@ int main()
     else
     {
         //generate texture buffer, bind it and set data.
-        
         glGenBuffers(1, &texture);
         glBindBuffer(GL_TEXTURE_2D, texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -169,36 +169,31 @@ int main()
         7,5,6,
     };
 
-
+    //Configure body VAO
     VAO bodyVAO;
     bodyVAOCfg(bodyVAO, vertices, indices, sizeof(vertices), sizeof(indices));
 
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-
+    //Configure table VAO
     VAO tableVAO;
     tableVAOCfg(tableVAO, tableVertices, tableIndices, sizeof(tableVertices), sizeof(tableIndices));
     
-
+    //Configure food VAO
     VAO foodVAO;
     foodVAOCfg(foodVAO, foodVertices, foodIndices, sizeof(foodVertices), sizeof(foodIndices));
 
+    //Configure border VAO
     VAO borderVAO;
-    VBO borderVBO;
-    borderVAO.bind();
-    borderVBO.bind();
-    borderVBO.inputData(sizeof(borderVertices), borderVertices, GL_STATIC_DRAW);
-    borderVBO.linkAttrPtr(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    borderVBO.unbind();
-    borderVAO.unbind();
+    borderVAOCfg(borderVAO, borderVertices, sizeof(borderVertices));
 
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    //Enable the deep testing to prevent triangles behind of other triangles be rendered.
     glEnable(GL_DEPTH_TEST);
     
     Snake snake;
     Food food;
+
     double currTime = glfwGetTime();
 
     // render loop
@@ -219,15 +214,16 @@ int main()
             // render
             // ------
 
+            //Specify the color used to clear the color buffer.
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            //Specify the buffer to be cleared.
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            // -------------------------------------------------------------------------------
+            //Set the uniform matrixes.
             glm::mat4 rotation = glm::mat4(1.0f);
             //rotation = glm::rotate(rotation, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             shaderProgram.setUniformM4f("rotation", rotation);
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
             shaderProgram.setUniformM4f("model", model);
             glm::mat4 view = glm::mat4(1.0f);
             view = glm::rotate(view, glm::radians(70.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -245,32 +241,37 @@ int main()
             shaderProgram.setUniformM4f("view", view);
             shaderProgram.setUniformM4f("rotation", rotation);
             shaderProgram.setUniformM4f("projection", projection);
+            // -------------------------------------------------------------------------------
+            //Draw table
             tableVAO.bind();
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
             // -------------------------------------------------------------------------------
-
+            //Draw border
             borderVAO.bind();
             glDrawArrays(GL_LINE_STRIP, 0, 5);
             // -------------------------------------------------------------------------------
+            //draw snake
             snake.render(bodyVAO, shaderProgram);
             snake.changeDirection(keyboardDirection);
             snake.move();
             // -------------------------------------------------------------------------------
+            //Draw food
             food.render(shaderProgram,foodVAO);
             // -------------------------------------------------------------------------------
+            //Check if the food is eaten. If it is eaten, then regenerate the food at another position.
             bool isEaten = snake.checkEating(food.row, food.col);
             if (isEaten) {
                 food.regenerate();
             }
+            //Check if the snake head is at the position of its body. If it is, then the snake die.
             snake.checkSelfEating();
             // -------------------------------------------------------------------------------
             // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
             // -------------------------------------------------------------------------------
+            //Swap the content between front buffer and back buffer.
             glfwSwapBuffers(window);
             glfwPollEvents();
-        }
-
-        
+        }  
     }
 
 
@@ -278,6 +279,17 @@ int main()
     // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
+}
+
+void borderVAOCfg(VAO& borderVAO, float  borderVertices[15], unsigned int size)
+{
+    VBO borderVBO;
+    borderVAO.bind();
+    borderVBO.bind();
+    borderVBO.inputData(size, borderVertices, GL_STATIC_DRAW);
+    borderVBO.linkAttrPtr(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    borderVBO.unbind();
+    borderVAO.unbind();
 }
 
 void bodyVAOCfg(VAO& bodyVAO, float  vertices[64], unsigned int  indices[36], unsigned int verticesSize, unsigned int indicesSize)

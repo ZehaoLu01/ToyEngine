@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="a.cpp" />
-    <ClCompile Include="b.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="EBO.cpp" />
     <ClCompile Include="Food.cpp" />
     <ClCompile Include="glad.c" />
