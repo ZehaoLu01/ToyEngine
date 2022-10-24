@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -20,23 +20,23 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="a.cpp" />
+    <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="EBO.cpp" />
-    <ClCompile Include="Food.cpp" />
+    <ClCompile Include="Renderer\EBO.cpp" />
     <ClCompile Include="glad.c" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="Snake.cpp" />
+    <ClCompile Include="Renderer\RenderSystem.cpp" />
+    <ClCompile Include="Renderer\Shader.cpp" />
     <ClCompile Include="STB_image_implementation.cpp" />
-    <ClCompile Include="VAO.cpp" />
-    <ClCompile Include="VBO.cpp" />
+    <ClCompile Include="Renderer\VAO.cpp" />
+    <ClCompile Include="Renderer\VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EBO.h" />
-    <ClInclude Include="Food.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="Snake.h" />
-    <ClInclude Include="VAO.h" />
-    <ClInclude Include="VBO.h" />
+    <ClInclude Include="Renderer\EBO.h" />
+    <ClInclude Include="Engine\Engine.h" />
+    <ClInclude Include="Renderer\RenderSystem.h" />
+    <ClInclude Include="Renderer\Shader.h" />
+    <ClInclude Include="Renderer\VAO.h" />
+    <ClInclude Include="Renderer\VBO.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fs.glsl" />
@@ -49,9 +49,9 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{b2ea4ce6-0929-40be-991f-0d958b6436e1}</ProjectGuid>
-    <RootNamespace>ToyRenderer</RootNamespace>
+    <RootNamespace>ToyEngine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>ToyRenderer</ProjectName>
+    <ProjectName>ToyEngine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -106,7 +106,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>C:\Users\91566\OneDrive - UBC\Programs\OpenGLLib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)\lib;$(LibraryPath)</LibraryPath>
     <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,7 +149,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>./include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./include</AdditionalIncludeDirectories>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -157,6 +158,9 @@
       <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>./lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
