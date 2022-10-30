@@ -2,25 +2,27 @@
 
 #include<memory>
 #include<vector>
-#include "../Renderer/RenderSystem.h"
-#include<glad/glad.h>
+#include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "../Renderer/RenderSystem.h"
 
 namespace ToyEngine {
-
+	class RenderSystem;
 	using WindowPtr = std::shared_ptr<GLFWwindow>;
+	using std::shared_ptr;
+	using std::make_shared;
 
 	class MyEngine
 	{
-		WindowPtr& mWindow;
-		std::shared_ptr<RenderSystem> mRenderSystem;
+	public:
+		MyEngine(WindowPtr& window) :mWindow(window) {};
+		void tick();
+		void init();
 
-		public:
-			MyEngine(WindowPtr& window) :mWindow(window) {};
+	private:
+		shared_ptr<RenderSystem> mRenderSystem = make_shared<RenderSystem>();
 
-			void tick();
-
-			
+		WindowPtr mWindow;
 	};
 }
 

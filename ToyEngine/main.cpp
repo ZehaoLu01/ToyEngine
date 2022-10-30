@@ -10,6 +10,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Engine/Engine.h"
+#include <fstream>
+#include <sstream>
 
 using std::unique_ptr;
 using ToyEngine::WindowPtr;
@@ -45,23 +47,33 @@ int main()
 
     auto engine = std::make_shared<ToyEngine::MyEngine>(window);
 
+    engine->init();
+
     while (!glfwWindowShouldClose(window.get())) {
         engine->tick();
     }
+    glfwTerminate();
     return 0;
 }
 
 // Window Initialization
 WindowPtr windowInit()
 {
-    WindowPtr window(glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "ToyRenderer", NULL, NULL));
-    if (!window)
+    GLFWwindow* raw_window_ptr = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "ToyRenderer", NULL, NULL);
+    
+    // Note that if we called glfwterminate and also use default deleter, the window pointer will be delete twice.
+    // To avoid this, we should not call glfwterminate. Instead customize a deleter for shared_ptr.
+    WindowPtr window(raw_window_ptr, [](GLFWwindow* window) {
+        glfwDestroyWindow(window);
+        });
+    if (!raw_window_ptr)
     {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
+        std::cout << "GLFW::WINDOW_INIT, Failed to create GLFW window" << std::endl;
     }
     return window;
 }
+
+
 
 // GLAD Initialization
 bool gladInit(WindowPtr window) {

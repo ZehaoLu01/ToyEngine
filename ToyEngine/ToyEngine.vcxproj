@@ -26,6 +26,9 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="Renderer\RenderSystem.cpp" />
     <ClCompile Include="Renderer\Shader.cpp" />
+    <Text Include="Shaders\FragmentShader.glsl">
+      <FileType>Document</FileType>
+    </Text>
     <ClCompile Include="STB_image_implementation.cpp" />
     <ClCompile Include="Renderer\VAO.cpp" />
     <ClCompile Include="Renderer\VBO.cpp" />
@@ -40,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="fs.glsl" />
+    <None Include="Shaders\ShaderX.glsl" />
     <None Include="vs.glsl" />
   </ItemGroup>
   <ItemGroup>
