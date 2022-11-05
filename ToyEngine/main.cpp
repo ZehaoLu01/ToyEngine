@@ -1,7 +1,6 @@
 
-#include <ImageProcessing/stb_image.h>
 #include <iostream>
-#include<glad/glad.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "Renderer/Shader.h"
 #include "Renderer/VBO.h"
@@ -12,6 +11,8 @@
 #include "Engine/Engine.h"
 #include <fstream>
 #include <sstream>
+#include "Resource/StbImageLoader.h"
+#include "Resource/Texture.h"
 
 using std::unique_ptr;
 using ToyEngine::WindowPtr;
@@ -29,7 +30,7 @@ bool isOver = false;
 
 
 
-int main()
+int main(char* argc, char** argv)
 {
     // glfw: initialize and configure
     glfwInit();
@@ -48,7 +49,7 @@ int main()
     auto engine = std::make_shared<ToyEngine::MyEngine>(window);
 
     engine->init();
-
+  
     while (!glfwWindowShouldClose(window.get())) {
         engine->tick();
     }
