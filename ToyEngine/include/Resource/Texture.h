@@ -1,6 +1,7 @@
 #pragma once
 #include<memory>
 #include<vector>
+#include "Resource/stb_image.h"
 #define out
 namespace ToyEngine {
 	// Right now only support unsigned char data.
@@ -10,7 +11,7 @@ namespace ToyEngine {
 	{
 	public:
 		Texture(TextureDataType* data, unsigned int width, unsigned int height, unsigned int internalFormat, unsigned int mSourceFormat, unsigned int mipmapLevel)
-			:mData(data),
+			:mData(data,stbi_image_free),
 			mWidth(width),
 			mHeight(height),
 			mInternalFormat(internalFormat),
@@ -21,7 +22,7 @@ namespace ToyEngine {
 		}
 
 		TextureDataType* const getData() {
-			return mData;
+			return mData.get();
 		}
 
 
@@ -35,7 +36,7 @@ namespace ToyEngine {
 		// Image Data
 		// Can we use smart pointer for this?
 		// Picture formats have a specific sequence to stand for beginning and ending.
-		TextureDataType* mData;
+		std::unique_ptr<TextureDataType,decltype(stbi_image_free)*> mData;
 		
 		// the mipmap level for which we want to create a texture for if you want to set each mipmap level manually
 		unsigned int mMipmapLevel = 0;
