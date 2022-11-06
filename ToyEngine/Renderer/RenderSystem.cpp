@@ -1,13 +1,14 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-#include "RenderSystem.h"
+#include "Renderer/RenderSystem.h"
 #include "Resource/StbImageLoader.h"
 #include "Resource/Texture.h"
 #include <Resource/stb_image.h>
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "Renderer/RenderComponent.h"
 
 namespace ToyEngine {
     const std::string VERTEX_SHADER_PATH = "Shaders/ShaderX.glsl";
