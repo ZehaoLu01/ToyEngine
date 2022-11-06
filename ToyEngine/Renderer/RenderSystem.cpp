@@ -5,6 +5,9 @@
 #include "Resource/StbImageLoader.h"
 #include "Resource/Texture.h"
 #include <Resource/stb_image.h>
+#include "glm/glm.hpp"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace ToyEngine {
     const std::string VERTEX_SHADER_PATH = "Shaders/ShaderX.glsl";
@@ -18,9 +21,31 @@ namespace ToyEngine {
 
         float elapsedTime = glfwGetTime();
         float greenColor = (sin(elapsedTime) / 2.0f )+ 0.5f;
-        GLint uniformLocation = glGetUniformLocation(mShaderProgram, "colorFromTime");
+        
+
+
         glUseProgram(mShaderProgram);
+        GLint uniformLocation = glGetUniformLocation(mShaderProgram, "colorFromTime");
         glUniform4f(uniformLocation, 0.0f, greenColor, 0.0f, 1.0f);
+
+        // Testing transform uniform
+        auto model = glm::mat4(1.0f);
+        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(40.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+        GLuint modelLoc = glGetUniformLocation(mShaderProgram, "model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+        auto view = glm::mat4(1.0f);
+        // note that we're translating the scene in the reverse direction of where we want to move
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        GLuint viewLoc = glGetUniformLocation(mShaderProgram, "view");
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+        auto projection = glm::mat4(1);
+        projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
+        GLuint projectionLoc = glGetUniformLocation(mShaderProgram, "projection");
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+
 
         //glBindTexture(GL_TEXTURE_2D, mTexture);
         glBindVertexArray(mVAO);
@@ -114,8 +139,6 @@ namespace ToyEngine {
         else {
             std::cerr << "????????????????"<<std::endl;
         }
-
-        // don't forget to free image
     }
 
     void RenderSystem::initShader() {
@@ -139,6 +162,9 @@ namespace ToyEngine {
 
         const char* cstr_vertex = vertexString.c_str();
         const char* cstr_fragment = fragmentString.c_str();
+
+        // =======================================================================
+
 
         GLuint vertexShader;
         GLuint fragmentShader;
@@ -174,7 +200,6 @@ namespace ToyEngine {
             glGetProgramInfoLog(mShaderProgram, 512, NULL, log);
             std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << log << std::endl;
         }
-
 
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
