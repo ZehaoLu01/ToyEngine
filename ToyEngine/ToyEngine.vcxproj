@@ -20,11 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="a.cpp" />
+    <ClCompile Include="Engine\Component.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
+    <ClCompile Include="Engine\GameObject.cpp" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
+    <ClCompile Include="Renderer\RenderComponent.cpp" />
     <ClCompile Include="Renderer\Resource\ImageLoader.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Renderer\EBO.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Renderer\RenderSystem.cpp" />
     <ClCompile Include="Renderer\Shader.cpp" />
@@ -34,10 +36,10 @@
     </Text>
     <ClCompile Include="Renderer\Resource\StbImageLoader.cpp" />
     <ClCompile Include="Renderer\Resource\STB_image_implementation.cpp" />
-    <ClCompile Include="Renderer\VAO.cpp" />
-    <ClCompile Include="Renderer\VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Engine\Component.h" />
+    <ClInclude Include="include\Engine\GameObject.h" />
     <ClInclude Include="include\glm\common.hpp" />
     <ClInclude Include="include\glm\detail\compute_common.hpp" />
     <ClInclude Include="include\glm\detail\compute_vector_relational.hpp" />
@@ -322,12 +324,10 @@
     <ClInclude Include="include\glm\vector_relational.hpp" />
     <ClInclude Include="include\Resource\ImageLoader.h" />
     <ClInclude Include="include\Resource\stb_image.h" />
-    <ClInclude Include="Renderer\EBO.h" />
-    <ClInclude Include="Engine\Engine.h" />
-    <ClInclude Include="Renderer\RenderSystem.h" />
-    <ClInclude Include="Renderer\Shader.h" />
-    <ClInclude Include="Renderer\VAO.h" />
-    <ClInclude Include="Renderer\VBO.h" />
+    <ClInclude Include="include\Renderer\RenderComponent.h" />
+    <ClInclude Include="include\Engine\Engine.h" />
+    <ClInclude Include="include\Renderer\RenderSystem.h" />
+    <ClInclude Include="include\Renderer\Shader.h" />
     <ClInclude Include="include\Resource\Texture.h" />
     <ClInclude Include="include\Resource\StbImageLoader.h" />
   </ItemGroup>
