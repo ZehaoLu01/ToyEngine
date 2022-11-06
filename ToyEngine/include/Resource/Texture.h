@@ -1,15 +1,24 @@
 #pragma once
 #include<memory>
 #include<vector>
-#include "Resource/stb_image.h"
-
+#include"Resource/stb_image.h"
+#include "glad/glad.h"
 namespace ToyEngine {
 	// Right now only support unsigned char data.
 	using TextureDataType = unsigned char;
 	using std::shared_ptr;
+
 	class Texture
 	{
+		friend class RenderComponent;
+
 	public:
+		Texture()
+			:mData(nullptr,stbi_image_free)
+		{
+
+		}
+
 		Texture(TextureDataType* data, unsigned int width, unsigned int height, unsigned int internalFormat, unsigned int mSourceFormat, unsigned int mipmapLevel)
 			:mData(data,stbi_image_free),
 			mWidth(width),
@@ -18,13 +27,16 @@ namespace ToyEngine {
 			mSourceFormat(mSourceFormat),
 			mMipmapLevel(mipmapLevel)
 		{
-			
+			init();
 		}
+
+		~Texture() = default;
 
 		TextureDataType* const getData() {
 			return mData.get();
 		}
 
+		void init();
 
 	private:
 		unsigned int mWidth;
@@ -44,6 +56,7 @@ namespace ToyEngine {
 		// the format(color chanals) of the source image
 		unsigned char mSourceFormat;
 
+		GLuint mTextureIndex;
 	};
 }
 

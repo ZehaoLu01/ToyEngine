@@ -20,38 +20,7 @@ namespace ToyEngine {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-        float elapsedTime = glfwGetTime();
-        float greenColor = (sin(elapsedTime) / 2.0f )+ 0.5f;
-        
-
-
-        glUseProgram(mShaderProgram);
-        GLint uniformLocation = glGetUniformLocation(mShaderProgram, "colorFromTime");
-        glUniform4f(uniformLocation, 0.0f, greenColor, 0.0f, 1.0f);
-
-        // Testing transform uniform
-        auto model = glm::mat4(1.0f);
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(40.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-        GLuint modelLoc = glGetUniformLocation(mShaderProgram, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-        auto view = glm::mat4(1.0f);
-        // note that we're translating the scene in the reverse direction of where we want to move
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        GLuint viewLoc = glGetUniformLocation(mShaderProgram, "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-        auto projection = glm::mat4(1);
-        projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
-        GLuint projectionLoc = glGetUniformLocation(mShaderProgram, "projection");
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-
-
-        //glBindTexture(GL_TEXTURE_2D, mTexture);
-        glBindVertexArray(mVAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+        mRenderComponent->tick();
 
         glfwSwapBuffers(mWindow.get());
         glfwPollEvents();
@@ -61,89 +30,87 @@ namespace ToyEngine {
         mWindow = window;
 
         glEnable(GL_DEPTH_TEST);
-
-        // generate buffers
-        glGenVertexArrays(1, &mVAO);
-        glGenBuffers(1, &mGeneratedBuffer);
-        glGenBuffers(1, &mEBO);
-
-        glBindVertexArray(mVAO);
-        
-        glBindBuffer(GL_ARRAY_BUFFER, mGeneratedBuffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        glBindVertexArray(0);
-
-
-        initShader();
-
-        
-        // must init shader first!!
-        initTexture();
-    }
-
-    void RenderSystem::initTexture() {
-        glGenTextures(1, &mTexture);
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, mTexture);
-        // Add more texture here.
-
-
-        //Configuration
-        //=================================================================================
-        // what if the texture coordinate is over 1.0?
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-        // For GL_CLAMP_TO_BORDER
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        //float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-        //glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-        //=================================================================================
-        // filter
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        //=================================================================================
-        // set image data
-        stbi_set_flip_vertically_on_load(true);
+        // ========================================================
 
         ToyEngine::StbImageLoader stbLoader;
         ToyEngine::ImageLoader* loader = &stbLoader;
         int width, height, channels;
-        auto data = loader->getImageFrom("Resources/Images/FunnyPicture.jpg", &width, &height, &channels);
-        auto texture = ToyEngine::Texture(data, (unsigned int)width, (unsigned int)height, (unsigned int)channels, (unsigned int)channels, 0u);
+        auto textureData = loader->getImageFrom("Resources/Images/FunnyPicture.jpg", &width, &height, &channels);
+        auto textureDataPtr = std::make_shared<Texture>(textureData, width, height, GL_RGB, GL_RGBA, 0);
 
-        if (data) {
-            unsigned int size;
-            auto data_c = texture.getData();
-            
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_c);
-            //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        auto vertexDataPtr = std::make_unique<std::vector<float>>();
+        *vertexDataPtr = {
+                     0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+                     0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+                    -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+                    -0.5f,  0.5f, 0.0f, 0.0f, 1.0f
+        };
+        
+        auto indicesDataPtr = std::make_unique<std::vector<unsigned int>>();
 
-            glGenerateMipmap(GL_TEXTURE_2D);
+        *indicesDataPtr = {
+                0, 1, 3,
+                1, 2, 3
+        };
 
-            glUseProgram(mShaderProgram);
-            glUniform1f(glGetUniformLocation(mShaderProgram, "texture1"), mTexture);
-        }
-        else {
-            std::cerr << "????????????????"<<std::endl;
-        }
+        auto shaderIndex = initShader();
+
+        auto component =  std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureDataPtr, shaderIndex);
+        mRenderComponent = component;
     }
 
-    void RenderSystem::initShader() {
+    void RenderSystem::initTexture() {
+        //glGenTextures(1, &mTexture);
+
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_2D, mTexture);
+        //// Add more texture here.
+
+
+        ////Configuration
+        ////=================================================================================
+        //// what if the texture coordinate is over 1.0?
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        //// For GL_CLAMP_TO_BORDER
+        ////glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        ////glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        ////float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+        ////glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+        ////=================================================================================
+        //// filter
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        ////=================================================================================
+        //// set image data
+        //stbi_set_flip_vertically_on_load(true);
+
+        //ToyEngine::StbImageLoader stbLoader;
+        //ToyEngine::ImageLoader* loader = &stbLoader;
+        //int width, height, channels;
+        //auto data = loader->getImageFrom("Resources/Images/FunnyPicture.jpg", &width, &height, &channels);
+        //auto texture = ToyEngine::Texture(data, (unsigned int)width, (unsigned int)height, (unsigned int)channels, (unsigned int)channels, 0u);
+
+        //if (data) {
+        //    unsigned int size;
+        //    auto data_c = texture.getData();
+        //    
+        //    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data_c);
+        //    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+        //    glGenerateMipmap(GL_TEXTURE_2D);
+
+        //    glUseProgram(mShaderProgram);
+        //    glUniform1f(glGetUniformLocation(mShaderProgram, "texture1"), mTexture);
+        //}
+        //else {
+        //    std::cerr << "????????????????"<<std::endl;
+        //}
+    }
+
+    GLuint RenderSystem::initShader() {
 
         std::ifstream vertexInput(VERTEX_SHADER_PATH);
         std::ifstream fragmentInput(FRAGMENT_SHADER_PATH);
@@ -191,20 +158,22 @@ namespace ToyEngine {
             glGetProgramInfoLog(fragmentShader, sizeof(log), NULL, log);
             std::cout << "ERROR::SHADER::LINKING_FAILED\n" << log << std::endl;
         }
+        GLuint ret;
+        ret = glCreateProgram();
+        glAttachShader(ret, vertexShader);
+        glAttachShader(ret, fragmentShader);
+        glLinkProgram(ret);
 
-        mShaderProgram = glCreateProgram();
-        glAttachShader(mShaderProgram, vertexShader);
-        glAttachShader(mShaderProgram, fragmentShader);
-        glLinkProgram(mShaderProgram);
-
-        glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &success);
+        glGetProgramiv(ret, GL_LINK_STATUS, &success);
         if (!success) {
-            glGetProgramInfoLog(mShaderProgram, 512, NULL, log);
+            glGetProgramInfoLog(ret, 512, NULL, log);
             std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << log << std::endl;
         }
 
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
+
+        return ret;
     }
 
 }

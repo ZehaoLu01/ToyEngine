@@ -2,7 +2,6 @@
 
 in vec2 f_textureCoordinate;
 out vec4 FragColor;
-uniform vec4 colorFromTime;
 
 uniform sampler2D texture1;
 
