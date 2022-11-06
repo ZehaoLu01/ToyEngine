@@ -38,6 +38,7 @@
     <ClCompile Include="Renderer\Resource\STB_image_implementation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Renderer\Camera.h" />
     <ClInclude Include="include\Engine\Component.h" />
     <ClInclude Include="include\Engine\GameObject.h" />
     <ClInclude Include="include\glm\common.hpp" />

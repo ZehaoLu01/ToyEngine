@@ -17,6 +17,8 @@ namespace ToyEngine {
 
     void RenderSystem::tick()
     {
+
+
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
@@ -56,7 +58,7 @@ namespace ToyEngine {
         //auto shaderIndex = initShader();
         std::shared_ptr<Shader> shaderPtr = std::make_shared<Shader>(VERTEX_SHADER_PATH.c_str(), FRAGMENT_SHADER_PATH.c_str());
 
-        auto component =  std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureDataPtr, shaderPtr);
+        auto component =  std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureDataPtr, shaderPtr,mWindow);
         mRenderComponent = component;
     }
 

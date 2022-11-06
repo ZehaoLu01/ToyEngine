@@ -3,27 +3,37 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "GLFW/glfw3.h"
+#include "Renderer/Camera.h"
 
 namespace ToyEngine {
 	void RenderComponent::tick()
 	{
+        float current_time = glfwGetTime();
+        float delta_time = glfwGetTime() - lastFrameTime;
+        lastFrameTime = current_time;
+        processInput(mWindow.get(), delta_time);
+
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, mTextureIndex);
 
         mShader->use();
 
         // Testing transform uniform
-        auto model = glm::mat4(1.0f);
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(40.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+        auto identity = glm::mat4(1.0f);
+        // rotation need to be improved
+        auto model_rotate = glm::rotate(identity, (float)glfwGetTime() * glm::radians(40.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+        auto model_translate = glm::translate(identity, mWorldPos);
+        auto model = model_translate * model_rotate;
         mShader->setUniform("model", model);
 
         auto view = glm::mat4(1.0f);
         // note that we're translating the scene in the reverse direction of where we want to move
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        view = camera.GetViewMatrix();
+        //view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
         mShader->setUniform("view", view);
 
         auto projection = glm::mat4(1);
-        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(camera.Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
         mShader->setUniform("projection", projection);
 
 
@@ -35,6 +45,8 @@ namespace ToyEngine {
 
 	void RenderComponent::init()
 	{
+        camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+
         // generate buffers
         glGenVertexArrays(1, &mVAOIndex);
         glGenBuffers(1, &mVBOIndex);
@@ -57,5 +69,27 @@ namespace ToyEngine {
 
         glBindVertexArray(0);
 	}
+
+    // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+    void RenderComponent::processInput(GLFWwindow* window, float deltaTime)
+    {
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwSetWindowShouldClose(window, true);
+
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            camera.ProcessKeyboard(FORWARD, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            camera.ProcessKeyboard(BACKWARD, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            camera.ProcessKeyboard(LEFT, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            camera.ProcessKeyboard(RIGHT, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+            camera.ProcessKeyboard(UP, deltaTime);
+        }
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+            camera.ProcessKeyboard(DOWN, deltaTime);
+        }
+    }
 
 }
