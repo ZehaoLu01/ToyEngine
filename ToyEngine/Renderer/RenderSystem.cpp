@@ -17,7 +17,7 @@ namespace ToyEngine {
     void RenderSystem::tick()
     {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
         float elapsedTime = glfwGetTime();
         float greenColor = (sin(elapsedTime) / 2.0f )+ 0.5f;
@@ -59,6 +59,7 @@ namespace ToyEngine {
     void RenderSystem::init(WindowPtr window) {
         mWindow = window;
 
+        glEnable(GL_DEPTH_TEST);
 
         // generate buffers
         glGenVertexArrays(1, &mVAO);
