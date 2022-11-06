@@ -2,7 +2,7 @@
 #include<memory>
 #include<vector>
 #include "Resource/stb_image.h"
-#define out
+
 namespace ToyEngine {
 	// Right now only support unsigned char data.
 	using TextureDataType = unsigned char;
