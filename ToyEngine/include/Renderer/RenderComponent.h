@@ -4,6 +4,8 @@
 #include "Engine/Component.h"
 #include "glad/glad.h"
 #include "Resource/Texture.h"
+#include "Renderer/Shader.h"
+
 
 namespace ToyEngine {
 	using VertexDataElementType = float;
@@ -24,11 +26,11 @@ namespace ToyEngine {
 		
 		RenderComponent() = default;
 
-		RenderComponent(VertexDataPtr&& vertexDataPtr, IndexDataPtr&& indicesPtr, std::shared_ptr<Texture> textureDataPtr, GLuint shaderProgramIndex)
+		RenderComponent(VertexDataPtr&& vertexDataPtr, IndexDataPtr&& indicesPtr, std::shared_ptr<Texture> textureDataPtr, std::shared_ptr<Shader> shader)
 			:mVertexDataPtr(std::move(vertexDataPtr)),
 			mtextureDataPtr(textureDataPtr),
 			mIndicesPtr(std::move(indicesPtr)),
-			mShaderProgramIndex(shaderProgramIndex)
+			mShader(shader)
 		{
 			init();
 			mTextureIndex = textureDataPtr->mTextureIndex;
@@ -38,14 +40,13 @@ namespace ToyEngine {
 
 		GLuint mVBOIndex;
 		GLuint mVAOIndex;
-		GLuint mShaderProgramIndex;
 		GLuint mEBOIndex;
 		GLuint mTextureIndex;
 
 		std::shared_ptr<Texture> mtextureDataPtr;
 
 		IndexDataPtr mIndicesPtr;
-
+		std::shared_ptr<Shader> mShader;
 		//material
 	};
 

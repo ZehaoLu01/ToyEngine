@@ -53,9 +53,10 @@ namespace ToyEngine {
                 1, 2, 3
         };
 
-        auto shaderIndex = initShader();
+        //auto shaderIndex = initShader();
+        std::shared_ptr<Shader> shaderPtr = std::make_shared<Shader>(VERTEX_SHADER_PATH.c_str(), FRAGMENT_SHADER_PATH.c_str());
 
-        auto component =  std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureDataPtr, shaderIndex);
+        auto component =  std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureDataPtr, shaderPtr);
         mRenderComponent = component;
     }
 
