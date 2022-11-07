@@ -28,9 +28,9 @@ namespace ToyEngine {
         glfwPollEvents();
     }
 
-    void RenderSystem::init(WindowPtr window) {
+    void RenderSystem::init(WindowPtr window, std::shared_ptr<Camera> camera) {
         mWindow = window;
-
+        mCamera = camera;
         glEnable(GL_DEPTH_TEST);
         // ========================================================
 
@@ -58,7 +58,7 @@ namespace ToyEngine {
         //auto shaderIndex = initShader();
         std::shared_ptr<Shader> shaderPtr = std::make_shared<Shader>(VERTEX_SHADER_PATH.c_str(), FRAGMENT_SHADER_PATH.c_str());
 
-        auto component =  std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureDataPtr, shaderPtr,mWindow);
+        auto component =  std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureDataPtr, shaderPtr, mWindow, mCamera);
         mRenderComponent = component;
     }
 

@@ -30,12 +30,13 @@ namespace ToyEngine {
 		
 		RenderComponent() = default;
 
-		RenderComponent(VertexDataPtr&& vertexDataPtr, IndexDataPtr&& indicesPtr, std::shared_ptr<Texture> textureDataPtr, std::shared_ptr<Shader> shader, std::shared_ptr<GLFWwindow> window)
+		RenderComponent(VertexDataPtr&& vertexDataPtr, IndexDataPtr&& indicesPtr, std::shared_ptr<Texture> textureDataPtr, std::shared_ptr<Shader> shader, std::shared_ptr<GLFWwindow> window, std::shared_ptr<Camera> camera)
 			:mVertexDataPtr(std::move(vertexDataPtr)),
 			mtextureDataPtr(textureDataPtr),
 			mIndicesPtr(std::move(indicesPtr)),
 			mShader(shader),
-			mWindow(window)
+			mWindow(window),
+			mCamera(camera)
 		{
 			init();
 			mTextureIndex = textureDataPtr->mTextureIndex;
@@ -49,7 +50,7 @@ namespace ToyEngine {
 		GLuint mVAOIndex;
 		GLuint mEBOIndex;
 		GLuint mTextureIndex;
-		Camera camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f));
+		std::shared_ptr<Camera> mCamera;
 		std::shared_ptr<GLFWwindow> mWindow;
 
 		std::shared_ptr<Texture> mtextureDataPtr;
@@ -57,10 +58,6 @@ namespace ToyEngine {
 		IndexDataPtr mIndicesPtr;
 		std::shared_ptr<Shader> mShader;
 		//material
-
-
-		// To be removed
-		void processInput(GLFWwindow* window, float deltaTime);
 
 		float lastFrameTime=0;
 	};

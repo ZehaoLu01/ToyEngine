@@ -1,6 +1,7 @@
 #pragma once
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "Renderer/Camera.h"
 
 namespace ToyEngine{
 	using WindowPtr = std::shared_ptr<GLFWwindow>;
@@ -8,7 +9,7 @@ namespace ToyEngine{
 	class RenderSystem {
 		public:
 			void tick();
-			void init(WindowPtr window);
+			void init(WindowPtr window, std::shared_ptr<Camera> camera);
 				
 		private:
 				
@@ -18,6 +19,7 @@ namespace ToyEngine{
 				1, 2, 3    // second triangle
 			};
 			WindowPtr mWindow;
+			std::shared_ptr<Camera> mCamera;
 
 			GLuint initShader();
 			void initTexture();

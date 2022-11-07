@@ -26,7 +26,13 @@ int MAX_ROW = 20;
 int MAX_COL = 20;
 bool isOver = false;
 
+ToyEngine::MyEngine* engine_globalPtr;
 
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+    if (engine_globalPtr) {
+        engine_globalPtr->getMainCamera()->ProcessMouseScroll(yoffset);
+    }
+}
 
 int main(char* argc, char** argv)
 {
@@ -38,15 +44,16 @@ int main(char* argc, char** argv)
 
     // glfw window creation
     WindowPtr window;
-
     window = windowInit();
     if (!window)return -1;
 
     if (!gladInit(window))return -1;
 
     auto engine = std::make_shared<ToyEngine::MyEngine>(window);
-
+    engine_globalPtr = engine.get();
     engine->init();
+
+    glfwSetScrollCallback(window.get(), scrollCallback);
   
     while (!glfwWindowShouldClose(window.get())) {
         engine->tick();
