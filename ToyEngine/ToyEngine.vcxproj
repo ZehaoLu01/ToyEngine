@@ -471,7 +471,8 @@
     <None Include="include\glm\gtx\vector_angle.inl" />
     <None Include="include\glm\gtx\vector_query.inl" />
     <None Include="include\glm\gtx\wrap.inl" />
-    <None Include="Shaders\ShaderX.glsl" />
+    <None Include="Shaders\SingleColorFragmentShader.glsl" />
+    <None Include="Shaders\VertexShader.glsl" />
     <None Include="vs.glsl" />
   </ItemGroup>
   <ItemGroup>
