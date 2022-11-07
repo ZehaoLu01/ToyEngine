@@ -29,7 +29,7 @@ namespace ToyEngine {
         mShader->setUniform("view", view);
 
         auto projection = glm::mat4(1);
-        projection = glm::perspective(glm::radians(mCamera->Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(mCamera->mZoom), 800.0f / 600.0f, 0.1f, 100.0f);
         mShader->setUniform("projection", projection);
 
 

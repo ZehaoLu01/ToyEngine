@@ -34,6 +34,12 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
     }
 }
 
+void MouseMoveCallback(GLFWwindow* window, double xpos, double ypos) {
+    if (engine_globalPtr) {
+        engine_globalPtr->getMainCamera()->ProcessMouseMovement(xpos, ypos);
+    }
+}
+
 int main(char* argc, char** argv)
 {
     // glfw: initialize and configure
@@ -54,6 +60,7 @@ int main(char* argc, char** argv)
     engine->init();
 
     glfwSetScrollCallback(window.get(), scrollCallback);
+    glfwSetCursorPosCallback(window.get(), MouseMoveCallback);
   
     while (!glfwWindowShouldClose(window.get())) {
         engine->tick();

@@ -45,5 +45,4 @@ namespace ToyEngine{
             mMainCameraPtr->ProcessKeyboard(DOWN, deltaTime);
         }
     }
-
 }

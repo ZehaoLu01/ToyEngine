@@ -34,29 +34,35 @@ namespace ToyEngine {
         glm::vec3 Right;
         glm::vec3 WorldUp;
         // euler Angles
-        float Yaw;
-        float Pitch;
+        float mYaw = -90.0f;
+        float mPitch = 0.0f;
+
         // camera options
-        float MovementSpeed;
-        float MouseSensitivity;
-        float Zoom;
+        float mMovementSpeed;
+        float mMouseSensitivity;
+        float mZoom;
+        
+        bool mFirstMouse = true;
+
+        float mLastCursorX = 0.0f;
+        float mLastCursorY = 0.0f;
 
         // constructor with vectors
-        Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+        Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), mMovementSpeed(SPEED), mMouseSensitivity(SENSITIVITY), mZoom(ZOOM)
         {
             Position = position;
             WorldUp = up;
-            Yaw = yaw;
-            Pitch = pitch;
+            mYaw = yaw;
+            mPitch = pitch;
             updateCameraVectors();
         }
         // constructor with scalar values
-        Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+        Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), mMovementSpeed(SPEED), mMouseSensitivity(SENSITIVITY), mZoom(ZOOM)
         {
             Position = glm::vec3(posX, posY, posZ);
             WorldUp = glm::vec3(upX, upY, upZ);
-            Yaw = yaw;
-            Pitch = pitch;
+            mYaw = yaw;
+            mPitch = pitch;
             updateCameraVectors();
         }
 
@@ -71,7 +77,7 @@ namespace ToyEngine {
         // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
         void ProcessKeyboard(Camera_Movement direction, float deltaTime)
         {
-            float velocity = MovementSpeed * deltaTime;
+            float velocity = mMovementSpeed * deltaTime;
             if (direction == FORWARD)
                 Position += Front * velocity;
             if (direction == BACKWARD)
@@ -87,21 +93,38 @@ namespace ToyEngine {
         }
 
         // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-        void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
+        void ProcessMouseMovement(double xposIn, double yposIn, GLboolean constrainPitch = true)
         {
-            xoffset *= MouseSensitivity;
-            yoffset *= MouseSensitivity;
+            float xpos = static_cast<float>(xposIn);
+            float ypos = static_cast<float>(yposIn);
 
-            Yaw += xoffset;
-            Pitch += yoffset;
+            if (mFirstMouse)
+            {
+                mLastCursorX = xpos;
+                mLastCursorY = ypos;
+                mFirstMouse = false;
+            }
+
+            float xoffset = xpos - mLastCursorX;
+            float yoffset = mLastCursorY - ypos; // reversed since y-coordinates go from bottom to top
+
+            mLastCursorX = xpos;
+            mLastCursorY = ypos;
+
+
+            xoffset *= mMouseSensitivity;
+            yoffset *= mMouseSensitivity;
+
+            mYaw += xoffset;
+            mPitch += yoffset;
 
             // make sure that when pitch is out of bounds, screen doesn't get flipped
             if (constrainPitch)
             {
-                if (Pitch > 89.0f)
-                    Pitch = 89.0f;
-                if (Pitch < -89.0f)
-                    Pitch = -89.0f;
+                if (mPitch > 89.0f)
+                    mPitch = 89.0f;
+                if (mPitch < -89.0f)
+                    mPitch = -89.0f;
             }
 
             // update Front, Right and Up Vectors using the updated Euler angles
@@ -111,12 +134,14 @@ namespace ToyEngine {
         // processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
         void ProcessMouseScroll(float yoffset)
         {
-            Zoom -= (float)yoffset;
-            if (Zoom < 1.0f)
-                Zoom = 1.0f;
-            if (Zoom > 45.0f)
-                Zoom = 45.0f;
+            mZoom -= (float)yoffset;
+            if (mZoom < 1.0f)
+                mZoom = 1.0f;
+            if (mZoom > 45.0f)
+                mZoom = 45.0f;
         }
+
+
 
     private:
         // calculates the front vector from the Camera's (updated) Euler Angles
@@ -124,9 +149,9 @@ namespace ToyEngine {
         {
             // calculate the new Front vector
             glm::vec3 front;
-            front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-            front.y = sin(glm::radians(Pitch));
-            front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+            front.x = cos(glm::radians(mYaw)) * cos(glm::radians(mPitch));
+            front.y = sin(glm::radians(mPitch));
+            front.z = sin(glm::radians(mYaw)) * cos(glm::radians(mPitch));
             Front = glm::normalize(front);
             // also re-calculate the Right and Up vector
             Right = glm::normalize(glm::cross(Front, WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
