@@ -20,6 +20,8 @@ namespace ToyEngine{
 	}
 
 	void MyEngine::init() {
+        glfwSetInputMode(mWindow.get(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 		mMainCameraPtr = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 10.0f));
 
 		mRenderSystem->init(mWindow, mMainCameraPtr);
