@@ -26,7 +26,9 @@ namespace ToyEngine {
 		virtual void tick() override;
 		virtual void init() override;
 
-		
+		void setWorldPosition(glm::vec3 position) {
+			mWorldPos = position;
+		}
 		
 		RenderComponent() = default;
 
@@ -39,7 +41,9 @@ namespace ToyEngine {
 			mCamera(camera)
 		{
 			init();
-			mTextureIndex = textureDataPtr->mTextureIndex;
+			if (mtextureDataPtr) {
+				mTextureIndex = textureDataPtr->mTextureIndex;
+			}
 		}
 	private:
 		VertexDataPtr mVertexDataPtr;

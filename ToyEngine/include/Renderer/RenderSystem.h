@@ -20,7 +20,7 @@ namespace ToyEngine{
 			void initTexture();
 
 			//testing
-			std::shared_ptr<RenderComponent> mRenderComponent;
+			std::vector<std::shared_ptr<RenderComponent>> mRenderComponents;
 
 			float lastFrameTime = 0.0f;
 	};

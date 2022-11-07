@@ -9,9 +9,10 @@
 namespace ToyEngine {
 	void RenderComponent::tick()
 	{
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, mTextureIndex);
-
+        if (mtextureDataPtr) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, mTextureIndex);
+        }
         mShader->use();
 
         // Testing transform uniform
@@ -32,10 +33,14 @@ namespace ToyEngine {
         projection = glm::perspective(glm::radians(mCamera->mZoom), 800.0f / 600.0f, 0.1f, 100.0f);
         mShader->setUniform("projection", projection);
 
-
-        //glBindTexture(GL_TEXTURE_2D, mTexture);
         glBindVertexArray(mVAOIndex);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        if (mIndicesPtr) {
+            glDrawElements(GL_TRIANGLES, mIndicesPtr->size(), GL_UNSIGNED_INT, 0);
+        }
+        else {
+            glDrawArrays(GL_TRIANGLES, 0, mVertexDataPtr->size());
+        }
+        
         glBindVertexArray(0);
 	}
 
@@ -45,21 +50,33 @@ namespace ToyEngine {
         // generate buffers
         glGenVertexArrays(1, &mVAOIndex);
         glGenBuffers(1, &mVBOIndex);
-        glGenBuffers(1, &mEBOIndex);
-
+        if (mIndicesPtr) {
+            glGenBuffers(1, &mEBOIndex);
+        }
+        
         glBindVertexArray(mVAOIndex);
 
         glBindBuffer(GL_ARRAY_BUFFER, mVBOIndex);
         glBufferData(GL_ARRAY_BUFFER, mVertexDataPtr->size() * sizeof(VertexDataElementType), mVertexDataPtr->data(), GL_STATIC_DRAW);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBOIndex);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndicesPtr->size() * sizeof(IndexDataElementType), mIndicesPtr->data(), GL_STATIC_DRAW);
+        if (mIndicesPtr) {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBOIndex);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndicesPtr->size() * sizeof(IndexDataElementType), mIndicesPtr->data(), GL_STATIC_DRAW);
+        }
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
 
+
+        if (mtextureDataPtr) {
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(1);
+        }
+        else {
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+        }
+        
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         glBindVertexArray(0);
