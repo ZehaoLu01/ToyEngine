@@ -24,6 +24,7 @@
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Engine\GameObject.cpp" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
+    <ClCompile Include="Renderer\Camera.cpp" />
     <ClCompile Include="Renderer\RenderComponent.cpp" />
     <ClCompile Include="Renderer\Resource\ImageLoader.cpp" />
     <ClCompile Include="main.cpp" />
