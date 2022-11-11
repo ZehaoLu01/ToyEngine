@@ -40,11 +40,9 @@ namespace ToyEngine{
             mMainCameraPtr->ProcessKeyboard(LEFT, deltaTime);
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             mMainCameraPtr->ProcessKeyboard(RIGHT, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
             mMainCameraPtr->ProcessKeyboard(UP, deltaTime);
-        }
-        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
             mMainCameraPtr->ProcessKeyboard(DOWN, deltaTime);
-        }
     }
 }

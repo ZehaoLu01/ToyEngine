@@ -40,10 +40,14 @@ namespace ToyEngine {
 			mWindow(window),
 			mCamera(camera)
 		{
-			init();
 			if (mtextureDataPtr) {
 				mTextureIndex = textureDataPtr->mTextureIndex;
+				mIsWithTexture = true;
 			}
+		}
+
+		void setNormalAvailablitility(bool value) {
+			mIsWithNormal = value;
 		}
 	private:
 		VertexDataPtr mVertexDataPtr;
@@ -64,6 +68,9 @@ namespace ToyEngine {
 		//material
 
 		float lastFrameTime=0;
+
+		bool mIsWithNormal = false;
+		bool mIsWithTexture = false;
 	};
 
 }

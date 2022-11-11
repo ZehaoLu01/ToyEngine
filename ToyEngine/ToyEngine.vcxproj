@@ -471,7 +471,16 @@
     <None Include="include\glm\gtx\vector_angle.inl" />
     <None Include="include\glm\gtx\vector_query.inl" />
     <None Include="include\glm\gtx\wrap.inl" />
+    <None Include="Shaders\dots.fs.glsl" />
+    <None Include="Shaders\dots.vs.glsl" />
+    <None Include="Shaders\LightFragmentShader.glsl" />
+    <None Include="Shaders\phong.fs.glsl" />
+    <None Include="Shaders\phong.vs.glsl" />
     <None Include="Shaders\SingleColorFragmentShader.glsl" />
+    <None Include="Shaders\sphere.fs.glsl" />
+    <None Include="Shaders\sphere.vs.glsl" />
+    <None Include="Shaders\toon.fs.glsl" />
+    <None Include="Shaders\toon.vs.glsl" />
     <None Include="Shaders\VertexShader.glsl" />
     <None Include="vs.glsl" />
   </ItemGroup>

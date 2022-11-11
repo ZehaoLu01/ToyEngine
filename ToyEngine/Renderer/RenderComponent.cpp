@@ -16,18 +16,28 @@ namespace ToyEngine {
         mShader->use();
 
         // Testing transform uniform
-        auto identity = glm::mat4(1.0f);
-        // rotation need to be improved
-        auto model_rotate = glm::rotate(identity, (float)glfwGetTime() * glm::radians(40.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-        auto model_translate = glm::translate(identity, mWorldPos);
-        auto model = model_translate * model_rotate;
+        auto model = glm::mat4(1.0f);
+        if (!mIsWithNormal) {
+            // rotation need to be improved
+            auto model_rotate = glm::rotate(model, (float)glfwGetTime() * glm::radians(40.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+            auto model_translate = glm::translate(model, mWorldPos);
+            model = model_translate * model_rotate;
+        }
+        else {
+            auto model_translate = glm::translate(model, mWorldPos);
+            model = model_translate;
+        }
         mShader->setUniform("model", model);
+
+        
 
         auto view = glm::mat4(1.0f);
         // note that we're translating the scene in the reverse direction of where we want to move
         view = mCamera->GetViewMatrix();
         //view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
         mShader->setUniform("view", view);
+
+        mShader->setUniform("normalMat", glm::transpose(glm::inverse(view * model)));
 
         auto projection = glm::mat4(1);
         projection = glm::perspective(glm::radians(mCamera->mZoom), 800.0f / 600.0f, 0.1f, 100.0f);
@@ -38,8 +48,9 @@ namespace ToyEngine {
             glDrawElements(GL_TRIANGLES, mIndicesPtr->size(), GL_UNSIGNED_INT, 0);
         }
         else {
-            glDrawArrays(GL_TRIANGLES, 0, mVertexDataPtr->size());
+            glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+
         
         glBindVertexArray(0);
 	}
@@ -72,9 +83,15 @@ namespace ToyEngine {
             glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
             glEnableVertexAttribArray(1);
         }
-        else {
+        else if(!mtextureDataPtr && !mIsWithNormal) {
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
             glEnableVertexAttribArray(0);
+        }
+        else if(!mtextureDataPtr && mIsWithNormal) {
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(1);
         }
         
         glBindBuffer(GL_ARRAY_BUFFER, 0);

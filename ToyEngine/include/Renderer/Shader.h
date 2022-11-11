@@ -45,6 +45,10 @@ namespace ToyEngine {
             glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
         }
 
+        void setUniform(const std::string& name, glm::vec3 vec) const
+        {
+            glUniform3f(glGetUniformLocation(ID, name.c_str()), vec.x, vec.y, vec.z);
+        }
     private:
         // utility function for checking shader compilation/linking errors.
         void checkCompileErrors(unsigned int shader, std::string type);
