@@ -14,14 +14,14 @@ namespace ToyEngine {
 	const glm::vec3 LIGHT_BULB_POSITION(2.0f, 2.0f, 2.0f);
 
 	const glm::vec3 PHONG_TESTING_POSITION(0.f, 0.f, 2.f);
-	const glm::vec3 PHONG_AMBIENT_COLOR(0.5f, 0.5f, 0.5f);
+	const glm::vec3 PHONG_AMBIENT_COLOR(1.0f, 0.0f, 0.0f);
 	const glm::vec3 PHONG_DIFFUSE_COLOR(1.0f, 0.0f, 0.0f);
 	const glm::vec3 PHONG_SPECULAR_COLOR(1.0f, 1.0f, 1.0f);
 
 
 
 	const glm::vec3 BLINN_PHONG_TESTING_POSITION(2.f, 0.f, 0.f);
-	const glm::vec3 BLINN_PHONG_AMBIENT_COLOR(0.5f, 0.5f, 0.5f);
+	const glm::vec3 BLINN_PHONG_AMBIENT_COLOR(0.0f, 1.0f, 0.0f);
 	const glm::vec3 BLINN_PHONG_DIFFUSE_COLOR(0.0f, 1.0f, 0.0f);
 	const glm::vec3 BLINN_PHONG_SPECULAR_COLOR(1.0f, 1.0f, 1.0f);
 
