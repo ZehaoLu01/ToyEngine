@@ -471,6 +471,8 @@
     <None Include="include\glm\gtx\vector_angle.inl" />
     <None Include="include\glm\gtx\vector_query.inl" />
     <None Include="include\glm\gtx\wrap.inl" />
+    <None Include="Shaders\BlinnPhong.fs.glsl" />
+    <None Include="Shaders\BlinnPhong.vs.glsl" />
     <None Include="Shaders\dots.fs.glsl" />
     <None Include="Shaders\dots.vs.glsl" />
     <None Include="Shaders\LightFragmentShader.glsl" />

@@ -17,7 +17,7 @@ namespace ToyEngine {
 
         // Testing transform uniform
         auto model = glm::mat4(1.0f);
-        if (!mIsWithNormal) {
+        if (true) {
             // rotation need to be improved
             auto model_rotate = glm::rotate(model, (float)glfwGetTime() * glm::radians(40.0f), glm::vec3(0.5f, 1.0f, 0.0f));
             auto model_translate = glm::translate(model, mWorldPos);
