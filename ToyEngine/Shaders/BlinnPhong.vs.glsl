@@ -9,6 +9,7 @@ uniform mat4 normalMat;
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
+layout(location = 2) in vec2 textureCoordinate;
 
 // The shared variable is initialized in the vertex shader and attached to the current vertex being processed,
 // such that each vertex is given a shared variable and when passed to the fragment shader,
@@ -17,7 +18,7 @@ layout(location = 1) in vec3 normal;
 out vec3 interpolatedNormal;
 out vec3 lightDirection;
 out vec3 viewPosition;
-
+out vec2 aTextureCoordinate;
 
 void main() {
     // HINT: Compute the vertex position in VCS
@@ -28,6 +29,8 @@ void main() {
     
     // HINT: Interpolate the normal
     interpolatedNormal = normalize((normalMat * vec4(normal,0.0f)).xyz);
+
+    aTextureCoordinate = textureCoordinate;
 
     // Multiply each vertex by the model matrix to get the world position of each vertex, 
     // then the view matrix to get the position in the camera coordinate system, 

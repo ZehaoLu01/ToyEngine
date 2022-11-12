@@ -30,7 +30,7 @@ namespace ToyEngine {
 		if (mData) {
 			unsigned char* data_c = mData.get();
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data_c);
+			glTexImage2D(GL_TEXTURE_2D, 0, mInternalFormat, mWidth, mHeight, 0, mSourceFormat, GL_UNSIGNED_BYTE, data_c);
 
 			glGenerateMipmap(GL_TEXTURE_2D);
 

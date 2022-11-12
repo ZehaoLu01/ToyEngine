@@ -1,6 +1,4 @@
-// HINT: Don't forget to define the uniforms here after you pass them in in A3.js
-
-
+#version 330 core
 // The value of our shared variable is given as the interpolation between normals computed in the vertex shader
 // below we can see the shared variable we passed from the vertex shader using the 'in' classifier
 in vec3 interpolatedNormal;

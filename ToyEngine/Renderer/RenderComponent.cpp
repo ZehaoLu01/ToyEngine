@@ -9,11 +9,21 @@
 namespace ToyEngine {
 	void RenderComponent::tick()
 	{
-        if (mtextureDataPtr) {
+        mShader->use();
+        if (mIsWithTexture && !mIsWithSpecularMap) {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, mTextureIndex);
+            
         }
-        mShader->use();
+        else if(mIsWithTexture && mIsWithSpecularMap) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, mTextureIndex);
+
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, mSpecularMapIndex);
+        }
+        
+        
 
         // Testing transform uniform
         auto model = glm::mat4(1.0f);
@@ -75,13 +85,19 @@ namespace ToyEngine {
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndicesPtr->size() * sizeof(IndexDataElementType), mIndicesPtr->data(), GL_STATIC_DRAW);
         }
 
-
-
-        if (mtextureDataPtr) {
+        if (mIsWithTexture && !mIsWithNormal) {
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
             glEnableVertexAttribArray(1);
+        }
+        else if (mIsWithTexture && mIsWithNormal) {
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+            glEnableVertexAttribArray(2);
         }
         else if(!mtextureDataPtr && !mIsWithNormal) {
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -94,6 +110,17 @@ namespace ToyEngine {
             glEnableVertexAttribArray(1);
         }
         
+        //If we provide more than 1 texture, we should tell the shader each texture unit point to which uniform.
+        //By default the texture unit 0 is activated for all sampler 2D?
+        //Notice that this int unform value is *TEXTURE UNIT NUMBER*, not the buffer index.
+        if (mIsWithTexture && mIsWithSpecularMap) {
+            mShader->use();
+            mShader->setUniform("diffuseMap", 0);
+
+            mShader->setUniform("specularMap", 1);
+        }
+
+
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         glBindVertexArray(0);

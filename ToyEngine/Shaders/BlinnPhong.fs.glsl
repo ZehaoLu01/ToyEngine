@@ -7,11 +7,15 @@ uniform float kAmbient;
 uniform float kDiffuse;
 uniform float kSpecular;
 uniform float shininess;
+uniform sampler2D diffuseMap;
+uniform sampler2D specularMap;
+
 // The value of our shared variable is given as the interpolation between normals computed in the vertex shader
 // below we can see the shared variable we passed from the vertex shader using the 'in' classifier
 in vec3 interpolatedNormal;
 in vec3 lightDirection;
 in vec3 viewPosition;
+in vec2 aTextureCoordinate;
 
 out vec4 FragColor;
 
@@ -22,7 +26,7 @@ void main() {
     // HINT: Compute the diffuse component. This component varies with direction.
     // You may find it useful to review Chapter 14.2 in the textbook.
     vec3 linterpolatedNormal = normalize(interpolatedNormal);
-    vec3 ldiffuseColor= kDiffuse * dot(linterpolatedNormal, lightDirection) * diffuseColor;
+    vec3 ldiffuseColor= kDiffuse * dot(linterpolatedNormal, lightDirection) * texture(diffuseMap, aTextureCoordinate).xyz;
 
     // HINT: Compute the specular component. This component varies with direction,
     // and is what gives the model its "shine." You may find it useful to review
@@ -30,7 +34,7 @@ void main() {
     vec3 lviewDirection = -normalize(viewPosition);
     vec3 NormalizedLightDirection = normalize(lightDirection);
     vec3 halfVec = normalize(NormalizedLightDirection + lviewDirection);
-    vec3 lspecularColor = kSpecular * pow(clamp(dot(halfVec, linterpolatedNormal), 0.0, 1.0), shininess) * specularColor;
+    vec3 lspecularColor = kSpecular * pow(clamp(dot(halfVec, linterpolatedNormal), 0.0, 1.0), shininess) * texture(specularMap, aTextureCoordinate).xyz;
 
 
     // HINT: Set final rendered colour to be a combination of the three components

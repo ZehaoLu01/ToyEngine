@@ -487,7 +487,9 @@
     <None Include="vs.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Resources\Images\diffuseMap.png" />
     <Image Include="Resources\Images\FunnyPicture.jpg" />
+    <Image Include="Resources\Images\specularMap.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

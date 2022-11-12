@@ -19,7 +19,7 @@ namespace ToyEngine {
 
 		}
 
-		Texture(TextureDataType* data, unsigned int width, unsigned int height, unsigned int internalFormat, unsigned int mSourceFormat, unsigned int mipmapLevel)
+		Texture(TextureDataType* data, unsigned int width, unsigned int height, GLenum internalFormat, GLenum mSourceFormat, unsigned int mipmapLevel)
 			:mData(data,stbi_image_free),
 			mWidth(width),
 			mHeight(height),
@@ -43,7 +43,7 @@ namespace ToyEngine {
 		unsigned int mHeight;
 		
 		// the format(color chanals) we want to store.
-		unsigned char mInternalFormat;
+		GLenum mInternalFormat;
 		
 		// Image Data
 		// Can we use smart pointer for this?
@@ -54,7 +54,7 @@ namespace ToyEngine {
 		unsigned int mMipmapLevel = 0;
 		
 		// the format(color chanals) of the source image
-		unsigned char mSourceFormat;
+		GLenum mSourceFormat;
 
 		GLuint mTextureIndex;
 	};

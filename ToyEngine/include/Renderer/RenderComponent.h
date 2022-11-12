@@ -46,11 +46,38 @@ namespace ToyEngine {
 			}
 		}
 
-		void setNormalAvailablitility(bool value) {
+		RenderComponent(VertexDataPtr&& vertexDataPtr, IndexDataPtr&& indicesPtr, std::shared_ptr<Texture> textureDataPtr, std::shared_ptr<Texture> specularMapDataPtr, std::shared_ptr<Shader> shader, std::shared_ptr<GLFWwindow> window, std::shared_ptr<Camera> camera)
+			:mVertexDataPtr(std::move(vertexDataPtr)),
+			mtextureDataPtr(textureDataPtr),
+			mSpecularMapDataPtr(specularMapDataPtr),
+			mIndicesPtr(std::move(indicesPtr)),
+			mShader(shader),
+			mWindow(window),
+			mCamera(camera)
+		{
+			if (mtextureDataPtr) {
+				mTextureIndex = textureDataPtr->mTextureIndex;
+				mIsWithTexture = true;
+			}
+			if (mSpecularMapDataPtr) {
+				mSpecularMapIndex = specularMapDataPtr->mTextureIndex;
+				mIsWithSpecularMap = true;
+			}
+		}
+
+		void setNormalAvailability(bool value) {
 			mIsWithNormal = value;
+		}
+		void setTextureAvailabiliy(bool value) {
+			mIsWithTexture = value;
+		}
+
+		void setSpecularMapAvailabiliy(bool value) {
+			mIsWithSpecularMap = value;
 		}
 	private:
 		VertexDataPtr mVertexDataPtr;
+
 		glm::vec3 mWorldPos = glm::vec3(1.0f,1.0f,1.0f);
 		glm::vec3 mRotation_eular;
 
@@ -58,10 +85,14 @@ namespace ToyEngine {
 		GLuint mVAOIndex;
 		GLuint mEBOIndex;
 		GLuint mTextureIndex;
+		GLuint mSpecularMapIndex;
+
 		std::shared_ptr<Camera> mCamera;
 		std::shared_ptr<GLFWwindow> mWindow;
 
+		// should be renamed.
 		std::shared_ptr<Texture> mtextureDataPtr;
+		std::shared_ptr<Texture> mSpecularMapDataPtr;
 
 		IndexDataPtr mIndicesPtr;
 		std::shared_ptr<Shader> mShader;
@@ -71,6 +102,7 @@ namespace ToyEngine {
 
 		bool mIsWithNormal = false;
 		bool mIsWithTexture = false;
+		bool mIsWithSpecularMap = false;
 	};
 
 }
