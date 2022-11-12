@@ -53,7 +53,7 @@ namespace ToyEngine {
 		// A face render component
 		// ========================================================
 		int width, height, channels;
-		auto textureData = loader->getImageFrom("Resources/Images/FunnyPicture.jpg", &width, &height, &channels);
+		auto textureData = loader->getImageFrom("FunnyPicture.jpg", &width, &height, &channels);
 		auto textureDataPtr = std::make_shared<Texture>(textureData, width, height, GL_RGB, GL_RGBA, 0);
 
 		auto vertexDataPtr = std::make_unique<std::vector<float>>();
