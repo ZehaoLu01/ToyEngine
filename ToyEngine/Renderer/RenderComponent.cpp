@@ -10,18 +10,18 @@ namespace ToyEngine {
 	void RenderComponent::tick()
 	{
         mShader->use();
-        if (mIsWithTexture && !mIsWithSpecularMap) {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, mTextureIndex);
-            
-        }
-        else if(mIsWithTexture && mIsWithSpecularMap) {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, mTextureIndex);
+        //if (mIsWithTexture && !mIsWithSpecularMap) {
+        //    glActiveTexture(GL_TEXTURE0);
+        //    glBindTexture(GL_TEXTURE_2D, mTextureIndex);
+        //    
+        //}
+        //else if(mIsWithTexture && mIsWithSpecularMap) {
+        //    glActiveTexture(GL_TEXTURE0);
+        //    glBindTexture(GL_TEXTURE_2D, mTextureIndex);
 
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, mSpecularMapIndex);
-        }
+        //    glActiveTexture(GL_TEXTURE1);
+        //    glBindTexture(GL_TEXTURE_2D, mSpecularMapIndex);
+        //}
         
         
 
@@ -61,7 +61,6 @@ namespace ToyEngine {
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
-        
         glBindVertexArray(0);
 	}
 

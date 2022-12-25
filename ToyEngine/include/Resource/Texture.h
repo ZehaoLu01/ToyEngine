@@ -4,6 +4,12 @@
 #include"Resource/stb_image.h"
 #include "glad/glad.h"
 namespace ToyEngine {
+	enum TextureType {
+		Specular,
+		Diffuse,
+		Color,
+	};
+
 	// Right now only support unsigned char data.
 	using TextureDataType = unsigned char;
 	using std::shared_ptr;
@@ -19,13 +25,14 @@ namespace ToyEngine {
 
 		}
 
-		Texture(TextureDataType* data, unsigned int width, unsigned int height, GLenum internalFormat, GLenum mSourceFormat, unsigned int mipmapLevel)
+		Texture(TextureDataType* data, unsigned int width, unsigned int height, GLenum internalFormat, GLenum mSourceFormat, unsigned int mipmapLevel, TextureType type)
 			:mData(data,stbi_image_free),
 			mWidth(width),
 			mHeight(height),
 			mInternalFormat(internalFormat),
 			mSourceFormat(mSourceFormat),
-			mMipmapLevel(mipmapLevel)
+			mMipmapLevel(mipmapLevel),
+			mTextureType(type)
 		{
 			init();
 		}
@@ -57,6 +64,8 @@ namespace ToyEngine {
 		GLenum mSourceFormat;
 
 		GLuint mTextureIndex;
+
+		TextureType mTextureType;
 	};
 }
 

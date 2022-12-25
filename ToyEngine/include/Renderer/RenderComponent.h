@@ -19,6 +19,13 @@ namespace ToyEngine {
 	using IndexDataPtr = std::unique_ptr<IndexData>;
 	
 
+
+	struct Vertex {
+		glm::vec3 Position;
+		glm::vec3 Normal;
+		glm::vec2 TexCoords;
+	};
+
 	class RenderComponent :public Component
 	{
 	public:
@@ -68,10 +75,12 @@ namespace ToyEngine {
 		void setNormalAvailability(bool value) {
 			mIsWithNormal = value;
 		}
+
 		void setTextureAvailabiliy(bool value) {
 			mIsWithTexture = value;
 		}
 
+		// Can I remove this and use TextureType instead?
 		void setSpecularMapAvailabiliy(bool value) {
 			mIsWithSpecularMap = value;
 		}

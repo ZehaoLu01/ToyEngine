@@ -67,7 +67,7 @@ namespace ToyEngine {
 		auto textureData = loader->getImageFrom("funnyPicture.jpg", &width, &height, &channels);
 		GLenum format = convertChannelsToFormat(channels);
 
-		auto textureDataPtr = std::make_shared<Texture>(textureData, width, height, format, format, 0);
+		auto textureDataPtr = std::make_shared<Texture>(textureData, width, height, format, format, 0, TextureType::Color);
 
 		auto vertexDataPtr = std::make_unique<std::vector<float>>();
 		*vertexDataPtr = {
@@ -143,11 +143,11 @@ namespace ToyEngine {
 
 		auto rawTexture = loader->getImageFrom("diffuseMap.png", &width, &height, &channels);
 		format = convertChannelsToFormat(channels);
-		textureDataPtr = std::make_shared<Texture>(rawTexture, width, height, format, format, 0);
+		textureDataPtr = std::make_shared<Texture>(rawTexture, width, height, format, format, 0, TextureType::Diffuse);
 
 		auto rawSpecularMap = loader->getImageFrom("specularMap.png", &width, &height, &channels);
 		format = convertChannelsToFormat(channels);
-		auto specularMapDataPtr = std::make_shared<Texture>(rawSpecularMap, width, height, format, format, 0);
+		auto specularMapDataPtr = std::make_shared<Texture>(rawSpecularMap, width, height, format, format, 0, TextureType::Specular);
 
 		indicesDataPtr.reset();
 
