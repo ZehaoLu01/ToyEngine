@@ -10,6 +10,10 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Renderer/RenderComponent.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 namespace ToyEngine {
 	const glm::vec3 LIGHT_BULB_POSITION(2.0f, 2.0f, 2.0f);
 
@@ -34,6 +38,9 @@ namespace ToyEngine {
 			format = GL_RGB;
 		else if (channels == 4)
 			format = GL_RGBA;
+
+		Assimp::Importer importer;
+		const aiScene* scene = importer.ReadFile("path", aiProcess_Triangulate | aiProcess_FlipUVs);
 		return format;
 	}
 
