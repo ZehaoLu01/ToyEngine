@@ -50,8 +50,6 @@ namespace ToyEngine {
 	}
 
 	void RenderSystem::init(WindowPtr window, std::shared_ptr<Camera> camera) {
-
-
 		mWindow = window;
 		mCamera = camera;
 		glEnable(GL_DEPTH_TEST);
@@ -67,7 +65,10 @@ namespace ToyEngine {
 		auto textureData = loader->getImageFrom("funnyPicture.jpg", &width, &height, &channels);
 		GLenum format = convertChannelsToFormat(channels);
 
-		auto textureDataPtr = std::make_shared<Texture>(textureData, width, height, format, format, 0, TextureType::Color);
+		std::vector<std::shared_ptr<Texture>> textureVec;
+		auto textureDataPtr = std::make_shared<Texture>(textureData, width, height, format, format, 0, TextureType::Diffuse);
+		textureVec.push_back(textureDataPtr);
+
 
 		auto vertexDataPtr = std::make_unique<std::vector<float>>();
 		*vertexDataPtr = {
@@ -86,7 +87,7 @@ namespace ToyEngine {
 
 
 
-		auto component = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureDataPtr, shaderPtr, mWindow, mCamera);
+		auto component = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureVec, shaderPtr, mWindow, mCamera);
 		component->init();
 		mRenderComponents.push_back(component);
 
@@ -143,12 +144,15 @@ namespace ToyEngine {
 
 		auto rawTexture = loader->getImageFrom("diffuseMap.png", &width, &height, &channels);
 		format = convertChannelsToFormat(channels);
+		
+		textureVec.clear();
 		textureDataPtr = std::make_shared<Texture>(rawTexture, width, height, format, format, 0, TextureType::Diffuse);
+		textureVec.push_back(textureDataPtr);
 
 		auto rawSpecularMap = loader->getImageFrom("specularMap.png", &width, &height, &channels);
 		format = convertChannelsToFormat(channels);
 		auto specularMapDataPtr = std::make_shared<Texture>(rawSpecularMap, width, height, format, format, 0, TextureType::Specular);
-
+		textureVec.push_back(specularMapDataPtr);
 		indicesDataPtr.reset();
 
 		shaderPtr = std::make_shared<Shader>("Shaders/phong.vs.glsl", "Shaders/phong.fs.glsl");
@@ -164,11 +168,9 @@ namespace ToyEngine {
 
 
 
-		auto componentWithPhong = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureDataPtr, specularMapDataPtr, shaderPtr, mWindow, mCamera);
+		auto componentWithPhong = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureVec, shaderPtr, mWindow, mCamera);
 		
 		componentWithPhong->setNormalAvailability(true);
-		componentWithPhong->setTextureAvailabiliy(true);
-		componentWithPhong->setSpecularMapAvailabiliy(true);
 
 		componentWithPhong->setWorldPosition(PHONG_TESTING_POSITION);
 		componentWithPhong->init();
@@ -248,10 +250,8 @@ namespace ToyEngine {
 		indicesDataPtr.reset();
 		textureDataPtr.reset();
 
-		auto componentWithBlinnPhong = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureDataPtr, specularMapDataPtr, shaderPtr, mWindow, mCamera);
+		auto componentWithBlinnPhong = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureVec, shaderPtr, mWindow, mCamera);
 		componentWithBlinnPhong->setNormalAvailability(true);
-		componentWithBlinnPhong->setTextureAvailabiliy(true);
-		componentWithBlinnPhong->setSpecularMapAvailabiliy(true);
 		componentWithBlinnPhong->setWorldPosition(BLINN_PHONG_TESTING_POSITION);
 		componentWithBlinnPhong->init();
 		mRenderComponents.push_back(componentWithBlinnPhong);
@@ -313,8 +313,9 @@ namespace ToyEngine {
 
 		indicesDataPtr.reset();
 		textureDataPtr.reset();
+		textureVec.clear();
 
-		auto lightBulb = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureDataPtr, shaderPtr, mWindow, mCamera);
+		auto lightBulb = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureVec, shaderPtr, mWindow, mCamera);
 		lightBulb->init();
 		lightBulb->setWorldPosition(LIGHT_BULB_POSITION);
 		mRenderComponents.push_back(lightBulb);

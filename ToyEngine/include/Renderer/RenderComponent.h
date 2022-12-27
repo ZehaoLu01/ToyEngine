@@ -39,50 +39,18 @@ namespace ToyEngine {
 		
 		RenderComponent() = default;
 
-		RenderComponent(VertexDataPtr&& vertexDataPtr, IndexDataPtr&& indicesPtr, std::shared_ptr<Texture> textureDataPtr, std::shared_ptr<Shader> shader, std::shared_ptr<GLFWwindow> window, std::shared_ptr<Camera> camera)
+		RenderComponent(VertexDataPtr&& vertexDataPtr, IndexDataPtr&& indicesPtr, std::vector<std::shared_ptr<Texture>> textureDataPtrs, std::shared_ptr<Shader> shader, std::shared_ptr<GLFWwindow> window, std::shared_ptr<Camera> camera)
 			:mVertexDataPtr(std::move(vertexDataPtr)),
-			mtextureDataPtr(textureDataPtr),
+			mTextures(textureDataPtrs),
 			mIndicesPtr(std::move(indicesPtr)),
 			mShader(shader),
 			mWindow(window),
 			mCamera(camera)
 		{
-			if (mtextureDataPtr) {
-				mTextureIndex = textureDataPtr->mTextureIndex;
-				mIsWithTexture = true;
-			}
-		}
-
-		RenderComponent(VertexDataPtr&& vertexDataPtr, IndexDataPtr&& indicesPtr, std::shared_ptr<Texture> textureDataPtr, std::shared_ptr<Texture> specularMapDataPtr, std::shared_ptr<Shader> shader, std::shared_ptr<GLFWwindow> window, std::shared_ptr<Camera> camera)
-			:mVertexDataPtr(std::move(vertexDataPtr)),
-			mtextureDataPtr(textureDataPtr),
-			mSpecularMapDataPtr(specularMapDataPtr),
-			mIndicesPtr(std::move(indicesPtr)),
-			mShader(shader),
-			mWindow(window),
-			mCamera(camera)
-		{
-			if (mtextureDataPtr) {
-				mTextureIndex = textureDataPtr->mTextureIndex;
-				mIsWithTexture = true;
-			}
-			if (mSpecularMapDataPtr) {
-				mSpecularMapIndex = specularMapDataPtr->mTextureIndex;
-				mIsWithSpecularMap = true;
-			}
 		}
 
 		void setNormalAvailability(bool value) {
 			mIsWithNormal = value;
-		}
-
-		void setTextureAvailabiliy(bool value) {
-			mIsWithTexture = value;
-		}
-
-		// Can I remove this and use TextureType instead?
-		void setSpecularMapAvailabiliy(bool value) {
-			mIsWithSpecularMap = value;
 		}
 	private:
 		VertexDataPtr mVertexDataPtr;
@@ -93,15 +61,14 @@ namespace ToyEngine {
 		GLuint mVBOIndex;
 		GLuint mVAOIndex;
 		GLuint mEBOIndex;
-		GLuint mTextureIndex;
+		std::vector<GLuint> mTextureIndices;
 		GLuint mSpecularMapIndex;
 
 		std::shared_ptr<Camera> mCamera;
 		std::shared_ptr<GLFWwindow> mWindow;
 
 		// should be renamed.
-		std::shared_ptr<Texture> mtextureDataPtr;
-		std::shared_ptr<Texture> mSpecularMapDataPtr;
+		std::vector<std::shared_ptr<Texture>> mTextures;
 
 		IndexDataPtr mIndicesPtr;
 		std::shared_ptr<Shader> mShader;
@@ -110,8 +77,6 @@ namespace ToyEngine {
 		float lastFrameTime=0;
 
 		bool mIsWithNormal = false;
-		bool mIsWithTexture = false;
-		bool mIsWithSpecularMap = false;
 	};
 
 }

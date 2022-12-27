@@ -40,4 +40,20 @@ namespace ToyEngine {
 			std::cerr << "????????????????" << std::endl;
 		}
 	}
+
+	std::string Texture::getTypeName() {
+		switch (mTextureType)
+		{
+		case ToyEngine::Specular:
+			return "specular";
+			break;
+		case ToyEngine::Diffuse:
+			return "diffuse";
+			break;
+		default:
+			std::cerr << "TextureType string is not defined";
+			return "";
+		}
+	}
+
 }

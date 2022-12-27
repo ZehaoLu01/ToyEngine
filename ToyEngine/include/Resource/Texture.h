@@ -3,6 +3,7 @@
 #include<vector>
 #include"Resource/stb_image.h"
 #include "glad/glad.h"
+#include <string>
 namespace ToyEngine {
 	enum TextureType {
 		Specular,
@@ -44,6 +45,8 @@ namespace ToyEngine {
 		}
 
 		void init();
+
+		std::string getTypeName();
 
 	private:
 		unsigned int mWidth;
