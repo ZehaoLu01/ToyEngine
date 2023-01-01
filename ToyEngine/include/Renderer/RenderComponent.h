@@ -7,6 +7,7 @@
 #include "Resource/Texture.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Camera.h"
+#include <algorithm>
 
 
 namespace ToyEngine {
@@ -39,14 +40,41 @@ namespace ToyEngine {
 		
 		RenderComponent() = default;
 
-		RenderComponent(VertexDataPtr&& vertexDataPtr, IndexDataPtr&& indicesPtr, std::vector<std::shared_ptr<Texture>> textureDataPtrs, std::shared_ptr<Shader> shader, std::shared_ptr<GLFWwindow> window, std::shared_ptr<Camera> camera)
+		RenderComponent(VertexDataPtr&& vertexDataPtr, IndexDataPtr&& indicesPtr, std::vector<Texture> textureData, std::shared_ptr<Shader> shader, std::shared_ptr<GLFWwindow> window, std::shared_ptr<Camera> camera)
 			:mVertexDataPtr(std::move(vertexDataPtr)),
-			mTextures(textureDataPtrs),
+			mTextures(textureData),
 			mIndicesPtr(std::move(indicesPtr)),
 			mShader(shader),
 			mWindow(window),
 			mCamera(camera)
 		{
+		}
+		RenderComponent(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures, std::shared_ptr<Shader> shader, std::shared_ptr<GLFWwindow> window, std::shared_ptr<Camera> camera)
+			:mShader(shader),
+			mWindow(window),
+			mCamera(camera)
+		{
+			mVertexDataPtr = std::make_unique<VertexData>();
+			for (const auto& v: vertices) {
+				mVertexDataPtr->push_back(v.Position.x);
+				mVertexDataPtr->push_back(v.Position.y);
+				mVertexDataPtr->push_back(v.Position.z);
+
+				mVertexDataPtr->push_back(v.Normal.x);
+				mVertexDataPtr->push_back(v.Normal.y);
+				mVertexDataPtr->push_back(v.Normal.z);
+
+				mVertexDataPtr->push_back(v.TexCoords.x);
+				mVertexDataPtr->push_back(v.TexCoords.y);
+			}
+
+			mIndicesPtr = std::make_unique<IndexData>();
+
+			for (const auto& i : indices) {
+				mIndicesPtr->push_back(i);
+			}
+
+			mTextures = std::vector<Texture>(textures.begin(), textures.end());
 		}
 
 		void setNormalAvailability(bool value) {
@@ -68,7 +96,7 @@ namespace ToyEngine {
 		std::shared_ptr<GLFWwindow> mWindow;
 
 		// should be renamed.
-		std::vector<std::shared_ptr<Texture>> mTextures;
+		std::vector<Texture> mTextures;
 
 		IndexDataPtr mIndicesPtr;
 		std::shared_ptr<Shader> mShader;

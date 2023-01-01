@@ -56,4 +56,26 @@ namespace ToyEngine {
 		}
 	}
 
+	void Texture::setId(int id) {
+		id = id;
+	}
+	void Texture::setType(const std::string& type) {
+		if (type == "texture_diffuse") {
+			mTextureType = ToyEngine::Diffuse;
+		}
+		else if (type == "texture_specular") {
+			mTextureType = ToyEngine::Specular;
+		}
+	}
+
+	void Texture::setPath(const std::string& path)
+	{
+		mPath = path;
+	}
+
+	void Texture::setData(std::shared_ptr<TextureDataType> textureDataPtr)
+	{
+		mData = textureDataPtr;
+	}
+
 }

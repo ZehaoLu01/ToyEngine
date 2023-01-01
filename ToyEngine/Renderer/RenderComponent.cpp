@@ -18,7 +18,6 @@ namespace ToyEngine {
         //else if(mIsWithTexture && mIsWithSpecularMap) {
         //    glActiveTexture(GL_TEXTURE0);
         //    glBindTexture(GL_TEXTURE_2D, mTextureIndex);
-
         //    glActiveTexture(GL_TEXTURE1);
         //    glBindTexture(GL_TEXTURE_2D, mSpecularMapIndex);
         //}
@@ -30,7 +29,7 @@ namespace ToyEngine {
             glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
             // retrieve texture number (the N in diffuse_textureN)
             std::string number;
-            std::string name = mTextures[i]->getTypeName();
+            std::string name = mTextures[i].getTypeName();
             if (name == "diffuse") {
                 name = "texture_diffuse";
                 number = std::to_string(diffuseNr++);
@@ -40,7 +39,7 @@ namespace ToyEngine {
                 number = std::to_string(specularNr++);
             }
             mShader->setUniform(name + number, i);
-            glBindTexture(GL_TEXTURE_2D, mTextures[i]->mTextureIndex);
+            glBindTexture(GL_TEXTURE_2D, mTextures[i].mTextureIndex);
         }
         glActiveTexture(GL_TEXTURE0);
 
@@ -57,8 +56,6 @@ namespace ToyEngine {
             model = model_translate;
         }
         mShader->setUniform("model", model);
-
-        
 
         auto view = glm::mat4(1.0f);
         // note that we're translating the scene in the reverse direction of where we want to move
@@ -79,13 +76,11 @@ namespace ToyEngine {
         else {
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-
         glBindVertexArray(0);
 	}
 
 	void RenderComponent::init()
 	{
-
         // generate buffers
         glGenVertexArrays(1, &mVAOIndex);
         glGenBuffers(1, &mVBOIndex);
