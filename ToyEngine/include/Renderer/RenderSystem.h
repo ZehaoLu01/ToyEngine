@@ -7,6 +7,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "Resource/Texture.h"
+#include "Renderer/Shader.h"
 
 namespace ToyEngine{
 	using WindowPtr = std::shared_ptr<GLFWwindow>;
@@ -15,7 +16,7 @@ namespace ToyEngine{
 		public:
 			void tick();
 			void init(WindowPtr window, std::shared_ptr<Camera> camera);
-			void loadModel(std::string path);
+			void loadModel(std::string path, std::shared_ptr<Shader> shader);
 
 		private:
 			WindowPtr mWindow;
@@ -29,7 +30,7 @@ namespace ToyEngine{
 			std::vector<std::shared_ptr<RenderComponent>> mRenderComponents;
 			std::vector<Texture> mLoadedTextures;
 			float lastFrameTime = 0.0f;
-			void processNode(aiNode* node, const aiScene* scene);
+			void processNode(aiNode* node, const aiScene* scene, std::shared_ptr<Shader> shader);
 			std::shared_ptr<RenderComponent> processMesh(aiMesh* mesh, const aiScene* scene);
 			std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 			TextureType ConvertTextureType(aiTextureType type);
