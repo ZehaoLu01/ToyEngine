@@ -24,6 +24,7 @@ namespace ToyEngine {
 			return mMainCameraPtr;
 		}
 		
+		bool isUsingImGUI();
 	private:
 		shared_ptr<RenderSystem> mRenderSystem = make_shared<RenderSystem>();
 		float lastFrameTime = 0;
@@ -32,6 +33,7 @@ namespace ToyEngine {
 		void processInput(GLFWwindow* window, float deltaTime);
 
 		std::shared_ptr<Camera> mMainCameraPtr;
+		bool mIsUsingImGUI = false;
 	};
 }
 

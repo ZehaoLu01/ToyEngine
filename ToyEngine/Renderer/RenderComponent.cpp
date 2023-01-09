@@ -5,22 +5,16 @@
 #include "GLFW/glfw3.h"
 #include "Renderer/Camera.h"
 #include <functional>
+#include "ImGuiMenu.h"
+
+//Debugging constant
+//If self rotated, it will not change its rotation according to the imgui menu.
+const bool SELF_ROTATION = false;
 
 namespace ToyEngine {
 	void RenderComponent::tick()
 	{
         mShader->use();
-        //if (mIsWithTexture && !mIsWithSpecularMap) {
-        //    glActiveTexture(GL_TEXTURE0);
-        //    glBindTexture(GL_TEXTURE_2D, mTextureIndex);
-        //    
-        //}
-        //else if(mIsWithTexture && mIsWithSpecularMap) {
-        //    glActiveTexture(GL_TEXTURE0);
-        //    glBindTexture(GL_TEXTURE_2D, mTextureIndex);
-        //    glActiveTexture(GL_TEXTURE1);
-        //    glBindTexture(GL_TEXTURE_2D, mSpecularMapIndex);
-        //}
         
         unsigned int diffuseNr = 0;
         unsigned int specularNr = 0;
@@ -43,9 +37,8 @@ namespace ToyEngine {
         }
         glActiveTexture(GL_TEXTURE0);
 
-        // Testing transform uniform
         auto model = glm::mat4(1.0f);
-        if (true) {
+        if (SELF_ROTATION) {
             // rotation need to be improved
             auto model_rotate = glm::rotate(model, (float)glfwGetTime() * glm::radians(40.0f), glm::vec3(0.5f, 1.0f, 0.0f));
             auto model_translate = glm::translate(model, mWorldPos);
@@ -53,7 +46,11 @@ namespace ToyEngine {
         }
         else {
             auto model_translate = glm::translate(model, mWorldPos);
-            model = model_translate;
+            auto model_rotate = glm::rotate(glm::mat4(1.0f), glm::radians(mRotation_eular.x), glm::vec3(1.0f, 0.0f, 0.0f));
+            model_rotate = glm::rotate(model_rotate, glm::radians(mRotation_eular.y), glm::vec3(0.0f, 1.0f, 0.0f));
+            model_rotate = glm::rotate(model_rotate, glm::radians(mRotation_eular.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
+            model = model_translate * model_rotate;
         }
         mShader->setUniform("model", model);
 
@@ -66,7 +63,7 @@ namespace ToyEngine {
         mShader->setUniform("normalMat", glm::transpose(glm::inverse(view * model)));
 
         auto projection = glm::mat4(1);
-        projection = glm::perspective(glm::radians(mCamera->mZoom), 800.0f / 600.0f, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
         mShader->setUniform("projection", projection);
 
         glBindVertexArray(mVAOIndex);
@@ -137,7 +134,20 @@ namespace ToyEngine {
         glBindVertexArray(0);
 	}
 
+    void RenderComponent::updateProperties() {
+        mWorldPos = ImGuiMenu::getWorldPos();
+        mRotation_eular = ImGuiMenu::getRotation();
+    }
 
+    void RenderComponent::setSpotLight(bool isSpotLighting)
+    {
+        mIsSpotLight = isSpotLighting;
+    }
+
+    bool RenderComponent::isSpotLight()
+    {
+        return mIsSpotLight;
+    }
 
 
 }

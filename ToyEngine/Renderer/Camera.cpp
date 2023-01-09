@@ -68,6 +68,11 @@ namespace ToyEngine {
             mZoom = 45.0f;
     }
 
+    void Camera::StopFollowCursor()
+    {
+
+    }
+
     // calculates the front vector from the Camera's (updated) Euler Angles
     void Camera::updateCameraVectors()
     {

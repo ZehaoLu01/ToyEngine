@@ -23,6 +23,14 @@
     <ClCompile Include="Engine\Component.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Engine\GameObject.cpp" />
+    <ClCompile Include="iamgui\imgui.cpp" />
+    <ClCompile Include="iamgui\imgui_demo.cpp" />
+    <ClCompile Include="iamgui\imgui_draw.cpp" />
+    <ClCompile Include="iamgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="iamgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="iamgui\imgui_tables.cpp" />
+    <ClCompile Include="iamgui\imgui_widgets.cpp" />
+    <ClCompile Include="iamgui\ImGuiMenu.cpp" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
     <ClCompile Include="Renderer\Camera.cpp" />
     <ClCompile Include="Renderer\RenderComponent.cpp" />
@@ -39,6 +47,16 @@
     <ClCompile Include="Renderer\Resource\STB_image_implementation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\ImGuiMenu.h" />
+    <ClInclude Include="include\imconfig.h" />
+    <ClInclude Include="include\imgui.h" />
+    <ClInclude Include="include\imgui_impl_glfw.h" />
+    <ClInclude Include="include\imgui_impl_opengl3.h" />
+    <ClInclude Include="include\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="include\imgui_internal.h" />
+    <ClInclude Include="include\imstb_rectpack.h" />
+    <ClInclude Include="include\imstb_textedit.h" />
+    <ClInclude Include="include\imstb_truetype.h" />
     <ClInclude Include="include\Renderer\Camera.h" />
     <ClInclude Include="include\Engine\Component.h" />
     <ClInclude Include="include\Engine\GameObject.h" />

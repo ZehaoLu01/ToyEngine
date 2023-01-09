@@ -15,6 +15,13 @@
 #include <assimp/postprocess.h>
 #include <filesystem>
 
+
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
+#include "ImGuiMenu.h"
+
 namespace ToyEngine {
 	const glm::vec3 LIGHT_BULB_POSITION(5.0f, 5.0f, 5.0f);
 
@@ -53,6 +60,9 @@ namespace ToyEngine {
 		for (auto component : mRenderComponents) {
 			component->tick();
 		}
+
+		ImGuiMenu::tick();
+
 		glfwSwapBuffers(mWindow.get());
 		glfwPollEvents();
 	}
@@ -71,76 +81,6 @@ namespace ToyEngine {
 		auto shaderPtr = std::make_shared<Shader>("Shaders/BlinnPhong.vs.glsl", "Shaders/BlinnPhong.fs.glsl");
 
 		Texture processedTextureData;
-
-		// ========================================================
-		// An object with Blinn Phong
-		// ========================================================
-
-		vertexDataPtr = std::make_unique<std::vector<float>>();
-		*vertexDataPtr = {
-			// positions          // normals			// texture coords
-			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-
-			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-
-			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-			-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-			-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-			 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-
-			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
-		};
-
-		shaderPtr = std::make_shared<Shader>("Shaders/BlinnPhong.vs.glsl", "Shaders/BlinnPhong.fs.glsl");
-		shaderPtr->use();
-		shaderPtr->setUniform("spherePosition", LIGHT_BULB_POSITION);
-		shaderPtr->setUniform("ambientColor", BLINN_PHONG_AMBIENT_COLOR);
-		shaderPtr->setUniform("diffuseColor", BLINN_PHONG_DIFFUSE_COLOR);
-		shaderPtr->setUniform("specularColor", BLINN_PHONG_SPECULAR_COLOR);
-		shaderPtr->setUniform("kAmbient", 0.3f);
-		shaderPtr->setUniform("kDiffuse", 0.6f);
-		shaderPtr->setUniform("kSpecular", 1.0f);
-		shaderPtr->setUniform("shininess", 10.0f);
-
-		indicesDataPtr.reset();
-		processedTextureData = Texture();
-
-		auto componentWithBlinnPhong = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureVec, shaderPtr, mWindow, mCamera);
-		componentWithBlinnPhong->setNormalAvailability(true);
-		componentWithBlinnPhong->setWorldPosition(BLINN_PHONG_TESTING_POSITION);
-		componentWithBlinnPhong->init();
-		mRenderComponents.push_back(componentWithBlinnPhong);
 
 		// ========================================================
 
@@ -205,6 +145,7 @@ namespace ToyEngine {
 		auto lightBulb = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureVec, shaderPtr, mWindow, mCamera);
 		lightBulb->init();
 		lightBulb->setWorldPosition(LIGHT_BULB_POSITION);
+		lightBulb->setSpotLight(true);
 		mRenderComponents.push_back(lightBulb);
 
 
@@ -220,6 +161,18 @@ namespace ToyEngine {
 		shaderPtr->setUniform("shininess", 10.0f);
 		// Complex model
 		loadModel("D:/Repo/ToyEngine/ToyEngine/Resources/model/backpack.obj", shaderPtr);
+
+		// Setup Dear ImGui context
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+
+		// Setup Dear ImGui style
+		ImGui::StyleColorsDark();
+		// Setup Platform/Renderer backends
+		ImGui_ImplGlfw_InitForOpenGL(mWindow.get(), true);
+		ImGui_ImplOpenGL3_Init("#version 130");
 	}
 
 	void RenderSystem::loadModel(std::string path, std::shared_ptr<Shader> shader)
@@ -440,4 +393,12 @@ namespace ToyEngine {
 		return format;
 	}
 
+	// Update All the render components from imgui menu.
+	void RenderSystem::updateComponentsProperties() {
+		for (auto c : mRenderComponents) {
+			if (!c->isSpotLight()) {
+				c->updateProperties();
+			}
+		}
+	}
 }

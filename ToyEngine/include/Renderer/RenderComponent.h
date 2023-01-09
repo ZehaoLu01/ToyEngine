@@ -80,11 +80,18 @@ namespace ToyEngine {
 		void setNormalAvailability(bool value) {
 			mIsWithNormal = value;
 		}
+
+		//Get Updates from imgui.
+		void updateProperties();
+
+		void setSpotLight(bool isSpotLighting);
+		bool isSpotLight();
 	private:
 		VertexDataPtr mVertexDataPtr;
 
 		glm::vec3 mWorldPos = glm::vec3(1.0f,1.0f,1.0f);
 		glm::vec3 mRotation_eular;
+		glm::vec3 mScale;
 
 		GLuint mVBOIndex;
 		GLuint mVAOIndex;
@@ -105,6 +112,8 @@ namespace ToyEngine {
 		float lastFrameTime=0;
 
 		bool mIsWithNormal = false;
+
+		bool mIsSpotLight = false;
 	};
 
 }

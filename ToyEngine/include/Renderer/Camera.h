@@ -83,6 +83,8 @@ namespace ToyEngine {
         // processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
         void ProcessMouseScroll(float yoffset);
 
+        void StopFollowCursor();
+
     private:
         // calculates the front vector from the Camera's (updated) Euler Angles
         void updateCameraVectors();

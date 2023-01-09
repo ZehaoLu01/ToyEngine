@@ -17,7 +17,7 @@ namespace ToyEngine{
 			void tick();
 			void init(WindowPtr window, std::shared_ptr<Camera> camera);
 			void loadModel(std::string path, std::shared_ptr<Shader> shader);
-
+			void updateComponentsProperties();
 		private:
 			WindowPtr mWindow;
 			std::shared_ptr<Camera> mCamera;
