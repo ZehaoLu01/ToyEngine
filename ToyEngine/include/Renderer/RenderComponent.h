@@ -8,6 +8,7 @@
 #include "Renderer/Shader.h"
 #include "Renderer/Camera.h"
 #include <algorithm>
+#include "ImGuiMenu.h"
 
 
 namespace ToyEngine {
@@ -114,6 +115,8 @@ namespace ToyEngine {
 		bool mIsWithNormal = false;
 
 		bool mIsSpotLight = false;
+
+		ImGuiMenu& mMenuInstance = ImGuiMenu::getInstance();
 	};
 
 }

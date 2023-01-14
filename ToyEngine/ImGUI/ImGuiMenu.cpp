@@ -5,9 +5,102 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-glm::vec3 ImGuiMenu::mWorldPos = glm::vec3();
-glm::vec3 ImGuiMenu::mRotation = glm::vec3();
-glm::vec3 ImGuiMenu::mScale = glm::vec3();
+void ImGuiMenu::drawPositionProps() {
+	ImGui::Text("POSITION");
+	if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
+		ImGui::TableNextColumn();
+		ImGui::Text("x: ");
+		ImGui::InputFloat("##value pos_x", &mWorldPos.x);
+		ImGui::Text("current val: %f", mWorldPos.x);
+
+		ImGui::TableNextColumn();
+		ImGui::Text("y: ");
+		ImGui::InputFloat("##value pos_y", &mWorldPos.y);
+		ImGui::Text("current val: %f", mWorldPos.y);
+
+		ImGui::TableNextColumn();
+		ImGui::Text("z: ");
+		ImGui::InputFloat("##value pos_z", &mWorldPos.z);
+		ImGui::Text("current val: %f", mWorldPos.z);
+
+		ImGui::EndTable();
+	}
+}
+
+void ImGuiMenu::drawRotationProps()
+{
+	ImGui::Text("ROTATION");
+	if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
+		ImGui::TableNextColumn();
+		ImGui::Text("pitch: ");
+		ImGui::InputFloat("##value pitch", &mRotation.x);
+		ImGui::Text("current val: %f", mRotation.x);
+
+
+		ImGui::TableNextColumn();
+		ImGui::Text("yaw: ");
+		ImGui::InputFloat("##value yaw", &mRotation.y);
+		ImGui::Text("current val: %f", mRotation.y);
+
+		ImGui::TableNextColumn();
+		ImGui::Text("row: ");
+		ImGui::InputFloat("##value row", &mRotation.z);
+		ImGui::Text("current val: %f", mRotation.z);
+
+		ImGui::EndTable();
+	}
+}
+
+void ImGuiMenu::drawScaleProps()
+{
+	ImGui::Text("SCALE");
+	if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
+		ImGui::TableNextColumn();
+		ImGui::Text("x: ");
+		ImGui::InputFloat("##value scale_x", &mScale.x);
+		ImGui::Text("current val: %f", mScale.x);
+
+		ImGui::TableNextColumn();
+		ImGui::Text("y: ");
+		ImGui::InputFloat("##value scale_y", &mScale.y);
+		ImGui::Text("current val: %f", mScale.y);
+
+		ImGui::TableNextColumn();
+		ImGui::Text("z: ");
+		ImGui::InputFloat("##value scale_z", &mScale.z);
+		ImGui::Text("current val: %f", mScale.z);
+
+		ImGui::EndTable();
+	}
+}
+
+void ImGuiMenu::drawLightProps()
+{
+	// temp value
+	static float point_light_position_x = 0.0f;
+	static float point_light_position_y = 0.0f;
+	static float point_light_position_z = 0.0f;
+
+	ImGui::Text("POSITION");
+	if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
+		ImGui::TableNextColumn();
+		ImGui::Text("x: ");
+		ImGui::InputFloat("##value x", &point_light_position_x);
+		ImGui::Text("current val: %f", point_light_position_x);
+
+		ImGui::TableNextColumn();
+		ImGui::Text("y: ");
+		ImGui::InputFloat("##value y", &point_light_position_y);
+		ImGui::Text("current val: %f", point_light_position_y);
+
+		ImGui::TableNextColumn();
+		ImGui::Text("z: ");
+		ImGui::InputFloat("##value z", &point_light_position_z);
+		ImGui::Text("current val: %f", point_light_position_z);
+
+		ImGui::EndTable();
+	}
+}
 
 void ImGuiMenu::tick()
 {
@@ -29,112 +122,18 @@ void ImGuiMenu::tick()
 		static float f = 0.0f;
 		static int counter = 0;
 
-		static float position_x = 1.0f;
-		static float position_y = 0.0f;
-		static float position_z = 0.0f;
-
-		static float rotation_pitch = 0.0f;
-		static float rotation_yaw = 0.0f;
-		static float rotation_roll = 0.0f;
-
-		static float scale_x = 1.0f;
-		static float scale_y = 1.0f;
-		static float scale_z = 1.0f;
-
-
 		ImGui::Begin("Renderer Settings");                          // Create a window called "Hello, world!" and append into it.
 
 		if (ImGui::CollapsingHeader("Object properties")) {
-			ImGui::Text("POSITION");
-			if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
-				ImGui::TableNextColumn();
-				ImGui::Text("x: ");
-				ImGui::InputFloat("##value pos_x", &mWorldPos.x);
-				ImGui::Text("current val: %f", mWorldPos.x);
-	
-				ImGui::TableNextColumn();
-				ImGui::Text("y: ");
-				ImGui::InputFloat("##value pos_y", &mWorldPos.y);
-				ImGui::Text("current val: %f", mWorldPos.y);
+			drawPositionProps();
 
-				ImGui::TableNextColumn();
-				ImGui::Text("z: ");
-				ImGui::InputFloat("##value pos_z", &mWorldPos.z);
-				ImGui::Text("current val: %f", mWorldPos.z);
+			drawRotationProps();
 
-				ImGui::EndTable();
-			}
-
-			ImGui::Text("ROTATION");
-			if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
-				ImGui::TableNextColumn();
-				ImGui::Text("pitch: ");
-				ImGui::InputFloat("##value pitch", &mRotation.x);
-				ImGui::Text("current val: %f", mRotation.x);
-
-
-				ImGui::TableNextColumn();
-				ImGui::Text("yaw: ");
-				ImGui::InputFloat("##value yaw", &mRotation.y);
-				ImGui::Text("current val: %f", mRotation.y);
-
-				ImGui::TableNextColumn();
-				ImGui::Text("row: ");
-				ImGui::InputFloat("##value row", &mRotation.z);
-				ImGui::Text("current val: %f", mRotation.z);
-
-				ImGui::EndTable();
-
-			}
-
-
-			ImGui::Text("SCALE");
-			if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
-				ImGui::TableNextColumn();
-				ImGui::Text("x: ");
-				ImGui::InputFloat("##value scale_x", &mScale.x);
-				ImGui::Text("current val: %f", mScale.x);
-
-				ImGui::TableNextColumn();
-				ImGui::Text("y: ");
-				ImGui::InputFloat("##value scale_y", &mScale.y);
-				ImGui::Text("current val: %f", mScale.y);
-
-				ImGui::TableNextColumn();
-				ImGui::Text("z: ");
-				ImGui::InputFloat("##value scale_z", &mScale.z);
-				ImGui::Text("current val: %f", mScale.z);
-
-				ImGui::EndTable();
-
-			}
+			drawScaleProps();
 		}
 
-		static float point_light_position_x = 0.0f;
-		static float point_light_position_y = 0.0f;
-		static float point_light_position_z = 0.0f;
-
 		if (ImGui::CollapsingHeader("Lighting properties")) {
-			ImGui::Text("POSITION");
-			if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
-				ImGui::TableNextColumn();
-				ImGui::Text("x: ");
-				ImGui::InputFloat("##value x", &point_light_position_x);
-				ImGui::Text("current val: %f", point_light_position_x);
-
-				ImGui::TableNextColumn();
-				ImGui::Text("y: ");
-				ImGui::InputFloat("##value y", &point_light_position_y);
-				ImGui::Text("current val: %f", point_light_position_y);
-
-				ImGui::TableNextColumn();
-				ImGui::Text("z: ");
-				ImGui::InputFloat("##value z", &point_light_position_z);
-				ImGui::Text("current val: %f", point_light_position_z);
-
-
-				ImGui::EndTable();
-			}
+			drawLightProps();
 		}
 
 		if (ImGui::Button("Set"))

@@ -8,6 +8,7 @@
 #include <assimp/postprocess.h>
 #include "Resource/Texture.h"
 #include "Renderer/Shader.h"
+#include "ImGuiMenu.h"
 
 namespace ToyEngine{
 	using WindowPtr = std::shared_ptr<GLFWwindow>;
@@ -35,6 +36,8 @@ namespace ToyEngine{
 			std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 			TextureType ConvertTextureType(aiTextureType type);
 			GLenum convertChannelsToFormat(unsigned int channels);
+
+			ImGuiMenu& mMenuInstance = ImGuiMenu::getInstance();
 	};
 }
 

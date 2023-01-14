@@ -61,7 +61,7 @@ namespace ToyEngine {
 			component->tick();
 		}
 
-		ImGuiMenu::tick();
+		mMenuInstance.tick();
 
 		glfwSwapBuffers(mWindow.get());
 		glfwPollEvents();

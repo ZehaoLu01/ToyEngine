@@ -135,8 +135,8 @@ namespace ToyEngine {
 	}
 
     void RenderComponent::updateProperties() {
-        mWorldPos = ImGuiMenu::getWorldPos();
-        mRotation_eular = ImGuiMenu::getRotation();
+        mWorldPos = mMenuInstance.getWorldPos();
+        mRotation_eular = mMenuInstance.getRotation();
     }
 
     void RenderComponent::setSpotLight(bool isSpotLighting)
