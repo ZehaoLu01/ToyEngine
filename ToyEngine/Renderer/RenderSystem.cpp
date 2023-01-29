@@ -21,6 +21,7 @@
 #include "imgui_impl_opengl3.h"
 
 #include "ImGuiMenu.h"
+#include <Renderer/Line.h>
 
 namespace ToyEngine {
 	const glm::vec3 LIGHT_BULB_POSITION(5.0f, 5.0f, 5.0f);
@@ -56,6 +57,21 @@ namespace ToyEngine {
 	{
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		auto projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
+		
+		Line lineX = Line(glm::vec3(0, 0, 0), glm::vec3(1, 0, 0));
+		lineX.setMVP(projection * mCamera->GetViewMatrix());
+		lineX.setColor(vec3(255, 0, 0));
+		lineX.draw();
+		Line lineY = Line(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+		lineY.setMVP(projection * mCamera->GetViewMatrix());
+		lineY.setColor(vec3(0, 0, 255));
+		lineY.draw();
+		Line lineZ = Line(glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
+		lineZ.setMVP(projection * mCamera->GetViewMatrix());
+		lineZ.setColor(vec3(0, 255, 0));
+		lineZ.draw();
 
 		for (auto component : mRenderComponents) {
 			component->tick();
@@ -148,7 +164,7 @@ namespace ToyEngine {
 		lightBulb->setSpotLight(true);
 		mRenderComponents.push_back(lightBulb);
 
-
+		// Complex model
 		shaderPtr = std::make_shared<Shader>("Shaders/BlinnPhong.vs.glsl", "Shaders/BlinnPhong.fs.glsl");
 		shaderPtr->use();
 		shaderPtr->setUniform("spherePosition", LIGHT_BULB_POSITION);
@@ -159,7 +175,6 @@ namespace ToyEngine {
 		shaderPtr->setUniform("kDiffuse", 0.6f);
 		shaderPtr->setUniform("kSpecular", 1.0f);
 		shaderPtr->setUniform("shininess", 10.0f);
-		// Complex model
 		loadModel("D:/Repo/ToyEngine/ToyEngine/Resources/model/backpack.obj", shaderPtr);
 
 		// Setup Dear ImGui context

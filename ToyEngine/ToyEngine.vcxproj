@@ -342,6 +342,7 @@
     <ClInclude Include="include\glm\vec3.hpp" />
     <ClInclude Include="include\glm\vec4.hpp" />
     <ClInclude Include="include\glm\vector_relational.hpp" />
+    <ClInclude Include="include\Renderer\Line.h" />
     <ClInclude Include="include\Resource\ImageLoader.h" />
     <ClInclude Include="include\Resource\stb_image.h" />
     <ClInclude Include="include\Renderer\RenderComponent.h" />
