@@ -62,7 +62,7 @@ namespace ToyEngine {
 
 		drawGridLine(projection);
 
-		drawCoordinateIndicator(projection);
+		drawCoordinateIndicator(projection, glm::vec3(0, 0, 0));
 
 		for (auto component : mRenderComponents) {
 			component->tick();
@@ -76,6 +76,7 @@ namespace ToyEngine {
 
 	// This method is consuming huge amount of resources.
 	// Consider improve this in the future?
+	// Frame Buffer?
 	void RenderSystem::drawGridLine(glm::highp_mat4& projection)
 	{
 		for (int i = -100; i < 101; i++) {
@@ -92,17 +93,17 @@ namespace ToyEngine {
 		}
 	}
 
-	void RenderSystem::drawCoordinateIndicator(glm::highp_mat4& projection)
+	void RenderSystem::drawCoordinateIndicator(glm::highp_mat4& projection, glm::vec3 position)
 	{
-		Line lineX = Line(glm::vec3(0, 0, 0), glm::vec3(1, 0, 0));
+		Line lineX = Line(position, position + glm::vec3(1, 0, 0));
 		lineX.setMVP(projection * mCamera->GetViewMatrix());
 		lineX.setColor(vec3(255, 0, 0));
 		lineX.draw();
-		Line lineY = Line(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+		Line lineY = Line(position, position + glm::vec3(0, 1, 0));
 		lineY.setMVP(projection * mCamera->GetViewMatrix());
 		lineY.setColor(vec3(0, 0, 255));
 		lineY.draw();
-		Line lineZ = Line(glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
+		Line lineZ = Line(position, position + glm::vec3(0, 0, 1));
 		lineZ.setMVP(projection * mCamera->GetViewMatrix());
 		lineZ.setColor(vec3(0, 255, 0));
 		lineZ.draw();
