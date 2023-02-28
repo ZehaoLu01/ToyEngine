@@ -16,6 +16,8 @@ namespace ToyEngine{
 	class RenderSystem {
 		public:
 			void tick();
+			void drawCoordinateIndicator(glm::highp_mat4& projection);
+			void drawGridLine(glm::highp_mat4& projection);
 			void init(WindowPtr window, std::shared_ptr<Camera> camera);
 			void loadModel(std::string path, std::shared_ptr<Shader> shader);
 			void updateComponentsProperties();

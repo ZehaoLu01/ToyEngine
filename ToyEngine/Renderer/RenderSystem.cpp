@@ -59,7 +59,41 @@ namespace ToyEngine {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		auto projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
-		
+
+		drawGridLine(projection);
+
+		drawCoordinateIndicator(projection);
+
+		for (auto component : mRenderComponents) {
+			component->tick();
+		}
+
+		mMenuInstance.tick();
+
+		glfwSwapBuffers(mWindow.get());
+		glfwPollEvents();
+	}
+
+	// This method is consuming huge amount of resources.
+	// Consider improve this in the future?
+	void RenderSystem::drawGridLine(glm::highp_mat4& projection)
+	{
+		for (int i = -100; i < 101; i++) {
+			Line gridLine = Line(glm::vec3(100, 0, i), glm::vec3(-100, 0, i));
+			gridLine.setMVP(projection * mCamera->GetViewMatrix());
+			gridLine.setColor(vec3(255, 255, 255));
+			gridLine.draw();
+		}
+		for (int i = -100; i < 101; i++) {
+			Line gridLine = Line(glm::vec3(i, 0, 100), glm::vec3(i, 0, -100));
+			gridLine.setMVP(projection * mCamera->GetViewMatrix());
+			gridLine.setColor(vec3(255, 255, 255));
+			gridLine.draw();
+		}
+	}
+
+	void RenderSystem::drawCoordinateIndicator(glm::highp_mat4& projection)
+	{
 		Line lineX = Line(glm::vec3(0, 0, 0), glm::vec3(1, 0, 0));
 		lineX.setMVP(projection * mCamera->GetViewMatrix());
 		lineX.setColor(vec3(255, 0, 0));
@@ -72,15 +106,6 @@ namespace ToyEngine {
 		lineZ.setMVP(projection * mCamera->GetViewMatrix());
 		lineZ.setColor(vec3(0, 255, 0));
 		lineZ.draw();
-
-		for (auto component : mRenderComponents) {
-			component->tick();
-		}
-
-		mMenuInstance.tick();
-
-		glfwSwapBuffers(mWindow.get());
-		glfwPollEvents();
 	}
 
 	void RenderSystem::init(WindowPtr window, std::shared_ptr<Camera> camera) {
