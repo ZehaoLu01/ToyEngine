@@ -74,23 +74,8 @@ namespace ToyEngine {
 		glfwPollEvents();
 	}
 
-	// This method is consuming huge amount of resources.
-	// Consider improve this in the future?
-	// Frame Buffer?
 	void RenderSystem::drawGridLine(glm::highp_mat4& projection)
 	{
-		//for (int i = -100; i < 101; i++) {
-		//	Line gridLine = Line(glm::vec3(100, 0, i), glm::vec3(-100, 0, i));
-		//	gridLine.setMVP(projection * mCamera->GetViewMatrix());
-		//	gridLine.setColor(vec3(255, 255, 255));
-		//	gridLine.draw();
-		//}
-		//for (int i = -100; i < 101; i++) { 
-		//	Line gridLine = Line(glm::vec3(i, 0, 100), glm::vec3(i, 0, -100));
-		//	gridLine.setMVP(projection * mCamera->GetViewMatrix());
-		//	gridLine.setColor(vec3(255, 255, 255));
-		//	gridLine.draw();
-		//}
 		glUseProgram(mGridShader->ID);
 		glm::highp_mat4 mvp = projection * mCamera->GetViewMatrix();
 		glUniformMatrix4fv(glGetUniformLocation(mGridShader->ID, "MVP"), 1, GL_FALSE, &mvp[0][0]);
