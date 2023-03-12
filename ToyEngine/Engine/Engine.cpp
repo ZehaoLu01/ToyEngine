@@ -10,9 +10,9 @@ namespace ToyEngine{
         float current_time = glfwGetTime();
         float delta_time = (float)glfwGetTime() - lastFrameTime;
         lastFrameTime = current_time;
-        processInput(mWindow.get(), delta_time);
-		//Logic Tick
+        processInput(delta_time);
 
+		//Logic Tick
         mRenderSystem->updateComponentsProperties();
 		//Render Tick
 
@@ -33,34 +33,33 @@ namespace ToyEngine{
         return mIsUsingImGUI;
     }
 
-    // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-    void MyEngine::processInput(GLFWwindow* window, float deltaTime)
-    {
-        if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
-            mIsUsingImGUI = !mIsUsingImGUI;
-            
+    void MyEngine::procesKeyboardEvent(GLFWwindow* window, int key, int buttonState, std::function<void()> callback) {
+        if (glfwGetKey(window, key) == buttonState) {
+            callback();
         }
-        if (!mIsUsingImGUI) {
-            if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-                glfwSetWindowShouldClose(window, true);
-            if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-                mMainCameraPtr->ProcessKeyboard(FORWARD, deltaTime);
-            if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-                mMainCameraPtr->ProcessKeyboard(BACKWARD, deltaTime);
-            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-                mMainCameraPtr->ProcessKeyboard(LEFT, deltaTime);
-            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-                mMainCameraPtr->ProcessKeyboard(RIGHT, deltaTime);
-            if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-                mMainCameraPtr->ProcessKeyboard(UP, deltaTime);
-            if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-                mMainCameraPtr->ProcessKeyboard(DOWN, deltaTime);
+    }
 
-            glfwSetInputMode(mWindow.get(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        }
-        else {
-            glfwSetInputMode(mWindow.get(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        }
+    void MyEngine::processInput(float delta_time) {
+        // Can this be simplifeid? Button up and down event.
+        procesKeyboardEvent(mWindow.get(), GLFW_KEY_G, GLFW_PRESS, [&]() {
+            mPrevImguiButtonState = GLFW_PRESS;
+        });
 
+        procesKeyboardEvent(mWindow.get(), GLFW_KEY_G, GLFW_RELEASE, [&]() {
+            if (mPrevImguiButtonState == GLFW_PRESS) {
+                mIsUsingImGUI = !mIsUsingImGUI;
+                auto targetCursorState = mIsUsingImGUI ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED;
+                glfwSetInputMode(mWindow.get(), GLFW_CURSOR, targetCursorState);
+                mPrevImguiButtonState = GLFW_RELEASE;
+            }
+        });
+
+        procesKeyboardEvent(mWindow.get(), GLFW_KEY_W, GLFW_PRESS, [&]() {mMainCameraPtr->ProcessKeyboard(FORWARD, delta_time); });
+        procesKeyboardEvent(mWindow.get(), GLFW_KEY_S, GLFW_PRESS, [&]() {mMainCameraPtr->ProcessKeyboard(BACKWARD, delta_time); });
+        procesKeyboardEvent(mWindow.get(), GLFW_KEY_A, GLFW_PRESS, [&]() {mMainCameraPtr->ProcessKeyboard(LEFT, delta_time); });
+        procesKeyboardEvent(mWindow.get(), GLFW_KEY_D, GLFW_PRESS, [&]() {mMainCameraPtr->ProcessKeyboard(RIGHT, delta_time); });
+        procesKeyboardEvent(mWindow.get(), GLFW_KEY_SPACE, GLFW_PRESS, [&]() {mMainCameraPtr->ProcessKeyboard(UP, delta_time); });
+        procesKeyboardEvent(mWindow.get(), GLFW_KEY_LEFT_SHIFT, GLFW_PRESS, [&]() {mMainCameraPtr->ProcessKeyboard(DOWN, delta_time); });
+        procesKeyboardEvent(mWindow.get(), GLFW_KEY_ESCAPE, GLFW_PRESS, [&]() {glfwSetWindowShouldClose(mWindow.get(), true); });
     }
 }

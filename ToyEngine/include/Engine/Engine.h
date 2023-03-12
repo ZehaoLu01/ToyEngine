@@ -6,6 +6,7 @@
 #include "GLFW/glfw3.h"
 #include "../Renderer/RenderSystem.h"
 #include "Renderer/Camera.h"
+#include <functional>
 
 namespace ToyEngine {
 	class RenderSystem;
@@ -30,10 +31,12 @@ namespace ToyEngine {
 		float lastFrameTime = 0;
 		WindowPtr mWindow;
 
-		void processInput(GLFWwindow* window, float deltaTime);
+		void procesKeyboardEvent(GLFWwindow* window, int key, int buttonState, std::function<void()> callback);
 
 		std::shared_ptr<Camera> mMainCameraPtr;
 		bool mIsUsingImGUI = false;
+		int mPrevImguiButtonState = GLFW_RELEASE;
+		void processInput(float delta);
 	};
 }
 
