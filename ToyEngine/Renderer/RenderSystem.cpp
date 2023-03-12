@@ -79,18 +79,25 @@ namespace ToyEngine {
 	// Frame Buffer?
 	void RenderSystem::drawGridLine(glm::highp_mat4& projection)
 	{
-		for (int i = -100; i < 101; i++) {
-			Line gridLine = Line(glm::vec3(100, 0, i), glm::vec3(-100, 0, i));
-			gridLine.setMVP(projection * mCamera->GetViewMatrix());
-			gridLine.setColor(vec3(255, 255, 255));
-			gridLine.draw();
-		}
-		for (int i = -100; i < 101; i++) {
-			Line gridLine = Line(glm::vec3(i, 0, 100), glm::vec3(i, 0, -100));
-			gridLine.setMVP(projection * mCamera->GetViewMatrix());
-			gridLine.setColor(vec3(255, 255, 255));
-			gridLine.draw();
-		}
+		//for (int i = -100; i < 101; i++) {
+		//	Line gridLine = Line(glm::vec3(100, 0, i), glm::vec3(-100, 0, i));
+		//	gridLine.setMVP(projection * mCamera->GetViewMatrix());
+		//	gridLine.setColor(vec3(255, 255, 255));
+		//	gridLine.draw();
+		//}
+		//for (int i = -100; i < 101; i++) { 
+		//	Line gridLine = Line(glm::vec3(i, 0, 100), glm::vec3(i, 0, -100));
+		//	gridLine.setMVP(projection * mCamera->GetViewMatrix());
+		//	gridLine.setColor(vec3(255, 255, 255));
+		//	gridLine.draw();
+		//}
+		glUseProgram(mGridShader->ID);
+		glm::highp_mat4 mvp = projection * mCamera->GetViewMatrix();
+		glUniformMatrix4fv(glGetUniformLocation(mGridShader->ID, "MVP"), 1, GL_FALSE, &mvp[0][0]);
+		glUniform3fv(glGetUniformLocation(mGridShader->ID, "color"), 1, &mGridLineColor[0]);
+		glBindVertexArray(mGridVAOIndex);
+		glDrawArrays(GL_LINES, 0, mGridPoints.size());
+
 	}
 
 	void RenderSystem::drawCoordinateIndicator(glm::highp_mat4& projection, glm::vec3 position)
@@ -123,6 +130,38 @@ namespace ToyEngine {
 		auto shaderPtr = std::make_shared<Shader>("Shaders/BlinnPhong.vs.glsl", "Shaders/BlinnPhong.fs.glsl");
 
 		Texture processedTextureData;
+
+		mGridShader = std::make_shared<Shader>("Shaders/GridVertex.glsl", "Shaders/GridFragment.glsl");
+
+		const int gridWidth = 500;
+		const int gridHeight = 500;
+		constexpr int pointNum = 2 * (gridWidth + 1 + gridHeight + 1);
+		mGridPoints.reserve(pointNum * 3);
+		for (int i = -gridWidth / 2; i < gridWidth / 2 + 1; i++) {
+			mGridPoints.push_back(i);
+			mGridPoints.push_back(0);
+			mGridPoints.push_back(-gridWidth / 2);
+			mGridPoints.push_back(i);
+			mGridPoints.push_back(0);
+			mGridPoints.push_back(gridWidth / 2);
+		}
+		for (int i = -gridWidth / 2; i < gridWidth / 2 + 1; i++) {
+			mGridPoints.push_back(-gridWidth / 2);
+			mGridPoints.push_back(0);
+			mGridPoints.push_back(i);
+			mGridPoints.push_back(gridWidth / 2);
+			mGridPoints.push_back(0);
+			mGridPoints.push_back(i);
+		}
+
+		glGenVertexArrays(1, &mGridVAOIndex);
+		glGenBuffers(1, &mGridVBOIndex);
+		glBindVertexArray(mGridVAOIndex);
+		glBindBuffer(GL_ARRAY_BUFFER, mGridVBOIndex);
+		glBufferData(GL_ARRAY_BUFFER, mGridPoints.size() * sizeof(float), mGridPoints.data(), GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		glBindVertexArray(0);
 
 		// ========================================================
 

@@ -33,6 +33,7 @@ namespace ToyEngine{
 			std::vector<std::shared_ptr<RenderComponent>> mRenderComponents;
 			std::vector<Texture> mLoadedTextures;
 			float lastFrameTime = 0.0f;
+			std::vector<float> mGridPoints;
 			void processNode(aiNode* node, const aiScene* scene, std::shared_ptr<Shader> shader);
 			std::shared_ptr<RenderComponent> processMesh(aiMesh* mesh, const aiScene* scene);
 			std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
@@ -40,6 +41,10 @@ namespace ToyEngine{
 			GLenum convertChannelsToFormat(unsigned int channels);
 
 			ImGuiMenu& mMenuInstance = ImGuiMenu::getInstance();
+			GLuint mGridVBOIndex;
+			GLuint mGridVAOIndex;
+			std::shared_ptr<Shader> mGridShader;
+			glm::vec3 mGridLineColor = glm::vec3(255, 0, 0);
 	};
 }
 

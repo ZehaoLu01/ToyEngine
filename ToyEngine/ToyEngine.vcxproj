@@ -494,6 +494,8 @@
     <None Include="Shaders\BlinnPhong.vs.glsl" />
     <None Include="Shaders\dots.fs.glsl" />
     <None Include="Shaders\dots.vs.glsl" />
+    <None Include="Shaders\GridFragment.glsl" />
+    <None Include="Shaders\GridVertex.glsl" />
     <None Include="Shaders\LightFragmentShader.glsl" />
     <None Include="Shaders\phong.fs.glsl" />
     <None Include="Shaders\phong.vs.glsl" />
