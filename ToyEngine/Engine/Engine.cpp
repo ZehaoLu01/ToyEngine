@@ -44,7 +44,7 @@ namespace ToyEngine{
         glfwSetScrollCallback(mWindow.get(), scrollCallback);
         glfwSetCursorPosCallback(mWindow.get(), cursorMoveCallback);
 
-		mMainCameraPtr = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 10.0f));
+		mMainCameraPtr = std::make_shared<Camera>(glm::vec3(0.0f, 10.0f, 10.0f));
 
 		mRenderSystem->init(mWindow, mMainCameraPtr);
 

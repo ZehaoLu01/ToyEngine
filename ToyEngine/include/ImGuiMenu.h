@@ -9,6 +9,12 @@ class ImGuiMenu
 public:
 	void tick();
 
+	void renderHierarchyMenu();
+
+	void renderLoggingMenu();
+
+	void renderObjectPropertyMenu();
+
 	void setWorldPos(glm::vec3);
 
 	static ImGuiMenu& getInstance()
