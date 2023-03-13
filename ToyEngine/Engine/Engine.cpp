@@ -2,9 +2,31 @@
 #include "GLFW/glfw3.h"
 #include "Engine/Engine.h"
 #include <memory>
+#include <imgui_impl_opengl3.h>
 
+extern std::shared_ptr<ToyEngine::MyEngine> engine_globalPtr;
 
 namespace ToyEngine{
+    void static scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+        if (engine_globalPtr && !engine_globalPtr->isUsingImGUI()) {
+            engine_globalPtr->getMainCamera()->ProcessMouseScroll(yoffset);
+        }
+    }
+
+    void static cursorMoveCallback(GLFWwindow* window, double xpos, double ypos) {
+        // Must pass input event to imgui because we have overwritten the callback set by imgui.
+        // See the note in Onenote
+        //(1) ALWAYS forward mouse data to ImGui! This is automatic with default backends. With your own backend:
+        ImGuiIO& io = ImGui::GetIO();
+        io.AddMousePosEvent(xpos, ypos);
+
+        if (!io.WantCaptureMouse) {
+            if (engine_globalPtr && !engine_globalPtr->isUsingImGUI()) {
+                engine_globalPtr->getMainCamera()->ProcessMouseMovement(xpos, ypos);
+            }
+        } 
+    }
+
 	void MyEngine::tick()
 	{
         float current_time = glfwGetTime();
@@ -26,6 +48,11 @@ namespace ToyEngine{
 		mMainCameraPtr = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 10.0f));
 
 		mRenderSystem->init(mWindow, mMainCameraPtr);
+
+        glfwSetInputMode(mWindow.get(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+        glfwSetScrollCallback(mWindow.get(), scrollCallback);
+        glfwSetCursorPosCallback(mWindow.get(), cursorMoveCallback);
 	}
 
     bool MyEngine::isUsingImGUI()
@@ -40,7 +67,7 @@ namespace ToyEngine{
     }
 
     void MyEngine::processInput(float delta_time) {
-        // Can this be simplifeid? Button up and down event.
+        //Can this be simplifeid? Button up and down event.
         procesKeyboardEvent(mWindow.get(), GLFW_KEY_G, GLFW_PRESS, [&]() {
             mPrevImguiButtonState = GLFW_PRESS;
         });
@@ -50,6 +77,10 @@ namespace ToyEngine{
                 mIsUsingImGUI = !mIsUsingImGUI;
                 auto targetCursorState = mIsUsingImGUI ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED;
                 glfwSetInputMode(mWindow.get(), GLFW_CURSOR, targetCursorState);
+                
+                //auto cursorMoveCallback = !mIsUsingImGUI ? cursorMoveCallback : nullptr;
+                //glfwSetCursorPosCallback(mWindow.get(), cursorMoveCallback);
+
                 mPrevImguiButtonState = GLFW_RELEASE;
             }
         });

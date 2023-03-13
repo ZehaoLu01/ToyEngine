@@ -26,19 +26,7 @@ int MAX_ROW = 20;
 int MAX_COL = 20;
 bool isOver = false;
 
-ToyEngine::MyEngine* engine_globalPtr;
-
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    if (engine_globalPtr && !engine_globalPtr->isUsingImGUI()) {
-        engine_globalPtr->getMainCamera()->ProcessMouseScroll(yoffset);
-    }
-}
-
-void MouseMoveCallback(GLFWwindow* window, double xpos, double ypos) {
-    if (engine_globalPtr && !engine_globalPtr->isUsingImGUI()) {
-        engine_globalPtr->getMainCamera()->ProcessMouseMovement(xpos, ypos);
-    }
-}
+std::shared_ptr<ToyEngine::MyEngine> engine_globalPtr;
 
 int main(char* argc, char** argv)
 {
@@ -56,11 +44,8 @@ int main(char* argc, char** argv)
     if (!gladInit(window))return -1;
 
     auto engine = std::make_shared<ToyEngine::MyEngine>(window);
-    engine_globalPtr = engine.get();
+    engine_globalPtr = engine;
     engine->init();
-
-    glfwSetScrollCallback(window.get(), scrollCallback);
-    glfwSetCursorPosCallback(window.get(), MouseMoveCallback);
   
     while (!glfwWindowShouldClose(window.get())) {
         engine->tick();

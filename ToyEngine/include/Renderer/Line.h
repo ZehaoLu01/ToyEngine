@@ -98,7 +98,7 @@ public:
     int draw() {
         glUseProgram(shaderProgram);
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "MVP"), 1, GL_FALSE, &MVP[0][0]);
-        glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, &lineColor[0]);
+        glUniform3fv(glGetUniformLocation(shaderProgram, "color"  ), 1, &lineColor[0]);
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_LINES, 0, 2);

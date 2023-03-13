@@ -4,6 +4,101 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include <iostream>
+
+void ImGuiMenu::tick()
+{
+	// Testing I am gui
+// Start the Dear ImGui frame
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	bool show_demo_window = true;
+	bool show_another_window = false;
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+	if (show_demo_window)
+		ImGui::ShowDemoWindow(&show_demo_window);
+
+	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+	{
+		static float f = 0.0f;
+		static int counter = 0;
+
+		ImGui::Begin("Renderer Settings",0, ImGuiWindowFlags_NoMove);                          // Create a window called "Hello, world!" and append into it.
+		if (ImGui::CollapsingHeader("Object properties")) {
+			drawPositionProps();
+
+			drawRotationProps();
+
+			drawScaleProps();
+		}
+
+		if (ImGui::CollapsingHeader("Lighting properties")) {
+			drawLightProps();
+		}
+
+		if (ImGui::Button("Set"))
+			counter++;
+		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+		ImGui::Checkbox("Another Window", &show_another_window);
+
+		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+
+		ImGui::SameLine();
+		ImGui::Text("counter = %d", counter);
+
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::End();
+	}
+
+	// 3. Show another simple window.
+	if (show_another_window)
+	{
+		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		ImGui::Text("Hello from another window!");
+		if (ImGui::Button("Close Me"))
+			show_another_window = false;
+		ImGui::End();
+	}
+
+	// Rendering
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void ImGuiMenu::setWorldPos(glm::vec3 worldPos)
+{
+	mWorldPos = worldPos;
+}
+
+void ImGuiMenu::setRotation(glm::vec3 rotation)
+{
+	mRotation = rotation;
+}
+
+void ImGuiMenu::setScale (glm::vec3 scale)
+{
+	mScale = scale;
+}
+
+glm::vec3 ImGuiMenu::getWorldPos()
+{
+	return mWorldPos;
+}
+
+glm::vec3 ImGuiMenu::getRotation()
+{
+	return mRotation;
+}
+
+glm::vec3 ImGuiMenu::getScale()
+{
+	return mScale;
+}
 
 void ImGuiMenu::drawPositionProps() {
 	ImGui::Text("POSITION");
@@ -100,99 +195,4 @@ void ImGuiMenu::drawLightProps()
 
 		ImGui::EndTable();
 	}
-}
-
-void ImGuiMenu::tick()
-{
-	// Testing I am gui
-// Start the Dear ImGui frame
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-
-	bool show_demo_window = true;
-	bool show_another_window = false;
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-	if (show_demo_window)
-		ImGui::ShowDemoWindow(&show_demo_window);
-
-	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-	{
-		static float f = 0.0f;
-		static int counter = 0;
-
-		ImGui::Begin("Renderer Settings");                          // Create a window called "Hello, world!" and append into it.
-
-		if (ImGui::CollapsingHeader("Object properties")) {
-			drawPositionProps();
-
-			drawRotationProps();
-
-			drawScaleProps();
-		}
-
-		if (ImGui::CollapsingHeader("Lighting properties")) {
-			drawLightProps();
-		}
-
-		if (ImGui::Button("Set"))
-			counter++;
-		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-		ImGui::Checkbox("Another Window", &show_another_window);
-
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-
-		ImGui::SameLine();
-		ImGui::Text("counter = %d", counter);
-
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::End();
-	}
-
-	// 3. Show another simple window.
-	if (show_another_window)
-	{
-		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-		ImGui::Text("Hello from another window!");
-		if (ImGui::Button("Close Me"))
-			show_another_window = false;
-		ImGui::End();
-	}
-
-	// Rendering
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
-void ImGuiMenu::setWorldPos(glm::vec3 worldPos)
-{
-	mWorldPos = worldPos;
-}
-
-void ImGuiMenu::setRotation(glm::vec3 rotation)
-{
-	mRotation = rotation;
-}
-
-void ImGuiMenu::setScale (glm::vec3 scale)
-{
-	mScale = scale;
-}
-
-glm::vec3 ImGuiMenu::getWorldPos()
-{
-	return mWorldPos;
-}
-
-glm::vec3 ImGuiMenu::getRotation()
-{
-	return mRotation;
-}
-
-glm::vec3 ImGuiMenu::getScale()
-{
-	return mScale;
 }
