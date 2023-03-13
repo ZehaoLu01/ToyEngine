@@ -14,11 +14,7 @@ namespace ToyEngine{
     }
 
     void static cursorMoveCallback(GLFWwindow* window, double xpos, double ypos) {
-        // Must pass input event to imgui because we have overwritten the callback set by imgui.
-        // See the note in Onenote
-        //(1) ALWAYS forward mouse data to ImGui! This is automatic with default backends. With your own backend:
         ImGuiIO& io = ImGui::GetIO();
-        io.AddMousePosEvent(xpos, ypos);
 
         if (!io.WantCaptureMouse) {
             if (engine_globalPtr && !engine_globalPtr->isUsingImGUI()) {
@@ -43,7 +39,10 @@ namespace ToyEngine{
 	}
 
 	void MyEngine::init() {
-        
+        // Must register callback first then init imgui.
+        // See onenote for details
+        glfwSetScrollCallback(mWindow.get(), scrollCallback);
+        glfwSetCursorPosCallback(mWindow.get(), cursorMoveCallback);
 
 		mMainCameraPtr = std::make_shared<Camera>(glm::vec3(0.0f, 0.0f, 10.0f));
 
@@ -51,8 +50,7 @@ namespace ToyEngine{
 
         glfwSetInputMode(mWindow.get(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-        glfwSetScrollCallback(mWindow.get(), scrollCallback);
-        glfwSetCursorPosCallback(mWindow.get(), cursorMoveCallback);
+
 	}
 
     bool MyEngine::isUsingImGUI()
@@ -77,10 +75,6 @@ namespace ToyEngine{
                 mIsUsingImGUI = !mIsUsingImGUI;
                 auto targetCursorState = mIsUsingImGUI ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED;
                 glfwSetInputMode(mWindow.get(), GLFW_CURSOR, targetCursorState);
-                
-                //auto cursorMoveCallback = !mIsUsingImGUI ? cursorMoveCallback : nullptr;
-                //glfwSetCursorPosCallback(mWindow.get(), cursorMoveCallback);
-
                 mPrevImguiButtonState = GLFW_RELEASE;
             }
         });
