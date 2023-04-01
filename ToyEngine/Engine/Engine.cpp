@@ -31,7 +31,7 @@ namespace ToyEngine{
         processInput(delta_time);
 
 		//Logic Tick
-        mRenderSystem->updateComponentsProperties();
+        
 		//Render Tick
 
 		mRenderSystem->tick();

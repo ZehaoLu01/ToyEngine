@@ -20,8 +20,9 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-#include "ImGuiMenu.h"
+#include "UI/View/ImGuiMenu.h"
 #include <Renderer/Line.h>
+#include <UI/Controller/PropertiesScreenController.h>
 
 namespace ToyEngine {
 	const glm::vec3 LIGHT_BULB_POSITION(5.0f, 5.0f, 5.0f);
@@ -68,7 +69,7 @@ namespace ToyEngine {
 			component->tick();
 		}
 
-		mMenuInstance.tick();
+		ImGuiMenu::getInstance().tick();
 
 		glfwSwapBuffers(mWindow.get());
 		glfwPollEvents();
@@ -225,8 +226,15 @@ namespace ToyEngine {
 		shaderPtr->setUniform("kDiffuse", 0.6f);
 		shaderPtr->setUniform("kSpecular", 1.0f);
 		shaderPtr->setUniform("shininess", 10.0f);
-		loadModel("D:/Repo/ToyEngine/ToyEngine/Resources/model/backpack.obj", shaderPtr);
+		std::vector<std::shared_ptr<RenderComponent>> backpackComponents = loadModel("C:/repo/ToyEngine/ToyEngine/Resources/model/backpack.obj", shaderPtr);
 
+		setupImGUI();
+		auto controller = std::make_shared<ui::PropertiesScreenController>(backpackComponents);
+		ImGuiMenu::getInstance().setController(controller);
+	}
+
+	void RenderSystem::setupImGUI()
+	{
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -240,7 +248,7 @@ namespace ToyEngine {
 		ImGui_ImplOpenGL3_Init("#version 130");
 	}
 
-	void RenderSystem::loadModel(std::string path, std::shared_ptr<Shader> shader)
+	vector<std::shared_ptr<RenderComponent>> RenderSystem::loadModel(std::string path, std::shared_ptr<Shader> shader)
 	{
 		Assimp::Importer import;
 		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -248,11 +256,16 @@ namespace ToyEngine {
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
 			std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
-			return;
+			vector<std::shared_ptr<RenderComponent>>ret;
+			return ret;
 		}
 		mDirectory = path.substr(0, path.find_last_of('/'));
 
+		auto start = mRenderComponents.size();
 		processNode(scene->mRootNode, scene, shader);
+		auto end = mRenderComponents.size();
+		auto ret = std::vector<std::shared_ptr<RenderComponent>>(mRenderComponents.begin()+start, mRenderComponents.begin()+end);
+		return ret;
 	}
 
 	void RenderSystem::processNode(aiNode* node, const aiScene* scene, std::shared_ptr<Shader> shader)
@@ -456,14 +469,5 @@ namespace ToyEngine {
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile("path", aiProcess_Triangulate | aiProcess_FlipUVs);
 		return format;
-	}
-
-	// Update All the render components from imgui menu.
-	void RenderSystem::updateComponentsProperties() {
-		for (auto c : mRenderComponents) {
-			if (!c->isSpotLight()) {
-				c->updateProperties();
-			}
-		}
 	}
 }

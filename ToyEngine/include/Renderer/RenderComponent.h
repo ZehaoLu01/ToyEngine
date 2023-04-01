@@ -8,8 +8,9 @@
 #include "Renderer/Shader.h"
 #include "Renderer/Camera.h"
 #include <algorithm>
-#include "ImGuiMenu.h"
+#include <UI/View/ImGuiMenu.h>
 
+using ui::ImGuiMenu;
 
 namespace ToyEngine {
 	using VertexDataElementType = float;
@@ -37,6 +38,26 @@ namespace ToyEngine {
 
 		void setWorldPosition(glm::vec3 position) {
 			mWorldPos = position;
+		}
+
+		void setRotationEular(glm::vec3 rotation) {
+			mRotation_eular = rotation;
+		}
+
+		void setScale(glm::vec3 scale) {
+			mScale = scale;
+		}
+
+		glm::vec3 getWorldPosition() {
+			return mWorldPos;
+		}
+
+		glm::vec3 getRotationEular() {
+			return mRotation_eular;
+		}
+
+		glm::vec3 getScale() {
+			return mScale;
 		}
 		
 		RenderComponent() = default;
@@ -82,17 +103,14 @@ namespace ToyEngine {
 			mIsWithNormal = value;
 		}
 
-		//Get Updates from imgui.
-		void updateProperties();
-
 		void setSpotLight(bool isSpotLighting);
 		bool isSpotLight();
 	private:
 		VertexDataPtr mVertexDataPtr;
 
-		glm::vec3 mWorldPos = glm::vec3(1.0f,1.0f,1.0f);
-		glm::vec3 mRotation_eular;
-		glm::vec3 mScale;
+		glm::vec3 mWorldPos = glm::vec3(0.0f,0.0f,0.0f);
+		glm::vec3 mRotation_eular = glm::vec3(0.0f, 0.0f, 0.0f);
+		glm::vec3 mScale = glm::vec3(1.0f, 1.0f, 1.0f);
 
 		GLuint mVBOIndex;
 		GLuint mVAOIndex;
@@ -115,8 +133,6 @@ namespace ToyEngine {
 		bool mIsWithNormal = false;
 
 		bool mIsSpotLight = false;
-
-		ImGuiMenu& mMenuInstance = ImGuiMenu::getInstance();
 	};
 
 }

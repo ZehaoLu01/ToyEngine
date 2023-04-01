@@ -20,17 +20,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="a.cpp" />
+    <ClCompile Include="UI\Controller\Controller.cpp" />
+    <ClCompile Include="UI\Controller\PropertiesScreenController.cpp" />
+    <ClCompile Include="UI\Model\ScreenModel.cpp" />
     <ClCompile Include="Engine\Component.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Engine\GameObject.cpp" />
-    <ClCompile Include="ImGUI\imgui.cpp" />
-    <ClCompile Include="ImGUI\imgui_demo.cpp" />
-    <ClCompile Include="ImGUI\imgui_draw.cpp" />
-    <ClCompile Include="ImGUI\imgui_impl_glfw.cpp" />
-    <ClCompile Include="ImGUI\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="ImGUI\imgui_tables.cpp" />
-    <ClCompile Include="ImGUI\imgui_widgets.cpp" />
-    <ClCompile Include="ImGUI\ImGuiMenu.cpp" />
+    <ClCompile Include="UI\ImGUI\imgui.cpp" />
+    <ClCompile Include="UI\ImGUI\imgui_demo.cpp" />
+    <ClCompile Include="UI\ImGUI\imgui_draw.cpp" />
+    <ClCompile Include="UI\ImGUI\imgui_impl_glfw.cpp" />
+    <ClCompile Include="UI\ImGUI\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="UI\ImGUI\imgui_tables.cpp" />
+    <ClCompile Include="UI\ImGUI\imgui_widgets.cpp" />
+    <ClCompile Include="UI\Model\PropertiesScreenModel.cpp" />
+    <ClCompile Include="UI\View\ImGuiMenu.cpp" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
     <ClCompile Include="Renderer\Camera.cpp" />
     <ClCompile Include="Renderer\RenderComponent.cpp" />
@@ -47,7 +51,8 @@
     <ClCompile Include="Renderer\Resource\STB_image_implementation.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\ImGuiMenu.h" />
+    <ClInclude Include="include\UI\Controller\Controller.h" />
+    <ClInclude Include="include\UI\View\ImGuiMenu.h" />
     <ClInclude Include="include\imconfig.h" />
     <ClInclude Include="include\imgui.h" />
     <ClInclude Include="include\imgui_impl_glfw.h" />
@@ -351,6 +356,9 @@
     <ClInclude Include="include\Renderer\Shader.h" />
     <ClInclude Include="include\Resource\Texture.h" />
     <ClInclude Include="include\Resource\StbImageLoader.h" />
+    <ClInclude Include="include\UI\Model\PropertiesScreenModel.h" />
+    <ClInclude Include="include\UI\Model\ScreenModel.h" />
+    <ClInclude Include="include\UI\Controller\PropertiesScreenController.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fs.glsl" />

@@ -8,7 +8,7 @@
 #include <assimp/postprocess.h>
 #include "Resource/Texture.h"
 #include "Renderer/Shader.h"
-#include "ImGuiMenu.h"
+#include "UI/View/ImGuiMenu.h"
 
 namespace ToyEngine{
 	using WindowPtr = std::shared_ptr<GLFWwindow>;
@@ -19,15 +19,12 @@ namespace ToyEngine{
 			void drawGridLine(glm::highp_mat4& projection);
 			void drawCoordinateIndicator(glm::highp_mat4& projection, glm::vec3 position);
 			void init(WindowPtr window, std::shared_ptr<Camera> camera);
-			void loadModel(std::string path, std::shared_ptr<Shader> shader);
-			void updateComponentsProperties();
+			void setupImGUI();
+			std::vector<std::shared_ptr<RenderComponent>> loadModel(std::string path, std::shared_ptr<Shader> shader);
 		private:
 			WindowPtr mWindow;
 			std::shared_ptr<Camera> mCamera;
 			std::string mDirectory;
-
-			GLuint initShader();
-			void initTexture();
 
 			//testing
 			std::vector<std::shared_ptr<RenderComponent>> mRenderComponents;
@@ -40,7 +37,6 @@ namespace ToyEngine{
 			TextureType ConvertTextureType(aiTextureType type);
 			GLenum convertChannelsToFormat(unsigned int channels);
 
-			ImGuiMenu& mMenuInstance = ImGuiMenu::getInstance();
 			GLuint mGridVBOIndex;
 			GLuint mGridVAOIndex;
 			std::shared_ptr<Shader> mGridShader;

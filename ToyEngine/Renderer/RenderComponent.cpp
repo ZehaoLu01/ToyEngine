@@ -5,7 +5,6 @@
 #include "GLFW/glfw3.h"
 #include "Renderer/Camera.h"
 #include <functional>
-#include "ImGuiMenu.h"
 
 //Debugging constant
 //If self rotated, it will not change its rotation according to the imgui menu.
@@ -50,7 +49,7 @@ namespace ToyEngine {
             model_rotate = glm::rotate(model_rotate, glm::radians(mRotation_eular.y), glm::vec3(0.0f, 1.0f, 0.0f));
             model_rotate = glm::rotate(model_rotate, glm::radians(mRotation_eular.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
-            model = model_translate * model_rotate;
+            model = glm::scale(model_translate * model_rotate, mScale);
         }
         mShader->setUniform("model", model);
 
@@ -133,11 +132,6 @@ namespace ToyEngine {
 
         glBindVertexArray(0);
 	}
-
-    void RenderComponent::updateProperties() {
-        mWorldPos = mMenuInstance.getWorldPos();
-        mRotation_eular = mMenuInstance.getRotation();
-    }
 
     void RenderComponent::setSpotLight(bool isSpotLighting)
     {
