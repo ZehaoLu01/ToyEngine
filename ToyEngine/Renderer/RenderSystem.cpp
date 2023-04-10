@@ -106,15 +106,11 @@ namespace ToyEngine {
 		mCamera = camera;
 		glEnable(GL_DEPTH_TEST);
 
-		std::vector<Texture> textureVec;
-
 		auto vertexDataPtr = std::make_unique<std::vector<float>>();
 
 		auto indicesDataPtr = std::make_unique<std::vector<unsigned int>>();
 
 		auto shaderPtr = std::make_shared<Shader>("Shaders/BlinnPhong.vs.glsl", "Shaders/BlinnPhong.fs.glsl");
-
-		Texture processedTextureData;
 
 		mGridShader = std::make_shared<Shader>("Shaders/GridVertex.glsl", "Shaders/GridFragment.glsl");
 
@@ -204,9 +200,6 @@ namespace ToyEngine {
 		shaderPtr->setUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
 		indicesDataPtr.reset();
-		processedTextureData = Texture();
-
-		textureVec.clear();
 
 		auto lightBulb = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureVec, shaderPtr, mWindow, mCamera);
 		lightBulb->init();
