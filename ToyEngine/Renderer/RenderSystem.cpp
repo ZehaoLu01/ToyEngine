@@ -19,7 +19,6 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-
 #include "UI/View/ImGuiMenu.h"
 #include <Renderer/Line.h>
 #include <UI/Controller/PropertiesScreenController.h>
@@ -231,7 +230,9 @@ namespace ToyEngine {
 		setupImGUI();
 		auto controller = std::make_shared<ui::PropertiesScreenController>(backpackComponents);
 		ImGuiMenu::getInstance().setController(controller);
-	}
+			
+		
+}
 
 	void RenderSystem::setupImGUI()
 	{

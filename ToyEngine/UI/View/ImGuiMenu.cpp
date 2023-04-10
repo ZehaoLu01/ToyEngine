@@ -72,11 +72,13 @@ namespace ui{
 
 	void ImGuiMenu::renderLoggingMenu()
 	{
-		ImGui::Begin("Logging Menu", nullptr, ImGuiWindowFlags_NoMove);                          // Create a window called "Hello, world!" and append into it.
-
+		//mFileBrowser->Open();
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::End();
+
+		mFileBrowser->Display();
+
+		mFileExplorer->render();
 	}
 
 	void ImGuiMenu::renderObjectPropertyMenu()
