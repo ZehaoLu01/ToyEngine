@@ -55,7 +55,7 @@ namespace ToyEngine {
 
 	void RenderSystem::tick()
 	{
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		auto projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
@@ -201,7 +201,7 @@ namespace ToyEngine {
 
 		indicesDataPtr.reset();
 
-		auto lightBulb = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureVec, shaderPtr, mWindow, mCamera);
+		auto lightBulb = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), std::vector<Texture>(), shaderPtr, mWindow, mCamera);
 		lightBulb->init();
 		lightBulb->setWorldPosition(LIGHT_BULB_POSITION);
 		lightBulb->setSpotLight(true);
