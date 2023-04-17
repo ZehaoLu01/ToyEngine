@@ -4,6 +4,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <memory>
 #include <string>
+#include "../../../submodule/FileExplorer/imfilebrowser.h"
+#include "UI/View/FileExplorer.h"
 
 
 
@@ -44,6 +46,9 @@ namespace ui
 		std::string getVec3String(glm::vec3 vec);
 
 		std::shared_ptr<PropertiesScreenController> mController;
+		std::shared_ptr<ImGui::FileBrowser> mFileBrowser = std::make_shared<ImGui::FileBrowser>();
+		std::shared_ptr<FileExplorer> mFileExplorer = std::make_shared<FileExplorer>();
+
 	};
 
 }

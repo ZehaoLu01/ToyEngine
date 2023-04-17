@@ -19,7 +19,6 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-
 #include "UI/View/ImGuiMenu.h"
 #include <Renderer/Line.h>
 #include <UI/Controller/PropertiesScreenController.h>
@@ -56,7 +55,7 @@ namespace ToyEngine {
 
 	void RenderSystem::tick()
 	{
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		auto projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
@@ -107,15 +106,11 @@ namespace ToyEngine {
 		mCamera = camera;
 		glEnable(GL_DEPTH_TEST);
 
-		std::vector<Texture> textureVec;
-
 		auto vertexDataPtr = std::make_unique<std::vector<float>>();
 
 		auto indicesDataPtr = std::make_unique<std::vector<unsigned int>>();
 
 		auto shaderPtr = std::make_shared<Shader>("Shaders/BlinnPhong.vs.glsl", "Shaders/BlinnPhong.fs.glsl");
-
-		Texture processedTextureData;
 
 		mGridShader = std::make_shared<Shader>("Shaders/GridVertex.glsl", "Shaders/GridFragment.glsl");
 
@@ -205,11 +200,8 @@ namespace ToyEngine {
 		shaderPtr->setUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
 		indicesDataPtr.reset();
-		processedTextureData = Texture();
 
-		textureVec.clear();
-
-		auto lightBulb = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), textureVec, shaderPtr, mWindow, mCamera);
+		auto lightBulb = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), std::vector<Texture>(), shaderPtr, mWindow, mCamera);
 		lightBulb->init();
 		lightBulb->setWorldPosition(LIGHT_BULB_POSITION);
 		lightBulb->setSpotLight(true);
@@ -231,7 +223,9 @@ namespace ToyEngine {
 		setupImGUI();
 		auto controller = std::make_shared<ui::PropertiesScreenController>(backpackComponents);
 		ImGuiMenu::getInstance().setController(controller);
-	}
+			
+		
+}
 
 	void RenderSystem::setupImGUI()
 	{

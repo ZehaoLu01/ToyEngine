@@ -58,6 +58,16 @@ namespace ToyEngine {
 		std::string getPath() {
 			return mPath;
 		}
+
+		GLuint getTextureIndex() {
+			return mTextureIndex;
+		}
+		unsigned int getWidth() {
+			return mWidth;
+		}
+		unsigned int getHeight() {
+			return mHeight;
+		}
 	private:
 
 		int id;
@@ -68,7 +78,6 @@ namespace ToyEngine {
 		GLenum mInternalFormat;
 		
 		// Image Data
-		// Can we use smart pointer for this?
 		// Picture formats have a specific sequence to stand for beginning and ending.
 		std::shared_ptr<TextureDataType> mData;
 		

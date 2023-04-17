@@ -9,6 +9,7 @@
 #include "Resource/Texture.h"
 #include "Renderer/Shader.h"
 #include "UI/View/ImGuiMenu.h"
+#include "../../submodule/FileExplorer/imfilebrowser.h"
 
 namespace ToyEngine{
 	using WindowPtr = std::shared_ptr<GLFWwindow>;
