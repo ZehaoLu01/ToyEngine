@@ -1,16 +1,10 @@
 #include "UI/Controller/PropertiesScreenController.h"
 
 namespace ui {
-	PropertiesScreenController::PropertiesScreenController()
+	PropertiesScreenController::PropertiesScreenController(entt::registry& registry): mRegistry(registry)
 	{
-		mPropertiesScreenModel = std::make_shared<PropertiesScreenModel>();
+		mPropertiesScreenModel = std::make_shared<PropertiesScreenModel>(registry);
 	}
-
-	PropertiesScreenController::PropertiesScreenController(std::vector<std::shared_ptr<ToyEngine::RenderComponent>> selectedComponents)
-	{
-		mPropertiesScreenModel = std::make_shared<PropertiesScreenModel>(selectedComponents);
-	}
-
 
 	void PropertiesScreenController::registerBindings()
 	{

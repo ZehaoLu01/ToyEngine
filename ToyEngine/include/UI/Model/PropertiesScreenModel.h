@@ -5,14 +5,15 @@
 #include "UI/Model/ScreenModel.h"
 #include <memory>
 #include <Renderer/RenderComponent.h>
+#include <entt/entt.hpp>
+#include <Engine/Component.h>
 
 
 namespace ui {
 	class PropertiesScreenModel: public ScreenModel, public std::enable_shared_from_this<PropertiesScreenModel> {
-
 	public:
-		PropertiesScreenModel();
-		PropertiesScreenModel(std::vector<std::shared_ptr<ToyEngine::RenderComponent>> defaultSelectedComponents);
+		PropertiesScreenModel(entt::registry& registry);
+		PropertiesScreenModel(entt::registry& registry, std::vector<std::shared_ptr<ToyEngine::RenderComponent>> defaultSelectedComponents);
 
 		glm::vec3 getPosition() {
 			if (!mSelectedRenderComponents.empty()) {
@@ -60,6 +61,8 @@ namespace ui {
 		glm::vec3 mRotation;
 		glm::vec3 mScale;
 
-		std::vector<std::shared_ptr<ToyEngine::RenderComponent>> mSelectedRenderComponents;
+		entt::registry& mRegistry;
+
+		std::vector<ToyEngine::TransformComponent> mSelectedRenderComponents;
 	};
 }

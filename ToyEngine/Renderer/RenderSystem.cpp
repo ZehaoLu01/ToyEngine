@@ -223,8 +223,6 @@ namespace ToyEngine {
 		setupImGUI();
 		auto controller = std::make_shared<ui::PropertiesScreenController>(backpackComponents);
 		ImGuiMenu::getInstance().setController(controller);
-			
-		
 }
 
 	void RenderSystem::setupImGUI()
