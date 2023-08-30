@@ -57,21 +57,6 @@ namespace ToyEngine {
 		return format;
 	}
 
-	//void RenderSystem::tick()
-	//{
-	//	preDraw();
-
-	//	auto projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
-
-	//	drawGridLine(projection);
-
-	//	drawCoordinateIndicator(projection, glm::vec3(0, 0, 0));
-
-	//	//ImGuiMenu::getInstance().tick();
-
-	//	afterDraw();
-	//}
-
 	void RenderSystem::afterDraw()
 	{
 		glfwSwapBuffers(mWindow.get());
@@ -176,6 +161,11 @@ namespace ToyEngine {
 		glBindVertexArray(0);
 	}
 
+	void RenderSystem::drawImGuiMenu()
+	{
+		ui::ImGuiMenu::getInstance().tick();
+	}
+
 	void RenderSystem::initGrid()
 	{
 		mGridShader = std::make_shared<Shader>("Shaders/GridVertex.glsl", "Shaders/GridFragment.glsl");
@@ -235,10 +225,10 @@ namespace ToyEngine {
 		mActiveShader->setUniform("shininess", 10.0f);
 
 		//ImGui
-		//setupImGUI();
-		//auto controller = std::make_shared<ui::PropertiesScreenController>(backpackComponents);
-		//ImGuiMenu::getInstance().setController(controller);
-}
+		setupImGUI();
+		auto controller = std::make_shared<ui::PropertiesScreenController>(registry);
+		ui::ImGuiMenu::getInstance().setController(controller);
+	}
 
 	void RenderSystem::setupImGUI()
 	{

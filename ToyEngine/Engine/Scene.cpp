@@ -20,6 +20,8 @@ void ToyEngine::MyScene::update()
 		RenderSystem::instance.drawMesh(transform, mesh, texture);
 	}
 
+	RenderSystem::instance.drawImGuiMenu();
+
 	RenderSystem::instance.afterDraw();
 }
 

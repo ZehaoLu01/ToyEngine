@@ -25,6 +25,7 @@ namespace ToyEngine{
 			void drawGridLine();
 			void drawCoordinateIndicator(glm::vec3 position);
 			void drawMesh(const TransformComponent& transform, const MeshComponent& mesh, TextureComponent textures);
+			void drawImGuiMenu();
 			void initGrid();
 			void init(WindowPtr window, std::shared_ptr<Camera> camera, entt::registry& registry);
 			void setupImGUI();

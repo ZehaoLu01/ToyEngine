@@ -6,6 +6,8 @@
 #include <glad/glad.h>
 #include <entt/entity/registry.hpp>
 #include <stdexcept>
+#include <Resource/Texture.h>
+#include <Renderer/Shader.h>
 
 
 namespace ToyEngine {

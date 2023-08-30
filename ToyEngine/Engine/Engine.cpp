@@ -18,13 +18,13 @@ namespace ToyEngine{
     }
 
     void static cursorMoveCallback(GLFWwindow* window, double xpos, double ypos) {
-        //ImGuiIO& io = ImGui::GetIO();
+        ImGuiIO& io = ImGui::GetIO();
 
-        //if (!io.WantCaptureMouse) {
-        //    if (engine_globalPtr && !engine_globalPtr->isUsingImGUI()) {
-        //        engine_globalPtr->getMainCamera()->ProcessMouseMovement(xpos, ypos);
-        //    }
-        //} 
+        if (!io.WantCaptureMouse) {
+            if (engine_globalPtr && !engine_globalPtr->isUsingImGUI()) {
+                engine_globalPtr->getMainCamera()->ProcessMouseMovement(xpos, ypos);
+            }
+        } 
     }
 
 	void MyEngine::tick()
