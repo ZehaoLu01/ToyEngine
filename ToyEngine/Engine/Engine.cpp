@@ -3,10 +3,14 @@
 #include "Engine/Engine.h"
 #include <memory>
 #include <imgui_impl_opengl3.h>
+#include "Engine/Scene.h"
 
 extern std::shared_ptr<ToyEngine::MyEngine> engine_globalPtr;
 
 namespace ToyEngine{
+    entt::registry MyEngine::mRegistry;
+
+
     void static scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
         if (engine_globalPtr && !engine_globalPtr->isUsingImGUI()) {
             engine_globalPtr->getMainCamera()->ProcessMouseScroll(yoffset);
@@ -14,13 +18,13 @@ namespace ToyEngine{
     }
 
     void static cursorMoveCallback(GLFWwindow* window, double xpos, double ypos) {
-        ImGuiIO& io = ImGui::GetIO();
+        //ImGuiIO& io = ImGui::GetIO();
 
-        if (!io.WantCaptureMouse) {
-            if (engine_globalPtr && !engine_globalPtr->isUsingImGUI()) {
-                engine_globalPtr->getMainCamera()->ProcessMouseMovement(xpos, ypos);
-            }
-        } 
+        //if (!io.WantCaptureMouse) {
+        //    if (engine_globalPtr && !engine_globalPtr->isUsingImGUI()) {
+        //        engine_globalPtr->getMainCamera()->ProcessMouseMovement(xpos, ypos);
+        //    }
+        //} 
     }
 
 	void MyEngine::tick()
@@ -34,8 +38,7 @@ namespace ToyEngine{
         
 		//Render Tick
 
-		mRenderSystem->tick();
-
+        mActiveScene.update();
 	}
 
 	void MyEngine::init() {
@@ -46,11 +49,12 @@ namespace ToyEngine{
 
 		mMainCameraPtr = std::make_shared<Camera>(glm::vec3(0.0f, 10.0f, 10.0f));
 
-		mRenderSystem->init(mWindow, mMainCameraPtr);
+		RenderSystem::instance.init(mWindow, mMainCameraPtr, mRegistry);
+
+        mActiveScene.init();
 
         glfwSetInputMode(mWindow.get(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-
+       
 	}
 
     bool MyEngine::isUsingImGUI()

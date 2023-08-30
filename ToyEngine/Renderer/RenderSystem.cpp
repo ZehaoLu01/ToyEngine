@@ -1,21 +1,21 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-#include "Renderer/RenderSystem.h"
-#include "Resource/StbImageLoader.h"
-#include "Resource/Texture.h"
+#include <Renderer/RenderSystem.h>
+#include <Resource/StbImageLoader.h>
+#include <Resource/Texture.h>
 #include <Resource/stb_image.h>
-#include "glm/glm.hpp"
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "Renderer/RenderComponent.h"
+#include <Engine/Component.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <filesystem>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
-
+#include <entt/entity/registry.hpp>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -23,7 +23,11 @@
 #include <Renderer/Line.h>
 #include <UI/Controller/PropertiesScreenController.h>
 
+#define SELF_ROTATION 1
+
 namespace ToyEngine {
+	RenderSystem RenderSystem::instance = RenderSystem();
+
 	const glm::vec3 LIGHT_BULB_POSITION(5.0f, 5.0f, 5.0f);
 
 	const glm::vec3 PHONG_TESTING_POSITION(0.f, 0.f, 2.f);
@@ -53,29 +57,37 @@ namespace ToyEngine {
 		return format;
 	}
 
-	void RenderSystem::tick()
+	//void RenderSystem::tick()
+	//{
+	//	preDraw();
+
+	//	auto projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
+
+	//	drawGridLine(projection);
+
+	//	drawCoordinateIndicator(projection, glm::vec3(0, 0, 0));
+
+	//	//ImGuiMenu::getInstance().tick();
+
+	//	afterDraw();
+	//}
+
+	void RenderSystem::afterDraw()
 	{
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		auto projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
-
-		drawGridLine(projection);
-
-		drawCoordinateIndicator(projection, glm::vec3(0, 0, 0));
-
-		for (auto component : mRenderComponents) {
-			component->tick();
-		}
-
-		ImGuiMenu::getInstance().tick();
-
 		glfwSwapBuffers(mWindow.get());
 		glfwPollEvents();
 	}
 
-	void RenderSystem::drawGridLine(glm::highp_mat4& projection)
+	void RenderSystem::preDraw()
 	{
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	void RenderSystem::drawGridLine()
+	{
+		glm::mat4 projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
+
 		glUseProgram(mGridShader->ID);
 		glm::highp_mat4 mvp = projection * mCamera->GetViewMatrix();
 		glUniformMatrix4fv(glGetUniformLocation(mGridShader->ID, "MVP"), 1, GL_FALSE, &mvp[0][0]);
@@ -85,8 +97,10 @@ namespace ToyEngine {
 
 	}
 
-	void RenderSystem::drawCoordinateIndicator(glm::highp_mat4& projection, glm::vec3 position)
+	void RenderSystem::drawCoordinateIndicator(glm::vec3 position)
 	{
+		glm::mat4 projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
+
 		Line lineX = Line(position, position + glm::vec3(1, 0, 0));
 		lineX.setMVP(projection * mCamera->GetViewMatrix());
 		lineX.setColor(vec3(255, 0, 0));
@@ -101,17 +115,69 @@ namespace ToyEngine {
 		lineZ.draw();
 	}
 
-	void RenderSystem::init(WindowPtr window, std::shared_ptr<Camera> camera) {
-		mWindow = window;
-		mCamera = camera;
-		glEnable(GL_DEPTH_TEST);
+	void RenderSystem::drawMesh(const TransformComponent& transform, const MeshComponent& mesh, TextureComponent texture)
+	{	
+		auto textures = texture.textures;
 
-		auto vertexDataPtr = std::make_unique<std::vector<float>>();
+		mesh.shader->use();
 
-		auto indicesDataPtr = std::make_unique<std::vector<unsigned int>>();
+		unsigned int diffuseNr = 0;
+		unsigned int specularNr = 0;
+		for (int i = 0; i < textures.size(); i++)
+		{
+			glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
+			// retrieve texture number (the N in diffuse_textureN)
+			std::string number;
+			std::string name = textures[i].getTypeName();
+			if (name == "diffuse") {
+				name = "texture_diffuse";
+				number = std::to_string(diffuseNr++);
+			}
+			else if (name == "specular") {
+				name = "texture_specular";
+				number = std::to_string(specularNr++);
+			}
+			mesh.shader->setUniform(name + number, i);
+			glBindTexture(GL_TEXTURE_2D, textures[i].getTextureIndex());
+		}
+		glActiveTexture(GL_TEXTURE0);
 
-		auto shaderPtr = std::make_shared<Shader>("Shaders/BlinnPhong.vs.glsl", "Shaders/BlinnPhong.fs.glsl");
+		auto model = glm::mat4(1.0f);
+		if (SELF_ROTATION) {
+			// rotation need to be improved
+			auto model_rotate = glm::rotate(model, (float)glfwGetTime() * glm::radians(40.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+			auto model_translate = glm::translate(model, transform.worldPos);
+			model = model_translate * model_rotate;
+		}
+		else {
+			auto model_translate = glm::translate(model, transform.worldPos);
+			auto model_rotate = glm::rotate(glm::mat4(1.0f), glm::radians(transform.rotation_eular.x), glm::vec3(1.0f, 0.0f, 0.0f));
+			model_rotate = glm::rotate(model_rotate, glm::radians(transform.rotation_eular.y), glm::vec3(0.0f, 1.0f, 0.0f));
+			model_rotate = glm::rotate(model_rotate, glm::radians(transform.rotation_eular.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
+			model = glm::scale(model_translate * model_rotate, transform.scale);
+		}
+		mesh.shader->setUniform("model", model);
+
+		auto view = glm::mat4(1.0f);
+		// note that we're translating the scene in the reverse direction of where we want to move
+		view = mCamera->GetViewMatrix();
+		//view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
+		mesh.shader->setUniform("view", view);
+
+		mesh.shader->setUniform("normalMat", glm::transpose(glm::inverse(view * model)));
+
+		auto projection = glm::mat4(1);
+		projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
+		mesh.shader->setUniform("projection", projection);
+
+		glBindVertexArray(mesh.VAOIndex);
+		glDrawElements(GL_TRIANGLES, mesh.vertexSize, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
+
+	void RenderSystem::initGrid()
+	{
 		mGridShader = std::make_shared<Shader>("Shaders/GridVertex.glsl", "Shaders/GridFragment.glsl");
 
 		const int gridWidth = 500;
@@ -143,88 +209,35 @@ namespace ToyEngine {
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
 		glBindVertexArray(0);
+	}
 
-		// ========================================================
+	// Setup active shader, camera, window.
+	void RenderSystem::init(WindowPtr window, std::shared_ptr<Camera> camera, entt::registry& registry) {
+		mWindow = window;
+		mCamera = camera;
+		glEnable(GL_DEPTH_TEST);
 
+		auto shaderPtr = std::make_shared<Shader>("Shaders/BlinnPhong.vs.glsl", "Shaders/BlinnPhong.fs.glsl");
 
-		// light bulb
-		// ========================================================
-		vertexDataPtr = std::make_unique<std::vector<float>>();
-		*vertexDataPtr = {
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
+		initGrid();
 
-			-0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
-
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f, -0.5f,
-
-			-0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f
-		};
-
-		shaderPtr = std::make_shared<Shader>("Shaders/VertexShader.glsl", "Shaders/LightFragmentShader.glsl");
-		shaderPtr->use();
-		shaderPtr->setUniform("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
-		shaderPtr->setUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-
-		indicesDataPtr.reset();
-
-		auto lightBulb = std::make_shared<RenderComponent>(std::move(vertexDataPtr), std::move(indicesDataPtr), std::vector<Texture>(), shaderPtr, mWindow, mCamera);
-		lightBulb->init();
-		lightBulb->setWorldPosition(LIGHT_BULB_POSITION);
-		lightBulb->setSpotLight(true);
-		mRenderComponents.push_back(lightBulb);
-
+		//===========================================================
 		// Complex model
-		shaderPtr = std::make_shared<Shader>("Shaders/BlinnPhong.vs.glsl", "Shaders/BlinnPhong.fs.glsl");
-		shaderPtr->use();
-		shaderPtr->setUniform("spherePosition", LIGHT_BULB_POSITION);
-		shaderPtr->setUniform("ambientColor", BLINN_PHONG_AMBIENT_COLOR);
-		shaderPtr->setUniform("diffuseColor", BLINN_PHONG_DIFFUSE_COLOR);
-		shaderPtr->setUniform("specularColor", BLINN_PHONG_SPECULAR_COLOR);
-		shaderPtr->setUniform("kAmbient", 0.3f);
-		shaderPtr->setUniform("kDiffuse", 0.6f);
-		shaderPtr->setUniform("kSpecular", 1.0f);
-		shaderPtr->setUniform("shininess", 10.0f);
-		std::vector<std::shared_ptr<RenderComponent>> backpackComponents = loadModel("C:/repo/ToyEngine/ToyEngine/Resources/model/backpack.obj", shaderPtr);
+		mActiveShader = std::make_shared<Shader>("Shaders/BlinnPhong.vs.glsl", "Shaders/BlinnPhong.fs.glsl");
+		mActiveShader->use();
+		mActiveShader->setUniform("spherePosition", LIGHT_BULB_POSITION);
+		mActiveShader->setUniform("ambientColor", BLINN_PHONG_AMBIENT_COLOR);
+		mActiveShader->setUniform("diffuseColor", BLINN_PHONG_DIFFUSE_COLOR);
+		mActiveShader->setUniform("specularColor", BLINN_PHONG_SPECULAR_COLOR);
+		mActiveShader->setUniform("kAmbient", 0.3f);
+		mActiveShader->setUniform("kDiffuse", 0.6f);
+		mActiveShader->setUniform("kSpecular", 1.0f);
+		mActiveShader->setUniform("shininess", 10.0f);
 
-		setupImGUI();
-		auto controller = std::make_shared<ui::PropertiesScreenController>(backpackComponents);
-		ImGuiMenu::getInstance().setController(controller);
-			
-		
+		//ImGui
+		//setupImGUI();
+		//auto controller = std::make_shared<ui::PropertiesScreenController>(backpackComponents);
+		//ImGuiMenu::getInstance().setController(controller);
 }
 
 	void RenderSystem::setupImGUI()
@@ -242,7 +255,7 @@ namespace ToyEngine {
 		ImGui_ImplOpenGL3_Init("#version 130");
 	}
 
-	vector<std::shared_ptr<RenderComponent>> RenderSystem::loadModel(std::string path, std::shared_ptr<Shader> shader)
+	entt::entity RenderSystem::loadModel(std::string path, entt::registry& registry, entt::entity parent)
 	{
 		Assimp::Importer import;
 		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -250,75 +263,106 @@ namespace ToyEngine {
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
 			std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
-			vector<std::shared_ptr<RenderComponent>>ret;
-			return ret;
+			return entt::null;
 		}
+
 		mDirectory = path.substr(0, path.find_last_of('/'));
 
-		auto start = mRenderComponents.size();
-		processNode(scene->mRootNode, scene, shader);
-		auto end = mRenderComponents.size();
-		auto ret = std::vector<std::shared_ptr<RenderComponent>>(mRenderComponents.begin()+start, mRenderComponents.begin()+end);
-		return ret;
+		entt::entity entity = registry.create();
+		auto child = processNode(scene->mRootNode, scene, registry, entity);
+		//TODO: PRE, NEXT
+		registry.emplace<RelationComponent>(entity, parent, std::make_shared<std::vector<entt::entity>>());
+		registry.get<RelationComponent>(entity).children->push_back(child);
+		return entity;
 	}
 
-	void RenderSystem::processNode(aiNode* node, const aiScene* scene, std::shared_ptr<Shader> shader)
+	void RenderSystem::bindSiblings(entt::registry& registry, entt::entity curr, entt::entity& prev)
 	{
+		if (prev != entt::null) {
+			auto childRelation = registry.get<RelationComponent>(curr);
+			auto prevRelation = registry.get<RelationComponent>(prev);
+
+			registry.get<RelationComponent>(curr).prev = prev;
+			registry.get<RelationComponent>(prev).next = curr;
+		}
+		prev = curr;
+	}
+
+	entt::entity RenderSystem::processNode(aiNode* node, const aiScene* scene, entt::registry& registry, entt::entity parent)
+	{
+		entt::entity entity = registry.create();
+		std::shared_ptr<std::vector<Vertex>> verticesPtr;
+		std::shared_ptr<std::vector<unsigned int>> indicesPtr;
+		auto relation = registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());
+
+		entt::entity prev = entt::null;
+
 		// process all the node's meshes (if any)
 		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
-			mRenderComponents.push_back(processMesh(mesh, scene));
+			auto child = processMesh(mesh, scene, registry, entity);
+
+			bindSiblings(registry, child, prev);
+
+			prev = child;
+			relation.children->push_back(child);
 		}
+
 		// then do the same for each of its children
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
-			processNode(node->mChildren[i], scene, shader);
+			auto child = processNode(node->mChildren[i], scene, registry, entity);
+
+			bindSiblings(registry, child, prev);
+
+			prev = child;
+			relation.children->push_back(child);
 		}
+		return entity;
 	}
 
-	std::shared_ptr<RenderComponent> RenderSystem::processMesh(aiMesh* mesh, const aiScene* scene)
+	entt::entity RenderSystem::processMesh(aiMesh* mesh, const aiScene* scene, entt::registry& registry, entt::entity parent)
 	{
-		std::vector<Vertex> vertices;
-		std::vector<unsigned int> indices;
+		entt::entity entity =  registry.create();
+
+		VertexDataPtr verticesPtr = std::make_shared<VertexData>();
+		IndexDataPtr indicesPtr = std::make_shared<IndexData>();
+
 		std::vector<Texture> textures;
+
+		bool hasNormal = false;
+		bool hasTexture = false;
 
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
-			Vertex vertex;
 			// process vertex positions, normals and texture coordinates
 			//...
-			glm::vec3 vector;
-			vector.x = mesh->mVertices[i].x;
-			vector.y = mesh->mVertices[i].y;
-			vector.z = mesh->mVertices[i].z;
-			vertex.Position = vector;
+			verticesPtr->push_back(mesh->mVertices[i].x);
+			verticesPtr->push_back(mesh->mVertices[i].y);
+			verticesPtr->push_back(mesh->mVertices[i].z);
 			if (mesh->HasNormals())
 			{
-				vector.x = mesh->mNormals[i].x;
-				vector.y = mesh->mNormals[i].y;
-				vector.z = mesh->mNormals[i].z;
-				vertex.Normal = vector;
+				hasNormal = true;
+				verticesPtr->push_back(mesh->mNormals[i].x);
+				verticesPtr->push_back(mesh->mNormals[i].y);
+				verticesPtr->push_back(mesh->mNormals[i].z);
 			}
 			if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
 			{
-				glm::vec2 vec;
-				vec.x = mesh->mTextureCoords[0][i].x;
-				vec.y = mesh->mTextureCoords[0][i].y;
-				vertex.TexCoords = vec;
+				hasTexture = true;
+				verticesPtr->push_back(mesh->mTextureCoords[0][i].x);
+				verticesPtr->push_back(mesh->mTextureCoords[0][i].y);
 			}
-			else
-				vertex.TexCoords = glm::vec2(0.0f, 0.0f);
-
-			vertices.push_back(vertex);
 		}
+
 		// process indices
 		for (unsigned int i = 0; i < mesh->mNumFaces; i++)
 		{
 			aiFace face = mesh->mFaces[i];
 			for (unsigned int j = 0; j < face.mNumIndices; j++)
-				indices.push_back(face.mIndices[j]);
+				indicesPtr->push_back(face.mIndices[j]);
 		}
 		
 		// process material
@@ -339,6 +383,8 @@ namespace ToyEngine {
 			//textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 		}
 
+
+		// TODO USE ACTIVE SHADER
 		std::shared_ptr<Shader> shaderPtr = std::make_shared<Shader>("Shaders/phong.vs.glsl", "Shaders/phong.fs.glsl");
 		shaderPtr->use();
 		shaderPtr->setUniform("spherePosition", LIGHT_BULB_POSITION);
@@ -350,11 +396,12 @@ namespace ToyEngine {
 		shaderPtr->setUniform("kSpecular", 1.0f);
 		shaderPtr->setUniform("shininess", 10.0f);
 
-		auto retPtr = std::make_shared<RenderComponent>(vertices, indices, textures, shaderPtr, mWindow, mCamera);
-		retPtr->setNormalAvailability(true);
-		retPtr->init();
+		registry.emplace<TransformComponent>(entity, glm::vec3{ 0.,0.,0. }, glm::vec3{ 0., 0., 0. }, glm::vec3{1.,1.,1.});
+		registry.emplace<MeshComponent>(entity, verticesPtr,indicesPtr,shaderPtr, hasNormal, hasTexture);
+		registry.emplace<TextureComponent>(entity, textures);
+		registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());
 
-		return retPtr;
+		return entity;
 	}
 
 	std::vector<Texture> RenderSystem::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
@@ -386,6 +433,7 @@ namespace ToyEngine {
 				TextureType textureType = ConvertTextureType(type);
 				Texture texture(textureData, width, height, format, format, 0, textureType);
 				texture.setPath(str_cpp);
+
 				textures.push_back(texture);
 				mLoadedTextures.push_back(texture);
 			}
