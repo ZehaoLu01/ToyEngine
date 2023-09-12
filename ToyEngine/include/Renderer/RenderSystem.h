@@ -29,7 +29,7 @@ namespace ToyEngine{
 			void initGrid();
 			void init(WindowPtr window, std::shared_ptr<Camera> camera, std::shared_ptr<MyScene> scene);
 			void setupImGUI();
-			entt::entity loadModel(std::string path, entt::registry& registry, entt::entity parent, const TransformComponent& transform);
+			entt::entity loadModel(std::string path, std::string modelName, entt::registry& registry, entt::entity parent, const TransformComponent& transform);
 			static RenderSystem instance;
 
 		private:

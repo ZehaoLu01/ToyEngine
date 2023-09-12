@@ -257,7 +257,7 @@ namespace ToyEngine {
 		ImGui_ImplOpenGL3_Init("#version 130");
 	}
 
-	entt::entity RenderSystem::loadModel(std::string path, entt::registry& registry, entt::entity parent, const TransformComponent& transform)
+	entt::entity RenderSystem::loadModel(std::string path, std::string modelName, entt::registry& registry, entt::entity parent, const TransformComponent& transform)
 	{
 		Assimp::Importer import;
 		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -277,7 +277,12 @@ namespace ToyEngine {
 		auto child = processNode(scene->mRootNode, scene, registry, entity, newTrasnform);
 		//TODO: PRE, NEXT
 		auto& relation = registry.emplace<RelationComponent>(entity, parent, std::make_shared<std::vector<entt::entity>>());
-		registry.emplace<TagComponent>(entity, "test");
+		if (modelName.size() == 0) {
+			registry.emplace<TagComponent>(entity, "default model");
+		}
+		else {
+			registry.emplace<TagComponent>(entity, modelName);
+		}
 		relation.children->push_back(child);
 		return entity;
 	}

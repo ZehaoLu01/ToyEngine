@@ -32,7 +32,7 @@ void ToyEngine::MyScene::init()
 	entt::entity entity = mRegistry.create();
 
 	// TODO: should remove this. This is for testing. The model is only for testing for now.
-	auto created = RenderSystem::instance.loadModel("C:/repo/ToyEngine/ToyEngine/Resources/model/backpack.obj", mRegistry, entity, transform);
+	auto created = RenderSystem::instance.loadModel("C:/repo/ToyEngine/ToyEngine/Resources/model/backpack.obj", "bag",mRegistry, entity, transform);
 	mEntityList.push_back(created);
 }
 
