@@ -81,10 +81,26 @@ namespace ToyEngine {
 		glm::vec3 rotation_eular = glm::vec3(0.0f, 0.0f, 0.0f);
 		glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
+        // Reference is to avoid expensive update operations on parent transforms
+        bool isReference = false;
+        const TransformComponent* referencedTransform=nullptr;
+
         TransformComponent() = default;
         TransformComponent(glm::vec3 pos, glm::vec3 rotation, glm::vec3 scaleInput) :
             worldPos(pos), rotation_eular(rotation), scale(scaleInput)
         {
+        };
+
+        // TODO: This may be error prone. Think about how to adjust this.
+        TransformComponent(const TransformComponent& other) {
+            isReference = true;
+
+            if (other.isReference&& other.referencedTransform !=nullptr) {
+                referencedTransform = other.referencedTransform;
+            }
+            else {
+                referencedTransform = &other;
+            }
         };
 	};
 
@@ -104,4 +120,7 @@ namespace ToyEngine {
         RelationComponent() = default;
     };
 
+    struct TagComponent {
+        std::string name;
+    };
 }

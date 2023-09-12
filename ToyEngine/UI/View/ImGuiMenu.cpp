@@ -1,10 +1,4 @@
 #include "UI/View/ImGuiMenu.h"
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include <iostream>
-#include <sstream>
-#include "UI/Controller/PropertiesScreenController.h"
 
 namespace ui{
 	void ImGuiMenu::tick()
@@ -63,11 +57,7 @@ namespace ui{
 
 	void ImGuiMenu::renderHierarchyMenu()
 	{
-		ImGui::Begin("Hierarchy", nullptr, ImGuiWindowFlags_NoMove);                          // Create a window called "Hello, world!" and append into it.
-
-
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::End();
+		mHierarchyPanel.tick();
 	}
 
 	void ImGuiMenu::renderLoggingMenu()
@@ -108,15 +98,16 @@ namespace ui{
 		return instance;
 	}
 
-	void ImGuiMenu::setController(std::shared_ptr<PropertiesScreenController> controller)
+	void ImGuiMenu::setupControllers(std::shared_ptr<ToyEngine::MyScene> scene)
 	{
-		mController = controller;
-		mController->registerBindings();
+		mHierarchyContorller = std::make_shared<SceneHierarchyController>(scene->getRegistry());
+		mController = std::make_shared<PropertiesScreenController>(scene->getRegistry());
+		mContext = scene;
+		mHierarchyPanel = SceneHierarchyPanel(scene, mHierarchyContorller);
 	}
 
 	ImGuiMenu::ImGuiMenu()
 	{
-		
 	}
 
 	void ImGuiMenu::drawPositionProps() {

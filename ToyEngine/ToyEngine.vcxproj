@@ -21,8 +21,10 @@
   <ItemGroup>
     <ClCompile Include="a.cpp" />
     <ClCompile Include="Engine\Scene.cpp" />
+    <ClCompile Include="UI\Controller\SceneHierarchyController.cpp" />
     <ClCompile Include="UI\Controller\Controller.cpp" />
     <ClCompile Include="UI\Controller\PropertiesScreenController.cpp" />
+    <ClCompile Include="UI\Model\SceneHierarchyModel.cpp" />
     <ClCompile Include="UI\Model\ScreenModel.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="UI\ImGUI\imgui.cpp" />
@@ -43,6 +45,7 @@
     <ClCompile Include="Renderer\RenderSystem.cpp" />
     <ClCompile Include="Renderer\Shader.cpp" />
     <ClCompile Include="Renderer\Resource\Texture.cpp" />
+    <ClCompile Include="UI\View\SceneHierarchyPanel.cpp" />
     <Text Include="Shaders\FragmentShader.glsl">
       <FileType>Document</FileType>
     </Text>
@@ -53,6 +56,8 @@
     <ClInclude Include="include\Engine\Component.h" />
     <ClInclude Include="include\Engine\Scene.h" />
     <ClInclude Include="include\UI\Controller\Controller.h" />
+    <ClInclude Include="include\UI\Controller\SceneHierarchyController.h" />
+    <ClInclude Include="include\UI\Model\SceneHierarchyModel.h" />
     <ClInclude Include="include\UI\View\FileExplorer.h" />
     <ClInclude Include="include\UI\View\ImGuiMenu.h" />
     <ClInclude Include="include\imconfig.h" />
@@ -358,6 +363,7 @@
     <ClInclude Include="include\UI\Model\PropertiesScreenModel.h" />
     <ClInclude Include="include\UI\Model\ScreenModel.h" />
     <ClInclude Include="include\UI\Controller\PropertiesScreenController.h" />
+    <ClInclude Include="include\UI\View\SceneHierarchyPanel.h" />
     <ClInclude Include="submodule\FileExplorer\imfilebrowser.h" />
   </ItemGroup>
   <ItemGroup>

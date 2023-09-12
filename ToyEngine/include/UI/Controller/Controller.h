@@ -57,6 +57,7 @@ namespace ui
 		void bindInt(std::string, std::function<int()>getter, std::function<void(int)>setter);
 		void bindVec3(std::string, std::function<glm::vec3()>getter, std::function<void(glm::vec3)>setter);
 		void bindButtonInteractHandler(std::string, std::function<void(ButtonEventData)>);
+
 		virtual void registerBindings() = 0;
 
 

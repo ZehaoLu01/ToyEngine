@@ -1,3 +1,7 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
+
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -23,7 +27,7 @@
 #include <Renderer/Line.h>
 #include <UI/Controller/PropertiesScreenController.h>
 
-#define SELF_ROTATION 1
+#define SELF_ROTATION 0
 
 namespace ToyEngine {
 	RenderSystem RenderSystem::instance = RenderSystem();
@@ -128,6 +132,14 @@ namespace ToyEngine {
 		glActiveTexture(GL_TEXTURE0);
 
 		auto model = glm::mat4(1.0f);
+
+		glm::vec3 worldPos;
+		glm::vec3 rotation;
+		glm::vec3 scale;
+		if (transform.isReference&&transform.referencedTransform) {
+			worldPos = transform.referencedTransform->worldPos;
+		}
+
 		if (SELF_ROTATION) {
 			// rotation need to be improved
 			auto model_rotate = glm::rotate(model, (float)glfwGetTime() * glm::radians(40.0f), glm::vec3(0.5f, 1.0f, 0.0f));
@@ -202,7 +214,7 @@ namespace ToyEngine {
 	}
 
 	// Setup active shader, camera, window.
-	void RenderSystem::init(WindowPtr window, std::shared_ptr<Camera> camera, entt::registry& registry) {
+	void RenderSystem::init(WindowPtr window, std::shared_ptr<Camera> camera, std::shared_ptr<MyScene> scene) {
 		mWindow = window;
 		mCamera = camera;
 		glEnable(GL_DEPTH_TEST);
@@ -226,8 +238,8 @@ namespace ToyEngine {
 
 		//ImGui
 		setupImGUI();
-		auto controller = std::make_shared<ui::PropertiesScreenController>(registry);
-		ui::ImGuiMenu::getInstance().setController(controller);
+		auto propertiesScreenController = std::make_shared<ui::PropertiesScreenController>(scene->getRegistry());
+		ui::ImGuiMenu::getInstance().setupControllers(scene);
 	}
 
 	void RenderSystem::setupImGUI()
@@ -245,7 +257,7 @@ namespace ToyEngine {
 		ImGui_ImplOpenGL3_Init("#version 130");
 	}
 
-	entt::entity RenderSystem::loadModel(std::string path, entt::registry& registry, entt::entity parent)
+	entt::entity RenderSystem::loadModel(std::string path, entt::registry& registry, entt::entity parent, const TransformComponent& transform)
 	{
 		Assimp::Importer import;
 		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -259,10 +271,14 @@ namespace ToyEngine {
 		mDirectory = path.substr(0, path.find_last_of('/'));
 
 		entt::entity entity = registry.create();
-		auto child = processNode(scene->mRootNode, scene, registry, entity);
+
+		auto& newTrasnform = registry.emplace<TransformComponent>(entity, transform);
+
+		auto child = processNode(scene->mRootNode, scene, registry, entity, newTrasnform);
 		//TODO: PRE, NEXT
-		registry.emplace<RelationComponent>(entity, parent, std::make_shared<std::vector<entt::entity>>());
-		registry.get<RelationComponent>(entity).children->push_back(child);
+		auto& relation = registry.emplace<RelationComponent>(entity, parent, std::make_shared<std::vector<entt::entity>>());
+		registry.emplace<TagComponent>(entity, "test");
+		relation.children->push_back(child);
 		return entity;
 	}
 
@@ -278,12 +294,13 @@ namespace ToyEngine {
 		prev = curr;
 	}
 
-	entt::entity RenderSystem::processNode(aiNode* node, const aiScene* scene, entt::registry& registry, entt::entity parent)
+	entt::entity RenderSystem::processNode(aiNode* node, const aiScene* scene, entt::registry& registry, entt::entity parent, const TransformComponent& parentTransform)
 	{
 		entt::entity entity = registry.create();
 		std::shared_ptr<std::vector<Vertex>> verticesPtr;
 		std::shared_ptr<std::vector<unsigned int>> indicesPtr;
-		auto relation = registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());
+		auto& relation = registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());
+		auto& transform = registry.emplace<TransformComponent>(entity, parentTransform);
 
 		entt::entity prev = entt::null;
 
@@ -292,7 +309,7 @@ namespace ToyEngine {
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
-			auto child = processMesh(mesh, scene, registry, entity);
+			auto child = processMesh(mesh, scene, registry, entity, transform);
 
 			bindSiblings(registry, child, prev);
 
@@ -303,7 +320,7 @@ namespace ToyEngine {
 		// then do the same for each of its children
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
-			auto child = processNode(node->mChildren[i], scene, registry, entity);
+			auto child = processNode(node->mChildren[i], scene, registry, entity, transform);
 
 			bindSiblings(registry, child, prev);
 
@@ -313,7 +330,7 @@ namespace ToyEngine {
 		return entity;
 	}
 
-	entt::entity RenderSystem::processMesh(aiMesh* mesh, const aiScene* scene, entt::registry& registry, entt::entity parent)
+	entt::entity RenderSystem::processMesh(aiMesh* mesh, const aiScene* scene, entt::registry& registry, entt::entity parent, const TransformComponent& parentTransform)
 	{
 		entt::entity entity =  registry.create();
 
@@ -386,7 +403,7 @@ namespace ToyEngine {
 		shaderPtr->setUniform("kSpecular", 1.0f);
 		shaderPtr->setUniform("shininess", 10.0f);
 
-		registry.emplace<TransformComponent>(entity, glm::vec3{ 0.,0.,0. }, glm::vec3{ 0., 0., 0. }, glm::vec3{1.,1.,1.});
+		registry.emplace<TransformComponent>(entity, parentTransform);
 		registry.emplace<MeshComponent>(entity, verticesPtr,indicesPtr,shaderPtr, hasNormal, hasTexture);
 		registry.emplace<TextureComponent>(entity, textures);
 		registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());

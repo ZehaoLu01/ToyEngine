@@ -12,13 +12,16 @@ namespace ToyEngine {
 			void init();
 
 			void update();
-			MyScene():mRootEntity(entt::null) {
-				mRootEntity = mRegistry.create();
-			};
+			MyScene() = default;
+
+			entt::registry& getRegistry() {
+				return mRegistry;
+			}
+
 		private:
 			entt::registry mRegistry;
 
-			entt::entity mRootEntity;
+			std::vector<entt::entity> mEntityList;
 
 			std::shared_ptr<Camera> mCamera;
 
