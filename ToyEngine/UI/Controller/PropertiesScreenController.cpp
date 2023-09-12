@@ -1,7 +1,7 @@
 #include "UI/Controller/PropertiesScreenController.h"
 
 namespace ui {
-	PropertiesScreenController::PropertiesScreenController(entt::registry& registry): mRegistry(registry)
+	PropertiesScreenController::PropertiesScreenController(entt::registry& registry) : mRegistry(registry)
 	{
 		mPropertiesScreenModel = std::make_shared<PropertiesScreenModel>(registry);
 	}

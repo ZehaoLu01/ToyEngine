@@ -24,12 +24,7 @@ namespace ui
 
 		void renderObjectPropertyMenu();
 
-		static ImGuiMenu& getInstance()
-		{
-			static ImGuiMenu instance; // Guaranteed to be destroyed.
-			// Instantiated on first use.
-			return instance;
-		}
+		static ImGuiMenu& getInstance();
 
 		void setController(std::shared_ptr<PropertiesScreenController> controller);
 

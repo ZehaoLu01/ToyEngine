@@ -20,12 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="a.cpp" />
+    <ClCompile Include="Engine\Scene.cpp" />
     <ClCompile Include="UI\Controller\Controller.cpp" />
     <ClCompile Include="UI\Controller\PropertiesScreenController.cpp" />
     <ClCompile Include="UI\Model\ScreenModel.cpp" />
-    <ClCompile Include="Engine\Component.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
-    <ClCompile Include="Engine\GameObject.cpp" />
     <ClCompile Include="UI\ImGUI\imgui.cpp" />
     <ClCompile Include="UI\ImGUI\imgui_demo.cpp" />
     <ClCompile Include="UI\ImGUI\imgui_draw.cpp" />
@@ -38,7 +37,6 @@
     <ClCompile Include="UI\View\ImGuiMenu.cpp" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
     <ClCompile Include="Renderer\Camera.cpp" />
-    <ClCompile Include="Renderer\RenderComponent.cpp" />
     <ClCompile Include="Renderer\Resource\ImageLoader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="glad.c" />
@@ -52,6 +50,8 @@
     <ClCompile Include="Renderer\Resource\STB_image_implementation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Engine\Component.h" />
+    <ClInclude Include="include\Engine\Scene.h" />
     <ClInclude Include="include\UI\Controller\Controller.h" />
     <ClInclude Include="include\UI\View\FileExplorer.h" />
     <ClInclude Include="include\UI\View\ImGuiMenu.h" />
@@ -65,8 +65,6 @@
     <ClInclude Include="include\imstb_textedit.h" />
     <ClInclude Include="include\imstb_truetype.h" />
     <ClInclude Include="include\Renderer\Camera.h" />
-    <ClInclude Include="include\Engine\Component.h" />
-    <ClInclude Include="include\Engine\GameObject.h" />
     <ClInclude Include="include\glm\common.hpp" />
     <ClInclude Include="include\glm\detail\compute_common.hpp" />
     <ClInclude Include="include\glm\detail\compute_vector_relational.hpp" />
@@ -352,7 +350,6 @@
     <ClInclude Include="include\Renderer\Line.h" />
     <ClInclude Include="include\Resource\ImageLoader.h" />
     <ClInclude Include="include\Resource\stb_image.h" />
-    <ClInclude Include="include\Renderer\RenderComponent.h" />
     <ClInclude Include="include\Engine\Engine.h" />
     <ClInclude Include="include\Renderer\RenderSystem.h" />
     <ClInclude Include="include\Renderer\Shader.h" />

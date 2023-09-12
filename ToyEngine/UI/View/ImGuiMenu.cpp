@@ -101,6 +101,13 @@ namespace ui{
 		ImGui::End();
 	}
 
+	ImGuiMenu& ImGuiMenu::getInstance()
+	{
+		static ImGuiMenu instance; // Guaranteed to be destroyed.
+		// Instantiated on first use.
+		return instance;
+	}
+
 	void ImGuiMenu::setController(std::shared_ptr<PropertiesScreenController> controller)
 	{
 		mController = controller;
@@ -109,7 +116,7 @@ namespace ui{
 
 	ImGuiMenu::ImGuiMenu()
 	{
-		mController = std::make_shared<ui::PropertiesScreenController>();
+		
 	}
 
 	void ImGuiMenu::drawPositionProps() {
