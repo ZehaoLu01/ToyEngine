@@ -27,7 +27,12 @@ void ToyEngine::MyScene::update()
 
 void ToyEngine::MyScene::init()
 {
+	TransformComponent transform;
+
+	entt::entity entity = mRegistry.create();
+
 	// TODO: should remove this. This is for testing. The model is only for testing for now.
-	mRootEntity = RenderSystem::instance.loadModel("C:/repo/ToyEngine/ToyEngine/Resources/model/backpack.obj", mRegistry, mRootEntity );
+	auto created = RenderSystem::instance.loadModel("C:/repo/ToyEngine/ToyEngine/Resources/model/backpack.obj", mRegistry, entity, transform);
+	mEntityList.push_back(created);
 }
 

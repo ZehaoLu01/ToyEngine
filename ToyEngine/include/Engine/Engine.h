@@ -32,7 +32,7 @@ namespace ToyEngine {
 	private:
 		float lastFrameTime = 0;
 		WindowPtr mWindow;
-		ToyEngine::MyScene mActiveScene;
+		std::shared_ptr<ToyEngine::MyScene> mActiveScene;
 
 		void procesKeyboardEvent(GLFWwindow* window, int key, int buttonState, std::function<void()> callback);
 

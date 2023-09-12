@@ -38,7 +38,7 @@ namespace ToyEngine{
         
 		//Render Tick
 
-        mActiveScene.update();
+        mActiveScene->update();
 	}
 
 	void MyEngine::init() {
@@ -48,10 +48,12 @@ namespace ToyEngine{
         glfwSetCursorPosCallback(mWindow.get(), cursorMoveCallback);
 
 		mMainCameraPtr = std::make_shared<Camera>(glm::vec3(0.0f, 10.0f, 10.0f));
+        
+        mActiveScene = std::make_shared<MyScene>();
+        mActiveScene->init();
 
-		RenderSystem::instance.init(mWindow, mMainCameraPtr, mRegistry);
+		RenderSystem::instance.init(mWindow, mMainCameraPtr, mActiveScene);
 
-        mActiveScene.init();
 
         glfwSetInputMode(mWindow.get(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
        
