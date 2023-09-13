@@ -257,7 +257,7 @@ namespace ToyEngine {
 		ImGui_ImplOpenGL3_Init("#version 130");
 	}
 
-	entt::entity RenderSystem::loadModel(std::string path, std::string modelName, entt::registry& registry, entt::entity parent, const TransformComponent& transform)
+	entt::entity RenderSystem::loadModel(std::string path, std::string modelName, entt::registry& registry, entt::entity parent, const TransformComponent transform)
 	{
 		Assimp::Importer import;
 		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);

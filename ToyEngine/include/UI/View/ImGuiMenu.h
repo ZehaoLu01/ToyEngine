@@ -50,11 +50,12 @@ namespace ui
 
 		std::shared_ptr<PropertiesScreenController> mController;
 		std::shared_ptr<SceneHierarchyController> mHierarchyContorller;
+		std::shared_ptr<FileExplorerController> mFileExplorerController;
 
-		std::shared_ptr<ImGui::FileBrowser> mFileBrowser = std::make_shared<ImGui::FileBrowser>();
-		std::shared_ptr<FileExplorer> mFileExplorer = std::make_shared<FileExplorer>();
-		std::shared_ptr<ToyEngine::MyScene> mContext;
+		std::shared_ptr<ImGui::FileBrowser> mFileBrowser;
+		FileExplorer mFileExplorer;
 		SceneHierarchyPanel mHierarchyPanel;
+		std::shared_ptr<ToyEngine::MyScene> mContext;
 		std::vector<Controller> mScreenControllers;
 	};
 

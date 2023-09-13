@@ -3,6 +3,10 @@
 #include <sstream>
 
 namespace ui {
+    void Controller::init()
+    {
+        registerBindings();
+    }
     bool Controller::getBool(const std::string& bindingName)
     {
         if (mBoolBinding[bindingName].getter) {
@@ -95,7 +99,7 @@ namespace ui {
         mVec3Binding[bindingName] = { getter,setter };
     }
 
-    void Controller::bindButtonInteractHandler(std::string bindingName, std::function<void(ButtonEventData)> callback)
+    void Controller::bindButtonInteractHandler(std::string bindingName, std::function<void(ViewEvent)> callback)
     {
         auto iter = mButtonBinding.find(bindingName);
         if (iter != mButtonBinding.end()) {
@@ -175,7 +179,11 @@ namespace ui {
 
     void Controller::handleButtonEvent(const ViewEvent& event)
     {
+        if (mButtonBinding.find(event.name) == mButtonBinding.end()) {
+            return;
+        }
 
+        mButtonBinding[event.name](event);
     }
 
     //required pattern: x,y,z
@@ -205,5 +213,7 @@ namespace ui {
     void Controller::tick() {
         handleViewEvents();
     }
+
+
 }
 

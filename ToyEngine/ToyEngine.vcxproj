@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="a.cpp" />
     <ClCompile Include="Engine\Scene.cpp" />
+    <ClCompile Include="UI\Controller\FileExplorerController.cpp" />
     <ClCompile Include="UI\Controller\SceneHierarchyController.cpp" />
     <ClCompile Include="UI\Controller\Controller.cpp" />
     <ClCompile Include="UI\Controller\PropertiesScreenController.cpp" />
@@ -53,6 +54,7 @@
     <ClCompile Include="Renderer\Resource\STB_image_implementation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\UI\Controller\FileExplorerController.h" />
     <ClInclude Include="include\Engine\Component.h" />
     <ClInclude Include="include\Engine\Scene.h" />
     <ClInclude Include="include\UI\Controller\Controller.h" />

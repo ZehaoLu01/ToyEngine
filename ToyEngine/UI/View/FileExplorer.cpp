@@ -1,7 +1,8 @@
 #include "UI/View/FileExplorer.h"
 
 namespace ui {
-	FileExplorer::FileExplorer() {
+	FileExplorer::FileExplorer(std::shared_ptr<FileExplorerController> controller, std::shared_ptr<ToyEngine::MyScene>scene):mScene(scene),mController(controller)
+	{
 		int width = 0;
 		int height = 0;
 		int channel = 0;
@@ -11,6 +12,7 @@ namespace ui {
 		auto folderThumbnail = ToyEngine::StbImageLoader::getImageFrom("folder.png", &width, &height, &channel);
 		mFolderThumbnailTexture = std::make_shared<ToyEngine::Texture>(folderThumbnail, width, height, GL_RGBA, GL_RGBA, 0, ToyEngine::TextureType::Diffuse);
 	}
+
 	void FileExplorer::render() {
 		ImGui::Begin("FileExplorer");
 		float widthAvail = ImGui::GetContentRegionAvail().x;
@@ -32,6 +34,14 @@ namespace ui {
 				//https://github.com/ocornut/imgui/issues/4216
 				ImGui::PushStyleColor(ImGuiCol_Button, FILE_BACKGROUND_COLOR);
 				if (ImageButton(i.path().string().c_str(), (void*)(intptr_t)index, { DEFAULT_THUMBNAIL_WIDTH ,DEFAULT_THUMBNAIL_WIDTH }, { 0, 1 }, { 1, 0 }, { 1.0f, 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f })) {
+					ViewEvent event(mScene->getRegistry());
+
+					//TODO: query name from user
+					event.name = "onModelFileButtonDown";
+					event.value = "testtesttest";
+					event.path = i.path().string();
+					event.viewEventType = ViewEventType::ButtonEvent;
+					mController->addViewEvent(event);
 				}
 				ImGui::Text(i.path().filename().string().c_str());
 				ImGui::PopStyleColor();

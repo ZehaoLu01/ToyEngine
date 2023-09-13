@@ -52,7 +52,11 @@ namespace ui{
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+
+		// TODO: use parent class (Controller)
 		mController->tick();
+		mHierarchyContorller->tick();
+		mFileExplorerController->tick();
 	}
 
 	void ImGuiMenu::renderHierarchyMenu()
@@ -62,13 +66,9 @@ namespace ui{
 
 	void ImGuiMenu::renderLoggingMenu()
 	{
-		//mFileBrowser->Open();
-
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
-		mFileBrowser->Display();
-
-		mFileExplorer->render();
+		mFileExplorer.render();
 	}
 
 	void ImGuiMenu::renderObjectPropertyMenu()
@@ -102,8 +102,16 @@ namespace ui{
 	{
 		mHierarchyContorller = std::make_shared<SceneHierarchyController>(scene->getRegistry());
 		mController = std::make_shared<PropertiesScreenController>(scene->getRegistry());
+		mFileExplorerController = std::make_shared<FileExplorerController>(scene->getRegistry());
+
+		mHierarchyContorller->init();
+		mController->init();
+		mFileExplorerController->init();
+
 		mContext = scene;
+
 		mHierarchyPanel = SceneHierarchyPanel(scene, mHierarchyContorller);
+		mFileExplorer = FileExplorer(mFileExplorerController, scene);
 	}
 
 	ImGuiMenu::ImGuiMenu()
@@ -133,8 +141,14 @@ namespace ui{
 
 			ImGui::EndTable();
 
+			ViewEvent event(mContext->getRegistry());
+			event.viewEventType = ViewEventType::InputEvent;
+			event.name = "properties.position";
+			event.valueType = BindingValueType::Vec3;
+			event.value = getVec3String(newPositionVal);
+
 			if (oldPositionVal != newPositionVal) {
-				mController->addViewEvent({ ViewEventType::InputEvent,"properties.position",BindingValueType::Vec3, getVec3String(newPositionVal) });
+				mController->addViewEvent(event);
 			}
 		}
 	}
@@ -164,8 +178,14 @@ namespace ui{
 
 			ImGui::EndTable();
 
+			ViewEvent event(mContext->getRegistry());
+			event.viewEventType = ViewEventType::InputEvent;
+			event.name = "properties.rotation";
+			event.valueType = BindingValueType::Vec3;
+			event.value = getVec3String(newRotationVal);
+
 			if (oldRotationVal != newRotationVal) {
-				mController->addViewEvent({ ViewEventType::InputEvent,"properties.rotation",BindingValueType::Vec3, getVec3String(newRotationVal) });
+				mController->addViewEvent(event);
 			}
 		}
 	}
@@ -193,8 +213,16 @@ namespace ui{
 
 			ImGui::EndTable();
 
+
+			ViewEvent event(mContext->getRegistry());
+			event.viewEventType = ViewEventType::InputEvent;
+			event.name = "properties.scale";
+			event.valueType = BindingValueType::Vec3;
+			event.value = getVec3String(newScaleVal);
+
+
 			if (oldScaleVal != newScaleVal) {
-				mController->addViewEvent({ ViewEventType::InputEvent,"properties.scale",BindingValueType::Vec3, getVec3String(newScaleVal) });
+				mController->addViewEvent(event);
 			}
 		}
 	}

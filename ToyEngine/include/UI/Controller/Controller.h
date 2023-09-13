@@ -5,9 +5,10 @@
 #include <glm/fwd.hpp>
 #include <unordered_map>
 #include <queue>
+#include <entt/entity/fwd.hpp>
 
 #define Binding(type) std::unordered_map<std::string, AccessBindings<type>>
-#define ButtonBinding std::unordered_map<std::string, std::function<void(ButtonEventData)>>
+#define ButtonBinding std::unordered_map<std::string, std::function<void(ui::ViewEvent)>>
 
 namespace ui
 {
@@ -29,7 +30,7 @@ namespace ui
 	};
 
 	struct ButtonEventData {
-
+		std::string path;
 	};
 
 	struct ViewEvent {
@@ -38,11 +39,24 @@ namespace ui
 		std::string name;
 		BindingValueType valueType;
 		std::string value;
+
+		std::string path;
+		std::string modelName;
+		entt::registry& registry;
+		
+		ViewEvent() = default;
+		ViewEvent(entt::registry& registry) :registry(registry) {};
+
 	};
 
 	class Controller
 	{
 	public:
+
+		Controller() = default;
+
+		void init();
+
 		bool getBool(const std::string& bindingName);
 		float getFloat(const std::string& bindingName);
 		glm::vec3 getVec(const std::string& bindingName);
@@ -56,7 +70,8 @@ namespace ui
 		void bindFloat(std::string, std::function<float()>getter, std::function<void(float)>setter);
 		void bindInt(std::string, std::function<int()>getter, std::function<void(int)>setter);
 		void bindVec3(std::string, std::function<glm::vec3()>getter, std::function<void(glm::vec3)>setter);
-		void bindButtonInteractHandler(std::string, std::function<void(ButtonEventData)>);
+		void bindButtonInteractHandler(std::string bindingName, std::function<void(ViewEvent)> callback);
+
 
 		virtual void registerBindings() = 0;
 
