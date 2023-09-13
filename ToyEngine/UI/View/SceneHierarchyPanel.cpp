@@ -21,6 +21,7 @@ namespace ui {
 				if (ImGui::IsItemClicked())
 				{
 					mSelectionContext = entity;
+					mSelectEntityCallback(entity);
 				}
 
 				bool entityDeleted = false;
@@ -53,5 +54,8 @@ namespace ui {
 				mSelectionContext = entt::null;
 		}
 		ImGui::End();
+	}
+	void SceneHierarchyPanel::setOnSelectCallBack(std::function<void(entt::entity)>)
+	{
 	}
 }

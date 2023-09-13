@@ -56,7 +56,7 @@ namespace ui
 		FileExplorer mFileExplorer;
 		SceneHierarchyPanel mHierarchyPanel;
 		std::shared_ptr<ToyEngine::MyScene> mContext;
-		std::vector<Controller> mScreenControllers;
+		std::vector<std::shared_ptr<Controller>> mScreenControllers;
 	};
 
 }

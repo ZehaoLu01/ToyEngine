@@ -4,7 +4,7 @@
 #include <UI/Model/PropertiesScreenModel.h>
 
 namespace ui {
-	class PropertiesScreenController: public Controller, public std::enable_shared_from_this<PropertiesScreenController>
+	class PropertiesScreenController: public Controller
 	{
 	public:
 		PropertiesScreenController(entt::registry& registry);
@@ -12,6 +12,9 @@ namespace ui {
 		virtual void registerBindings() override;
 
 	private:
+		virtual void onSelectionChange(entt::entity) override;
+
+		
 		std::shared_ptr<ui::PropertiesScreenModel> mPropertiesScreenModel;
 	
 		entt::registry& mRegistry;

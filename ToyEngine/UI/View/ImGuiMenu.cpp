@@ -1,4 +1,5 @@
 #include "UI/View/ImGuiMenu.h"
+#include <glm/gtx/string_cast.hpp>
 
 namespace ui{
 	void ImGuiMenu::tick()
@@ -104,13 +105,26 @@ namespace ui{
 		mController = std::make_shared<PropertiesScreenController>(scene->getRegistry());
 		mFileExplorerController = std::make_shared<FileExplorerController>(scene->getRegistry());
 
-		mHierarchyContorller->init();
-		mController->init();
-		mFileExplorerController->init();
+		mScreenControllers = std::vector<std::shared_ptr<Controller>>({mHierarchyContorller,mController,mFileExplorerController});
+
+		for (auto controller : mScreenControllers) {
+			controller->init();
+		}
 
 		mContext = scene;
 
-		mHierarchyPanel = SceneHierarchyPanel(scene, mHierarchyContorller);
+		mHierarchyPanel = SceneHierarchyPanel(scene, mHierarchyContorller, [](entt::entity entity) {
+
+				ViewEvent event(ImGuiMenu::getInstance().mContext->getRegistry());
+				event.viewEventType = ViewEventType::ButtonEvent;
+				event.name = "changeSelectionButtonDown";
+				event.value = std::to_string((uint32_t)entity);
+
+				for (auto controller : ImGuiMenu::getInstance().mScreenControllers) {
+					controller->addViewEvent(event);
+				}
+			}
+		);
 		mFileExplorer = FileExplorer(mFileExplorerController, scene);
 	}
 

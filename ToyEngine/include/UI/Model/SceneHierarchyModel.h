@@ -10,7 +10,7 @@
 #include <Engine/Component.h>
 
 namespace ui {
-	class SceneHierarchyModel : public ScreenModel, public std::enable_shared_from_this<SceneHierarchyModel> {
+	class SceneHierarchyModel : public ScreenModel{
 
 	public:
 		SceneHierarchyModel(entt::registry& registry);
@@ -58,11 +58,6 @@ namespace ui {
 
 			return mTags;
 		}
-		
-
-		void setSelectedEntity(const std::vector<entt::entity>& input) {
-			mSelectedEntity = std::vector<entt::entity>(input.begin(), input.end());
-		}
 
 	private:
 		void updateDictAndTags() {
@@ -80,7 +75,6 @@ namespace ui {
 
 		entt::registry& mRegistry;
 
-		std::vector<entt::entity> mSelectedEntity;
 		std::vector<std::string> mTags;
 		std::unordered_map<std::string, entt::entity> mTagToEntityDict;
 	};

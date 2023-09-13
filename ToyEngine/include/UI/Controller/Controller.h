@@ -49,7 +49,7 @@ namespace ui
 
 	};
 
-	class Controller
+	class Controller:public std::enable_shared_from_this<Controller>
 	{
 	public:
 
@@ -72,9 +72,9 @@ namespace ui
 		void bindVec3(std::string, std::function<glm::vec3()>getter, std::function<void(glm::vec3)>setter);
 		void bindButtonInteractHandler(std::string bindingName, std::function<void(ViewEvent)> callback);
 
-
 		virtual void registerBindings() = 0;
 
+		virtual void onSelectionChange(entt::entity) = 0;
 
 		void handleViewEvents();
 		virtual void handleInputEvent(const ViewEvent& event);

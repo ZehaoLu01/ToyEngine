@@ -7,11 +7,13 @@ namespace ui {
 	}
 	void FileExplorerController::registerBindings()
 	{
-		auto weakThis = weak_from_this();
-
-		bindButtonInteractHandler("onModelFileButtonDown", [weakThis](const ViewEvent& event) {
+		bindButtonInteractHandler("onModelFileButtonDown", [](const ViewEvent& event) {
 			ToyEngine::RenderSystem::instance.loadModel(event.path, event.value, event.registry);
 		});
 
+	}
+	void FileExplorerController::onSelectionChange(entt::entity entity)
+	{
+		
 	}
 }

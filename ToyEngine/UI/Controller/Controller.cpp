@@ -1,12 +1,19 @@
 #include "UI/Controller/Controller.h"
 #include <iostream>
 #include <sstream>
-
+#include <string>
 namespace ui {
     void Controller::init()
     {
         registerBindings();
+        auto weakThis = weak_from_this();
+        bindButtonInteractHandler("changeSelectionButtonDown", [weakThis](ViewEvent event) {
+            if (auto sharedThis = weakThis.lock()) {
+                sharedThis->onSelectionChange((entt::entity)std::stoi(event.value));
+            }
+        });
     }
+
     bool Controller::getBool(const std::string& bindingName)
     {
         if (mBoolBinding[bindingName].getter) {

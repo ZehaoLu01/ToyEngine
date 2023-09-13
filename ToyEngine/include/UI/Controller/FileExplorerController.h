@@ -4,12 +4,14 @@
 #include <entt/entt.hpp>
 
 namespace ui {
-	class FileExplorerController : public Controller, public std::enable_shared_from_this<FileExplorerController>
+	class FileExplorerController : public Controller
 	{
 	public:
 		FileExplorerController(entt::registry& registry);
 
 		virtual void registerBindings() override;
+
+		virtual void onSelectionChange(entt::entity entity) override;
 
 	private:
 

@@ -4,7 +4,7 @@
 #include <UI/Model/SceneHierarchyModel.h>
 
 namespace ui {
-	class SceneHierarchyController : public Controller, public std::enable_shared_from_this<SceneHierarchyController>
+	class SceneHierarchyController : public Controller
 	{
 	public:
 		SceneHierarchyController(entt::registry& registry);
@@ -14,6 +14,8 @@ namespace ui {
 		};
 
 		std::vector<std::string> getTagNames();
+
+		virtual void onSelectionChange(entt::entity) override;
 
 	private:
 		std::shared_ptr<ui::SceneHierarchyModel> mSceneHierarchyModel;

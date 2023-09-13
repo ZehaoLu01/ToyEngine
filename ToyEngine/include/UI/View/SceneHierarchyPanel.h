@@ -19,6 +19,9 @@ namespace ui {
 			SceneHierarchyPanel(std::shared_ptr<ToyEngine::MyScene> context, std::shared_ptr<SceneHierarchyController> controller):mController(controller) {
 				SetContext(context);
 			}
+			SceneHierarchyPanel(std::shared_ptr<ToyEngine::MyScene> context, std::shared_ptr<SceneHierarchyController> controller, std::function<void(entt::entity)> onSelect) :SceneHierarchyPanel(context,controller){
+				mSelectEntityCallback = onSelect;
+			}
 
 
 			void tick();
@@ -28,6 +31,9 @@ namespace ui {
 			void SetSelectedEntity(entt::entity entity) {
 				mSelectionContext = entity;
 			}
+
+			void setOnSelectCallBack(std::function<void(entt::entity)>);
+
 		private:
 			void SetContext(const std::shared_ptr<ToyEngine::MyScene> scene) {
 					mScene = scene;
@@ -37,5 +43,6 @@ namespace ui {
 			entt::entity mSelectionContext=entt::null;
 			std::shared_ptr<ToyEngine::MyScene> mScene;
 			std::shared_ptr<SceneHierarchyController> mController;
+			std::function<void(entt::entity)> mSelectEntityCallback;
 	};
 }
