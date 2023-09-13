@@ -43,6 +43,8 @@ namespace ui
 		std::string path;
 		std::string modelName;
 		entt::registry& registry;
+
+		entt::entity parentEntity;
 		
 		ViewEvent() = default;
 		ViewEvent(entt::registry& registry) :registry(registry) {};

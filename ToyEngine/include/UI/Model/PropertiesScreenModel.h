@@ -15,7 +15,7 @@ namespace ui {
 
 		glm::vec3 getPosition() {
 			if (mSelectedEntity!=entt::null) {
-				return mRegistry.get<ToyEngine::TransformComponent>(mSelectedEntity).worldPos;
+				return mRegistry.get<ToyEngine::TransformComponent>(mSelectedEntity).localPos;
 			}
 			return glm::vec3();
 		}
@@ -35,22 +35,22 @@ namespace ui {
 		}
 
 		void setPosition(glm::vec3 position) {
-			mRegistry.patch<ToyEngine::TransformComponent>(mSelectedEntity, [position](ToyEngine::TransformComponent& transform) {transform.worldPos = position; });
+			if (mSelectedEntity != entt::null) {
+				mRegistry.patch<ToyEngine::TransformComponent>(mSelectedEntity, [position](ToyEngine::TransformComponent& transform) {transform.localPos = position; });
+			}
 		}
 		void setRotation(glm::vec3 rotation) {
-			mRegistry.patch<ToyEngine::TransformComponent>(mSelectedEntity, [rotation](ToyEngine::TransformComponent& transform) {transform.rotation_eular = rotation; });
+			if (mSelectedEntity != entt::null) {
+				mRegistry.patch<ToyEngine::TransformComponent>(mSelectedEntity, [rotation](ToyEngine::TransformComponent& transform) {transform.rotation_eular = rotation; });
+			}
 		}
 		void setScale(glm::vec3 scale) {
-
-			mRegistry.patch<ToyEngine::TransformComponent>(mSelectedEntity, [scale](ToyEngine::TransformComponent& transform) {transform.scale = scale; });
-
+			if (mSelectedEntity != entt::null) {
+				mRegistry.patch<ToyEngine::TransformComponent>(mSelectedEntity, [scale](ToyEngine::TransformComponent& transform) {transform.scale = scale; });
+			}
 		}
 
 	private:
-		glm::vec3 mPosition;
-		glm::vec3 mRotation;
-		glm::vec3 mScale;
-
 		entt::registry& mRegistry;
 	};
 }

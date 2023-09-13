@@ -77,7 +77,7 @@ namespace ToyEngine {
 	};
 
 	struct TransformComponent {
-		glm::vec3 worldPos = glm::vec3(0.0f, 0.0f, 0.0f);
+		glm::vec3 localPos = glm::vec3(0.0f, 0.0f, 0.0f);
 		glm::vec3 rotation_eular = glm::vec3(0.0f, 0.0f, 0.0f);
 		glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -87,21 +87,45 @@ namespace ToyEngine {
 
         TransformComponent() = default;
         TransformComponent(glm::vec3 pos, glm::vec3 rotation, glm::vec3 scaleInput) :
-            worldPos(pos), rotation_eular(rotation), scale(scaleInput)
+            localPos(pos), rotation_eular(rotation), scale(scaleInput)
         {
         };
 
         // TODO: This may be error prone. Think about how to adjust this.
-        TransformComponent(const TransformComponent& other) {
+         void addParentTransform(const TransformComponent& other){
             isReference = true;
-
-            if (other.isReference&& other.referencedTransform !=nullptr) {
-                referencedTransform = other.referencedTransform;
-            }
-            else {
-                referencedTransform = &other;
-            }
+            referencedTransform = &other;
         };
+
+        glm::vec3 getWorldPos() const {
+            const TransformComponent* current = this;
+            glm::vec3 worldPos = localPos;
+            while (current->isReference) {
+                current = current->referencedTransform;
+                worldPos += current->localPos;
+            }
+            return worldPos;
+        }
+
+        glm::vec3 getWorldRotation() const{
+            const TransformComponent* current = this;
+            glm::vec3 worldRot = rotation_eular;
+            while (current->isReference) {
+                current = current->referencedTransform;
+                worldRot += current->rotation_eular;
+            }
+            return worldRot;
+        }
+
+        glm::vec3 getWorldScale() const{
+            const TransformComponent* current = this;
+            glm::vec3 worldScale = scale;
+            while (current->isReference) {
+                current = current->referencedTransform;
+                worldScale *= current->scale;
+            }
+            return worldScale;
+        }
 	};
 
     struct TextureComponent {
@@ -122,5 +146,7 @@ namespace ToyEngine {
 
     struct TagComponent {
         std::string name;
+        TagComponent() = default;
+        TagComponent(const std::string& input) : name(input) {};
     };
 }

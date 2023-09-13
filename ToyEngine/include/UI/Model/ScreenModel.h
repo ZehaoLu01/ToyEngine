@@ -4,13 +4,13 @@
 #include <functional>
 #include <string>
 #include <memory>
-#include <entt/entity/fwd.hpp>
+#include <entt/entt.hpp>
 namespace ui{
 
 	class ScreenModel
 	{
 	public:
-		entt::entity mSelectedEntity;
+		entt::entity mSelectedEntity=entt::null;
 
 		void setSelectedEntity(entt::entity entity) {
 			mSelectedEntity = entity;

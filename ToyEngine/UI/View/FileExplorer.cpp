@@ -41,6 +41,7 @@ namespace ui {
 					event.value = "testtesttest";
 					event.path = i.path().string();
 					event.viewEventType = ViewEventType::ButtonEvent;
+					event.parentEntity = mScene->getRootEntity();
 					mController->addViewEvent(event);
 				}
 				ImGui::Text(i.path().filename().string().c_str());

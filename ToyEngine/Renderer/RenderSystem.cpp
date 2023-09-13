@@ -133,26 +133,23 @@ namespace ToyEngine {
 
 		auto model = glm::mat4(1.0f);
 
-		glm::vec3 worldPos;
-		glm::vec3 rotation;
-		glm::vec3 scale;
-		if (transform.isReference&&transform.referencedTransform) {
-			worldPos = transform.referencedTransform->worldPos;
-		}
+		glm::vec3 worldPos = transform.getWorldPos();
+		glm::vec3 worldRot =  transform.getWorldRotation();
+		glm::vec3 worldScale = transform.getWorldScale();
 
 		if (SELF_ROTATION) {
 			// rotation need to be improved
 			auto model_rotate = glm::rotate(model, (float)glfwGetTime() * glm::radians(40.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-			auto model_translate = glm::translate(model, transform.worldPos);
+			auto model_translate = glm::translate(model, worldPos);
 			model = model_translate * model_rotate;
 		}
 		else {
-			auto model_translate = glm::translate(model, transform.worldPos);
-			auto model_rotate = glm::rotate(glm::mat4(1.0f), glm::radians(transform.rotation_eular.x), glm::vec3(1.0f, 0.0f, 0.0f));
-			model_rotate = glm::rotate(model_rotate, glm::radians(transform.rotation_eular.y), glm::vec3(0.0f, 1.0f, 0.0f));
-			model_rotate = glm::rotate(model_rotate, glm::radians(transform.rotation_eular.z), glm::vec3(0.0f, 0.0f, 1.0f));
+			auto model_translate = glm::translate(model, worldPos);
+			auto model_rotate = glm::rotate(glm::mat4(1.0f), glm::radians(worldRot.x), glm::vec3(1.0f, 0.0f, 0.0f));
+			model_rotate = glm::rotate(model_rotate, glm::radians(worldRot.y), glm::vec3(0.0f, 1.0f, 0.0f));
+			model_rotate = glm::rotate(model_rotate, glm::radians(worldRot.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
-			model = glm::scale(model_translate * model_rotate, transform.scale);
+			model = glm::scale(model_translate * model_rotate, worldScale);
 		}
 		mesh.shader->setUniform("model", model);
 
@@ -257,7 +254,7 @@ namespace ToyEngine {
 		ImGui_ImplOpenGL3_Init("#version 130");
 	}
 
-	entt::entity RenderSystem::loadModel(std::string path, std::string modelName, entt::registry& registry, entt::entity parent, const TransformComponent transform)
+	entt::entity RenderSystem::loadModel(std::string path, std::string modelName, entt::registry& registry, entt::entity parent)
 	{
 		Assimp::Importer import;
 		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -272,9 +269,11 @@ namespace ToyEngine {
 
 		entt::entity entity = registry.create();
 
-		auto& newTrasnform = registry.emplace<TransformComponent>(entity, transform);
+		auto& parentTransform = registry.get<TransformComponent>(parent);
+		auto& newTrasnform = registry.emplace<TransformComponent>(entity);
+		newTrasnform.addParentTransform(parentTransform);
 
-		auto child = processNode(scene->mRootNode, scene, registry, entity, newTrasnform);
+		auto child = processNode(scene->mRootNode, scene, registry, entity);
 		//TODO: PRE, NEXT
 		auto& relation = registry.emplace<RelationComponent>(entity, parent, std::make_shared<std::vector<entt::entity>>());
 		if (modelName.size() == 0) {
@@ -299,13 +298,19 @@ namespace ToyEngine {
 		prev = curr;
 	}
 
-	entt::entity RenderSystem::processNode(aiNode* node, const aiScene* scene, entt::registry& registry, entt::entity parent, const TransformComponent& parentTransform)
+	entt::entity RenderSystem::processNode(aiNode* node, const aiScene* scene, entt::registry& registry, entt::entity parent)
 	{
+		auto& parentTransform = registry.get<TransformComponent>(parent);
+
 		entt::entity entity = registry.create();
+		
 		std::shared_ptr<std::vector<Vertex>> verticesPtr;
 		std::shared_ptr<std::vector<unsigned int>> indicesPtr;
 		auto& relation = registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());
-		auto& transform = registry.emplace<TransformComponent>(entity, parentTransform);
+		auto& tag = registry.emplace<TagComponent>(entity, std::string(node->mName.C_Str()));
+		auto& transform = registry.emplace<TransformComponent>(entity);
+		transform.addParentTransform(parentTransform);
+		
 
 		entt::entity prev = entt::null;
 
@@ -314,29 +319,31 @@ namespace ToyEngine {
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
-			auto child = processMesh(mesh, scene, registry, entity, transform);
+			auto child = processMesh(mesh, scene, registry, entity);
 
-			bindSiblings(registry, child, prev);
+			//bindSiblings(registry, child, prev);
 
-			prev = child;
-			relation.children->push_back(child);
+			//prev = child;
+			//relation.children->push_back(child);
 		}
 
 		// then do the same for each of its children
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
-			auto child = processNode(node->mChildren[i], scene, registry, entity, transform);
+			auto child = processNode(node->mChildren[i], scene, registry, entity);
 
-			bindSiblings(registry, child, prev);
+			//bindSiblings(registry, child, prev);
 
-			prev = child;
-			relation.children->push_back(child);
+			//prev = child;
+			//relation.children->push_back(child);
 		}
 		return entity;
 	}
 
-	entt::entity RenderSystem::processMesh(aiMesh* mesh, const aiScene* scene, entt::registry& registry, entt::entity parent, const TransformComponent& parentTransform)
+	entt::entity RenderSystem::processMesh(aiMesh* mesh, const aiScene* scene, entt::registry& registry, entt::entity parent)
 	{
+		auto& parenTransform = registry.get<TransformComponent>(parent);
+
 		entt::entity entity =  registry.create();
 
 		VertexDataPtr verticesPtr = std::make_shared<VertexData>();
@@ -408,10 +415,11 @@ namespace ToyEngine {
 		shaderPtr->setUniform("kSpecular", 1.0f);
 		shaderPtr->setUniform("shininess", 10.0f);
 
-		registry.emplace<TransformComponent>(entity, parentTransform);
-		registry.emplace<MeshComponent>(entity, verticesPtr,indicesPtr,shaderPtr, hasNormal, hasTexture);
-		registry.emplace<TextureComponent>(entity, textures);
-		registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());
+		auto& transformComp = registry.emplace<TransformComponent>(entity);
+		transformComp.addParentTransform(parenTransform);
+		auto& meshComp = registry.emplace<MeshComponent>(entity, verticesPtr,indicesPtr,shaderPtr, hasNormal, hasTexture);
+		auto& textureComp = registry.emplace<TextureComponent>(entity, textures);
+		auto& relationComp = registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());
 
 		return entity;
 	}

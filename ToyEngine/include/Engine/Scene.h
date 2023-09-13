@@ -18,6 +18,10 @@ namespace ToyEngine {
 				return mRegistry;
 			}
 
+			entt::entity getRootEntity() {
+				return mRootEntity;
+			}
+
 		private:
 			entt::registry mRegistry;
 
@@ -25,5 +29,6 @@ namespace ToyEngine {
 
 			std::shared_ptr<Camera> mCamera;
 
+			entt::entity mRootEntity;
 	};
 }

@@ -7,8 +7,12 @@ namespace ui {
 	}
 	void FileExplorerController::registerBindings()
 	{
-		bindButtonInteractHandler("onModelFileButtonDown", [](const ViewEvent& event) {
-			ToyEngine::RenderSystem::instance.loadModel(event.path, event.value, event.registry);
+		auto weakThis = weak_from_this();
+		bindButtonInteractHandler("onModelFileButtonDown", [weakThis](const ViewEvent& event) {
+			if (auto sharedThis = std::dynamic_pointer_cast<FileExplorerController>(weakThis.lock())) {
+				auto parentTransform = sharedThis->mRegistry.get<ToyEngine::TransformComponent>(event.parentEntity);
+				ToyEngine::RenderSystem::instance.loadModel(event.path, event.value, event.registry, event.parentEntity);
+			}
 		});
 
 	}

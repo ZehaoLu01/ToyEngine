@@ -7,16 +7,16 @@
 
 void ToyEngine::MyScene::update()
 {
-	auto group = mRegistry.group<MeshComponent, TransformComponent, TextureComponent>();
+	auto view = mRegistry.view<MeshComponent, TransformComponent, TextureComponent>();
 	
 	RenderSystem::instance.preDraw();
 
 	RenderSystem::instance.drawGridLine();
 	RenderSystem::instance.drawCoordinateIndicator({0,0,0});
 
-	for (auto entity : group) {
+	for (auto entity : view) {
 		// reference?
-		auto [transform, mesh, texture] = group.get<TransformComponent, MeshComponent, TextureComponent>(entity);
+		auto [mesh, transform, texture] = mRegistry.get<MeshComponent, TransformComponent, TextureComponent>(entity);
 		RenderSystem::instance.drawMesh(transform, mesh, texture);
 	}
 
@@ -27,12 +27,10 @@ void ToyEngine::MyScene::update()
 
 void ToyEngine::MyScene::init()
 {
-	TransformComponent transform;
-
-	entt::entity entity = mRegistry.create();
+	mRootEntity = mRegistry.create();
+	auto transform = mRegistry.emplace<TransformComponent>(mRootEntity);
 
 	// TODO: should remove this. This is for testing. The model is only for testing for now.
-	auto created = RenderSystem::instance.loadModel("C:/repo/ToyEngine/ToyEngine/Resources/model/backpack.obj", "bag",mRegistry, entity, transform);
-	mEntityList.push_back(created);
+	//auto created = RenderSystem::instance.loadModel("C:/repo/ToyEngine/ToyEngine/Resources/model/backpack.obj", "bag",mRegistry, mRootEntity, transform);
 }
 
