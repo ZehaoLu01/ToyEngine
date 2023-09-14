@@ -39,6 +39,9 @@ namespace ui {
 					mScene = scene;
 			}
 
+			void hierarchyTraversal(entt::registry& registry, entt::entity head);
+
+
 		private:
 			entt::entity mSelectionContext=entt::null;
 			std::shared_ptr<ToyEngine::MyScene> mScene;

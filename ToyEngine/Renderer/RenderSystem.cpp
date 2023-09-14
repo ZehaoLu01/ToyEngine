@@ -324,7 +324,7 @@ namespace ToyEngine {
 			//bindSiblings(registry, child, prev);
 
 			//prev = child;
-			//relation.children->push_back(child);
+			relation.children->push_back(child);
 		}
 
 		// then do the same for each of its children
@@ -335,7 +335,7 @@ namespace ToyEngine {
 			//bindSiblings(registry, child, prev);
 
 			//prev = child;
-			//relation.children->push_back(child);
+			relation.children->push_back(child);
 		}
 		return entity;
 	}
@@ -402,7 +402,6 @@ namespace ToyEngine {
 			//textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 		}
 
-
 		// TODO USE ACTIVE SHADER
 		std::shared_ptr<Shader> shaderPtr = std::make_shared<Shader>("Shaders/phong.vs.glsl", "Shaders/phong.fs.glsl");
 		shaderPtr->use();
@@ -420,6 +419,13 @@ namespace ToyEngine {
 		auto& meshComp = registry.emplace<MeshComponent>(entity, verticesPtr,indicesPtr,shaderPtr, hasNormal, hasTexture);
 		auto& textureComp = registry.emplace<TextureComponent>(entity, textures);
 		auto& relationComp = registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());
+
+		if (std::string(mesh->mName.C_Str()).size()) {
+			registry.emplace<TagComponent>(entity, std::string(mesh->mName.C_Str()));
+		}
+		else {
+			registry.emplace<TagComponent>(entity, "unnamed mesh");
+		}
 
 		return entity;
 	}

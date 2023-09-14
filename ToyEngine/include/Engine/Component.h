@@ -137,6 +137,8 @@ namespace ToyEngine {
         entt::entity parent;
         entt::entity next=entt::null;
         entt::entity prev=entt::null;
+
+        //TODO: don't use shared_ptr
         std::shared_ptr<std::vector<entt::entity>> children;
         RelationComponent(entt::entity parent, std::shared_ptr<std::vector<entt::entity>> children) :parent(parent), children(children) {};
         RelationComponent(entt::entity parent, std::shared_ptr<std::vector<entt::entity>> children, entt::entity prev, entt::entity next) :parent(parent), children(children),prev(prev), next(next) {};

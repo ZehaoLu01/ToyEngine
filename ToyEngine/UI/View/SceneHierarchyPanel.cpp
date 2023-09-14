@@ -1,53 +1,32 @@
 #include "UI/View/SceneHierarchyPanel.h"
+#include<queue>
 
 namespace ui {
+	using ToyEngine::TagComponent;
+	using ToyEngine::RelationComponent;
+
 	void SceneHierarchyPanel::tick()
 	{
-		ImGui::Begin("Scene Hierarchy");
+		auto& registry = mScene->getRegistry();
 
+		ImGui::Begin("Scene Hierarchy");
 
 		// TODO: use controller here!!
 		if (mScene)
 		{
-			auto entities = mScene->getRegistry().view<ToyEngine::TagComponent>();
+			auto entities = registry.view <TagComponent, RelationComponent> ();
 
 			for (auto entity : entities)
 			{
-				auto& tag = mScene->getRegistry().get<ToyEngine::TagComponent>(entity).name;
+				// TODO: remove tag?
+				const auto& [tagComp, relationComp]= entities.get<TagComponent, RelationComponent>(entity);
 
-				ImGuiTreeNodeFlags flags = ((mSelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
-				flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
-				bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
-				if (ImGui::IsItemClicked())
-				{
-					mSelectionContext = entity;
-					mSelectEntityCallback(entity);
+				// We only want to begin from top of the hierarchy tree;
+				if (relationComp.parent != entt::null && relationComp.parent!=mScene->getRootEntity()) {
+					continue;
 				}
 
-				bool entityDeleted = false;
-				if (ImGui::BeginPopupContextItem())
-				{
-					if (ImGui::MenuItem("Delete Entity"))
-						entityDeleted = true;
-
-					ImGui::EndPopup();
-				}
-
-				if (opened)
-				{
-					ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-					bool opened = ImGui::TreeNodeEx((void*)9817239, flags, tag.c_str());
-					if (opened)
-						ImGui::TreePop();
-					ImGui::TreePop();
-				}
-
-				if (entityDeleted)
-				{
-					//m_Context->DestroyEntity(entity);
-					//if (m_SelectionContext == entity)
-					//	m_SelectionContext = {};
-				}
+				hierarchyTraversal(registry, entity);
 			};
 
 			if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
@@ -55,7 +34,41 @@ namespace ui {
 		}
 		ImGui::End();
 	}
+
+
 	void SceneHierarchyPanel::setOnSelectCallBack(std::function<void(entt::entity)>)
 	{
+	}
+	void SceneHierarchyPanel::hierarchyTraversal(entt::registry& registry, entt::entity head)
+	{
+		if (head == entt::null) {
+			return;
+		}
+		const auto& [currentTagComp, currentRelationComp] = registry.get<TagComponent, RelationComponent>(head);
+
+		auto tag = currentTagComp.name;
+
+		ImGuiTreeNodeFlags flags = ((mSelectionContext == head) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
+		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)head, flags, tag.c_str());
+
+		if (ImGui::IsItemClicked())
+		{
+			mSelectionContext = head;
+			mSelectEntityCallback(head);
+		}
+
+		if (opened)
+		{
+			//ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+			//bool opened = ImGui::TreeNodeEx((void*)9817239, flags, tag.c_str());
+			//if (opened)
+			//	ImGui::TreePop();
+			//ImGui::TreePop();
+			for (const auto child : *currentRelationComp.children) {
+				hierarchyTraversal(registry, child);
+			}
+			ImGui::TreePop();
+		}
 	}
 }
