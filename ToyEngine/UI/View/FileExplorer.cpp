@@ -6,11 +6,8 @@ namespace ui {
 		int width = 0;
 		int height = 0;
 		int channel = 0;
-		auto fileThumbnail = ToyEngine::StbImageLoader::getImageFrom("file.png", &width, &height, &channel);
-		mFileThumbnailTexture = std::make_shared<ToyEngine::Texture>(fileThumbnail, width, height, GL_RGBA, GL_RGBA, 0, ToyEngine::TextureType::Diffuse);
-
-		auto folderThumbnail = ToyEngine::StbImageLoader::getImageFrom("folder.png", &width, &height, &channel);
-		mFolderThumbnailTexture = std::make_shared<ToyEngine::Texture>(folderThumbnail, width, height, GL_RGBA, GL_RGBA, 0, ToyEngine::TextureType::Diffuse);
+		mFileThumbnailTexture = std::make_shared<ToyEngine::Texture>("Resources\\Images\\file.png",ToyEngine::TextureType::Diffuse);
+		mFolderThumbnailTexture = std::make_shared<ToyEngine::Texture>("Resources\\Images\\folder.png", ToyEngine::TextureType::Diffuse);
 	}
 
 	void FileExplorer::render() {

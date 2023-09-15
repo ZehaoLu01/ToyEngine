@@ -15,6 +15,7 @@ namespace ToyEngine {
 	using IndexDataPtr = std::shared_ptr<IndexData>;
 
 	enum TextureType {
+		Ambient,
 		Specular,
 		Diffuse,
 		Color,
@@ -27,75 +28,56 @@ namespace ToyEngine {
 	class Texture
 	{
 		friend class RenderComponent;
-
+		const int INVALID_ID = -1;
 	public:
-		Texture()
-			:mData(nullptr,stbi_image_free)
-		{
+		Texture() = default;
 
+		Texture(std::string path, TextureType type):mPath(path), mTextureType(type) {
+			load();
 		}
 
-		Texture(TextureDataType* data, unsigned int width, unsigned int height, GLenum internalFormat, GLenum mSourceFormat, unsigned int mipmapLevel, TextureType type)
-			:mData(data,stbi_image_free),
-			mWidth(width),
-			mHeight(height),
-			mInternalFormat(internalFormat),
-			mSourceFormat(mSourceFormat),
-			mMipmapLevel(mipmapLevel),
-			mTextureType(type)
-		{
-
-			init();
-		}
+		Texture(const Texture& other);
+		Texture& operator=(const Texture other);
 
 		~Texture() = default;
 
-		TextureDataType* const getData() {
-			return mData.get();
-		}
-
-		void init();
-
 		std::string getTypeName();
 
-		void setId(int id);
-		void setType(const std::string& type);
-		void setPath(const std::string& path);
-		void setData(std::shared_ptr<TextureDataType> textureDataPtr);
-
-		std::string getPath() {
+		std::string getPath() const {
 			return mPath;
 		}
 
-		GLuint getTextureIndex() {
+		GLuint getTextureIndex() const {
 			return mTextureIndex;
 		}
-		unsigned int getWidth() {
+		unsigned int getWidth() const {
 			return mWidth;
 		}
-		unsigned int getHeight() {
+		unsigned int getHeight() const {
 			return mHeight;
 		}
-	private:
 
-		int id;
-		unsigned int mWidth;
-		unsigned int mHeight;
+		bool isValid() const {
+			return mTextureIndex != INVALID_ID;
+		}
+	private:
+		GLenum convertChannelsToFormat(unsigned int channels);
+
+		void load();
+
+		int mWidth=-1;
+		int mHeight=-1;
 		
 		// the format(color chanals) we want to store.
-		GLenum mInternalFormat;
-		
-		// Image Data
-		// Picture formats have a specific sequence to stand for beginning and ending.
-		std::shared_ptr<TextureDataType> mData;
+		GLenum mInternalFormat = GL_RGBA;
 		
 		// the mipmap level for which we want to create a texture for if you want to set each mipmap level manually
 		unsigned int mMipmapLevel = 0;
 		
 		// the format(color chanals) of the source image
-		GLenum mSourceFormat;
+		GLenum mSourceFormat = GL_RGBA;
 
-		GLuint mTextureIndex;
+		GLuint mTextureIndex=INVALID_ID;
 
 		TextureType mTextureType;
 

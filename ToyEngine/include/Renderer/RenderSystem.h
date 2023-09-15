@@ -31,6 +31,7 @@ namespace ToyEngine{
 			void setupImGUI();
 			entt::entity loadModel(std::string path, std::string modelName, entt::registry& registry, entt::entity parent);
 
+			void setupTextureOfType(aiTextureType type, aiMaterial* const& pMaterial, std::string& directory, std::vector<ToyEngine::Texture>& textures, unsigned int i);
 
 			static RenderSystem instance;
 
@@ -45,11 +46,9 @@ namespace ToyEngine{
 			float lastFrameTime = 0.0f; 
 			std::vector<float> mGridPoints;
 			void bindSiblings(entt::registry& registry, entt::entity curr, entt::entity& prev);
-			entt::entity processNode(aiNode* node, const aiScene* scene, entt::registry& registry, entt::entity parent);
-			entt::entity processMesh(aiMesh* mesh, const aiScene* scene, entt::registry& registry, entt::entity parent);
-			std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
+			entt::entity processNode(aiNode* node, const aiScene* scene, entt::registry& registry, entt::entity parent, std::vector<Texture>& textures);
+			entt::entity processMesh(aiMesh* mesh, const aiScene* scene, entt::registry& registry, entt::entity parent, std::vector<Texture>& textures);
 			TextureType ConvertTextureType(aiTextureType type);
-			GLenum convertChannelsToFormat(unsigned int channels);
 
 			GLuint mGridVBOIndex;
 			GLuint mGridVAOIndex;

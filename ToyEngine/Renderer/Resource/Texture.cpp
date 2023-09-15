@@ -1,44 +1,74 @@
 #include <iostream>
 #include "Resource/Texture.h"
 #include "glad/glad.h"
+#include <Resource/StbImageLoader.h>
 
 namespace ToyEngine {
-	void Texture::init(){
-		glGenTextures(1, &mTextureIndex);
-		glBindTexture(GL_TEXTURE_2D, mTextureIndex);
-		// Add more texture here.
+	Texture::Texture(const Texture& other): mPath(other.mPath), mWidth(other.mWidth),mHeight(other.mHeight),mInternalFormat(other.mInternalFormat), mSourceFormat(other.mSourceFormat), mMipmapLevel(other.mMipmapLevel), mTextureIndex(other.mTextureIndex), mTextureType(other.mTextureType)
+	{
+	}
+	Texture& Texture::operator=(Texture other)
+	{
+		std::swap(mPath, other.mPath);
+		std::swap(mWidth, other.mWidth);
+		std::swap(mHeight, other.mHeight);
+		std::swap(mInternalFormat, other.mInternalFormat);
+		std::swap(mSourceFormat, other.mSourceFormat);
+		std::swap(mMipmapLevel, other.mMipmapLevel);
+		std::swap(mTextureIndex, other.mTextureIndex);
+		std::swap(mTextureType, other.mTextureType);
+		load();
+		return *this;
+	}
+
+	void Texture::load(){
+		try {
+			if (mPath == "") {
+				throw("Invalid texture path: " + mPath);
+			}
+			int channels = 0;
+			auto textureData = StbImageLoader::getImageFrom(mPath, &mWidth, &mHeight, &channels);
+
+			mSourceFormat = convertChannelsToFormat(channels);
+			mInternalFormat = convertChannelsToFormat(channels);
+
+			glGenTextures(1, &mTextureIndex);
+			glBindTexture(GL_TEXTURE_2D, mTextureIndex);
+			// Add more texture here.
 
 
-		//Configuration
-		//=================================================================================
-		// what if the texture coordinate is over 1.0?
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			//Configuration
+			//=================================================================================
+			// what if the texture coordinate is over 1.0?
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-		// For GL_CLAMP_TO_BORDER
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		//float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-		//glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+			// For GL_CLAMP_TO_BORDER
+			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+			//float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+			//glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
-		//=================================================================================
-		// filter
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		//=================================================================================
+			//=================================================================================
+			// filter
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			//=================================================================================
 
-		if (mData) {
-			unsigned char* data_c = mData.get();
+			if (textureData) {
 
-			glTexImage2D(GL_TEXTURE_2D, 0, mInternalFormat, mWidth, mHeight, 0, mSourceFormat, GL_UNSIGNED_BYTE, data_c);
+				glTexImage2D(GL_TEXTURE_2D, 0, mInternalFormat, mWidth, mHeight, 0, mSourceFormat, GL_UNSIGNED_BYTE, textureData);
+				glGenerateMipmap(GL_TEXTURE_2D);
 
-			glGenerateMipmap(GL_TEXTURE_2D);
-
-			// Remember to set the uniform!!
+				stbi_image_free(textureData);
+			}
+			else {
+				std::cerr << "????????????????" << std::endl;
+			}
 		}
-		else {
-			std::cerr << "????????????????" << std::endl;
-		}
+		catch (const std::string& err) {
+			std::cerr << err << std::endl;
+		}	
 	}
 
 	std::string Texture::getTypeName() {
@@ -50,32 +80,22 @@ namespace ToyEngine {
 		case ToyEngine::Diffuse:
 			return "diffuse";
 			break;
+		case ToyEngine::Ambient:
+			return "ambient";
 		default:
 			std::cerr << "TextureType string is not defined";
 			return "";
 		}
 	}
 
-	void Texture::setId(int id) {
-		id = id;
+	GLenum Texture::convertChannelsToFormat(unsigned int channels) {
+		GLenum format = GL_NONE;
+		if (channels == 1)
+			format = GL_RED;
+		else if (channels == 3)
+			format = GL_RGB;
+		else if (channels == 4)
+			format = GL_RGBA;
+		return format;
 	}
-	void Texture::setType(const std::string& type) {
-		if (type == "texture_diffuse") {
-			mTextureType = ToyEngine::Diffuse;
-		}
-		else if (type == "texture_specular") {
-			mTextureType = ToyEngine::Specular;
-		}
-	}
-
-	void Texture::setPath(const std::string& path)
-	{
-		mPath = path;
-	}
-
-	void Texture::setData(std::shared_ptr<TextureDataType> textureDataPtr)
-	{
-		mData = textureDataPtr;
-	}
-
 }

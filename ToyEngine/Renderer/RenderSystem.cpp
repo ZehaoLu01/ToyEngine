@@ -28,6 +28,7 @@
 #include <UI/Controller/PropertiesScreenController.h>
 
 #define SELF_ROTATION 0
+#define NUM_OF_TEXTURE_TYPE 3
 
 namespace ToyEngine {
 	RenderSystem RenderSystem::instance = RenderSystem();
@@ -55,9 +56,6 @@ namespace ToyEngine {
 			format = GL_RGB;
 		else if (channels == 4)
 			format = GL_RGBA;
-
-		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile("path", aiProcess_Triangulate | aiProcess_FlipUVs);
 		return format;
 	}
 
@@ -110,8 +108,10 @@ namespace ToyEngine {
 
 		mesh.shader->use();
 
-		unsigned int diffuseNr = 0;
-		unsigned int specularNr = 0;
+		int diffuseNr = 0;
+		int specularNr = 0;
+		int ambientNr = 0;
+
 		for (int i = 0; i < textures.size(); i++)
 		{
 			glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
@@ -126,9 +126,17 @@ namespace ToyEngine {
 				name = "texture_specular";
 				number = std::to_string(specularNr++);
 			}
+			else if (name == "ambient") {
+				name = "texture_ambient";
+				number = std::to_string(ambientNr++);
+			}
 			mesh.shader->setUniform(name + number, i);
 			glBindTexture(GL_TEXTURE_2D, textures[i].getTextureIndex());
 		}
+		mesh.shader->setUniform("ambientSize", ambientNr);
+		mesh.shader->setUniform("diffuseSize", diffuseNr);
+		mesh.shader->setUniform("specularSize", specularNr);
+
 		glActiveTexture(GL_TEXTURE0);
 
 		auto model = glm::mat4(1.0f);
@@ -168,6 +176,13 @@ namespace ToyEngine {
 		glBindVertexArray(mesh.VAOIndex);
 		glDrawElements(GL_TRIANGLES, mesh.vertexSize, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
+
+		// Clear texture binding so that current binding will not affect other meshes.
+		for (int i = 0; i < textures.size(); i++)
+		{
+			glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
 	}
 
 	void RenderSystem::drawImGuiMenu()
@@ -265,7 +280,18 @@ namespace ToyEngine {
 			return entt::null;
 		}
 
-		mDirectory = path.substr(0, path.find_last_of('/'));
+		std::vector<Texture> textures(scene->mNumMaterials * NUM_OF_TEXTURE_TYPE);
+
+		std::string directory = path.substr(0, path.find_last_of('\\'));
+
+
+		for (unsigned int i = 0; i < scene->mNumMaterials; i++) {
+			const auto pMaterial = scene->mMaterials[i];
+			setupTextureOfType(aiTextureType_AMBIENT, pMaterial, directory, textures, NUM_OF_TEXTURE_TYPE * i);
+			setupTextureOfType(aiTextureType_DIFFUSE, pMaterial, directory, textures, NUM_OF_TEXTURE_TYPE * i + 1);
+			setupTextureOfType(aiTextureType_SPECULAR, pMaterial, directory, textures, NUM_OF_TEXTURE_TYPE * i + 2);
+		}
+
 
 		entt::entity entity = registry.create();
 
@@ -273,7 +299,7 @@ namespace ToyEngine {
 		auto& newTrasnform = registry.emplace<TransformComponent>(entity);
 		newTrasnform.addParentTransform(parentTransform);
 
-		auto child = processNode(scene->mRootNode, scene, registry, entity);
+		auto child = processNode(scene->mRootNode, scene, registry, entity, textures);
 		//TODO: PRE, NEXT
 		auto& relation = registry.emplace<RelationComponent>(entity, parent, std::make_shared<std::vector<entt::entity>>());
 		if (modelName.size() == 0) {
@@ -284,6 +310,22 @@ namespace ToyEngine {
 		}
 		relation.children->push_back(child);
 		return entity;
+	}
+
+	void RenderSystem::setupTextureOfType(aiTextureType type, aiMaterial* const& pMaterial, std::string& directory, std::vector<ToyEngine::Texture>& textures, unsigned int targetIndex)
+	{
+		if (pMaterial->GetTextureCount(type)) {
+			aiString path;
+			if (pMaterial->GetTexture(type, 0, &path, NULL, NULL, NULL, NULL, NULL) == aiReturn_SUCCESS) {
+				std::string p(path.data);
+				if (p.substr(0, 2) == ".\\") {
+					p = p.substr(2, p.size() - 2);
+				}
+				std::string fullPath = directory + "\\" + p;
+				Texture texture(fullPath, ConvertTextureType(type));
+				textures[targetIndex] = texture;
+			}
+		}
 	}
 
 	void RenderSystem::bindSiblings(entt::registry& registry, entt::entity curr, entt::entity& prev)
@@ -298,7 +340,7 @@ namespace ToyEngine {
 		prev = curr;
 	}
 
-	entt::entity RenderSystem::processNode(aiNode* node, const aiScene* scene, entt::registry& registry, entt::entity parent)
+	entt::entity RenderSystem::processNode(aiNode* node, const aiScene* scene, entt::registry& registry, entt::entity parent, std::vector<Texture>& textures)
 	{
 		auto& parentTransform = registry.get<TransformComponent>(parent);
 
@@ -319,7 +361,7 @@ namespace ToyEngine {
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
-			auto child = processMesh(mesh, scene, registry, entity);
+			auto child = processMesh(mesh, scene, registry, entity, textures);
 
 			//bindSiblings(registry, child, prev);
 
@@ -330,7 +372,7 @@ namespace ToyEngine {
 		// then do the same for each of its children
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
-			auto child = processNode(node->mChildren[i], scene, registry, entity);
+			auto child = processNode(node->mChildren[i], scene, registry, entity, textures);
 
 			//bindSiblings(registry, child, prev);
 
@@ -340,7 +382,7 @@ namespace ToyEngine {
 		return entity;
 	}
 
-	entt::entity RenderSystem::processMesh(aiMesh* mesh, const aiScene* scene, entt::registry& registry, entt::entity parent)
+	entt::entity RenderSystem::processMesh(aiMesh* mesh, const aiScene* scene, entt::registry& registry, entt::entity parent, std::vector<Texture>& textures)
 	{
 		auto& parenTransform = registry.get<TransformComponent>(parent);
 
@@ -348,8 +390,6 @@ namespace ToyEngine {
 
 		VertexDataPtr verticesPtr = std::make_shared<VertexData>();
 		IndexDataPtr indicesPtr = std::make_shared<IndexData>();
-
-		std::vector<Texture> textures;
 
 		bool hasNormal = false;
 		bool hasTexture = false;
@@ -384,22 +424,24 @@ namespace ToyEngine {
 				indicesPtr->push_back(face.mIndices[j]);
 		}
 		
+		std::vector<Texture> texturesToAdd;
+
 		// process material
 		if (mesh->mMaterialIndex >= 0)
 		{
-			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-			// 1. diffuse maps
-			std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-			// 2. specular maps
-			std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-			textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-			//// 3. normal maps
-			//std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
-			//textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-			//// 4. height maps
-			//std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-			//textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+			aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+
+			// RN we only want to get diffuse and specualr texture
+
+			if (textures[NUM_OF_TEXTURE_TYPE * mesh->mMaterialIndex].isValid()) {
+				texturesToAdd.push_back(textures[NUM_OF_TEXTURE_TYPE * mesh->mMaterialIndex]);
+			}
+			if (textures[NUM_OF_TEXTURE_TYPE * mesh->mMaterialIndex + 1].isValid()) {
+				texturesToAdd.push_back(textures[NUM_OF_TEXTURE_TYPE * mesh->mMaterialIndex + 1]);
+			}
+			if (textures[NUM_OF_TEXTURE_TYPE * mesh->mMaterialIndex + 2].isValid()) {
+				texturesToAdd.push_back(textures[NUM_OF_TEXTURE_TYPE * mesh->mMaterialIndex + 2]);
+			}
 		}
 
 		// TODO USE ACTIVE SHADER
@@ -417,7 +459,7 @@ namespace ToyEngine {
 		auto& transformComp = registry.emplace<TransformComponent>(entity);
 		transformComp.addParentTransform(parenTransform);
 		auto& meshComp = registry.emplace<MeshComponent>(entity, verticesPtr,indicesPtr,shaderPtr, hasNormal, hasTexture);
-		auto& textureComp = registry.emplace<TextureComponent>(entity, textures);
+		auto& textureComp = registry.emplace<TextureComponent>(entity, texturesToAdd);
 		auto& relationComp = registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());
 
 		if (std::string(mesh->mName.C_Str()).size()) {
@@ -428,43 +470,6 @@ namespace ToyEngine {
 		}
 
 		return entity;
-	}
-
-	std::vector<Texture> RenderSystem::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
-	{
-		std::vector<Texture> textures;
-
-		for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
-		{
-
-			bool skip = false;
-			aiString str;
-			mat->GetTexture(type, i, &str);
-			std::string str_cpp(str.C_Str());
-			for (unsigned int j = 0; j < mLoadedTextures.size(); j++)
-			{
-				if (std::strcmp(mLoadedTextures[j].getPath().data(), str.C_Str()) == 0)
-				{
-					textures.push_back(mLoadedTextures[j]);
-					skip = true;
-					break;
-				}
-			}
-			if (!skip) {
-				int width;
-				int height;
-				int channels;
-				auto textureData = StbImageLoader::getImageFrom(str_cpp, &width, &height, &channels);
-				auto format = convertChannelsToFormat(channels);
-				TextureType textureType = ConvertTextureType(type);
-				Texture texture(textureData, width, height, format, format, 0, textureType);
-				texture.setPath(str_cpp);
-
-				textures.push_back(texture);
-				mLoadedTextures.push_back(texture);
-			}
-		}
-		return textures;
 	}
 
 	TextureType RenderSystem::ConvertTextureType(aiTextureType type)
@@ -523,19 +528,5 @@ namespace ToyEngine {
 			break;
 		}
 		return TextureType::Diffuse;
-	}
-
-	GLenum RenderSystem::convertChannelsToFormat(unsigned int channels) {
-		GLenum format = GL_NONE;
-		if (channels == 1)
-			format = GL_RED;
-		else if (channels == 3)
-			format = GL_RGB;
-		else if (channels == 4)
-			format = GL_RGBA;
-
-		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile("path", aiProcess_Triangulate | aiProcess_FlipUVs);
-		return format;
 	}
 }

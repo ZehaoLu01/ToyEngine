@@ -32,10 +32,13 @@ namespace ToyEngine {
 
 		// Vertex data includes coordinate, normal and 
         MeshComponent(VertexDataPtr vertexDataPtr, IndexDataPtr indicesPtr, std::shared_ptr<Shader> shaderInput, bool hasNormal = true, bool hasTexture = true) :shader(shaderInput), hasNormal(hasNormal),hasTexture(hasTexture) {
-            try{
-                if (!hasNormal || !hasTexture) {
-                    throw std::invalid_argument("vertex data without texture or normal is not support currrently");
-                }
+            try {
+                //if (!hasNormal || !hasTexture) {
+               //    throw std::invalid_argument("vertex data without texture or normal is not support currrently");
+               //}
+
+                vertexSize = indicesPtr->size();
+
                 // generate 1 Vertex Array Object
                 // Used to remember subsequent vertex attribute calls.
                 // Stores:
@@ -68,9 +71,8 @@ namespace ToyEngine {
                     glEnableVertexAttribArray(1);
                     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
                     glEnableVertexAttribArray(2);
-
                 }
-                else if(hasNormal){
+                else if (hasNormal) {
                     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
                     glEnableVertexAttribArray(0);
                     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -82,14 +84,20 @@ namespace ToyEngine {
                     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
                     glEnableVertexAttribArray(1);
                 }
+                else {
+                    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+                    glEnableVertexAttribArray(0);
+                }
+
 
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
 
                 glBindVertexArray(0);
             }
             catch (...) {
-                std::cerr << "Something went wrong when constructing MeshComponent!!"<<std::endl;
+                std::cerr << "Something went wrong when creating Mesh Component!!!" << std::endl;
             }
+           
 		}
 	};
 
