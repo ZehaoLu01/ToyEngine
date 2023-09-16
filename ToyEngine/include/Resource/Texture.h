@@ -19,6 +19,7 @@ namespace ToyEngine {
 		Specular,
 		Diffuse,
 		Color,
+		UNKNOWN
 	};
 
 	// Right now only support unsigned char data.
@@ -59,6 +60,14 @@ namespace ToyEngine {
 
 		bool isValid() const {
 			return mTextureIndex != INVALID_ID;
+		}
+
+		operator bool() const {
+			return isValid();
+		}
+
+		void setType(TextureType type) {
+			mTextureType = type;
 		}
 	private:
 		GLenum convertChannelsToFormat(unsigned int channels);

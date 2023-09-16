@@ -13,6 +13,7 @@
 #include "Engine/Component.h"
 #include <entt/entity/registry.hpp>
 #include "../Engine/Scene.h"
+#include <Resource/ResourceManager.h>
 
 
 namespace ToyEngine{
@@ -32,6 +33,7 @@ namespace ToyEngine{
 			entt::entity loadModel(std::string path, std::string modelName, entt::registry& registry, entt::entity parent);
 
 			void setupTextureOfType(aiTextureType type, aiMaterial* const& pMaterial, std::string& directory, std::vector<ToyEngine::Texture>& textures, unsigned int i);
+			void getTexturesOfType(aiTextureType type, aiMaterial* const& pMaterial, std::vector<Texture>& vecToAdd);
 
 			static RenderSystem instance;
 
@@ -56,6 +58,8 @@ namespace ToyEngine{
 			std::shared_ptr<Shader> mActiveShader;
 
 			glm::vec3 mGridLineColor = glm::vec3(255, 0, 0);
+			
+			ResourceManager rm;
 	};
 }
 

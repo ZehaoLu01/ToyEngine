@@ -17,7 +17,6 @@ namespace ToyEngine {
 		std::swap(mMipmapLevel, other.mMipmapLevel);
 		std::swap(mTextureIndex, other.mTextureIndex);
 		std::swap(mTextureType, other.mTextureType);
-		load();
 		return *this;
 	}
 

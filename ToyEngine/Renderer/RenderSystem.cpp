@@ -314,16 +314,36 @@ namespace ToyEngine {
 
 	void RenderSystem::setupTextureOfType(aiTextureType type, aiMaterial* const& pMaterial, std::string& directory, std::vector<ToyEngine::Texture>& textures, unsigned int targetIndex)
 	{
-		if (pMaterial->GetTextureCount(type)) {
+		for (int i = 0; i < pMaterial->GetTextureCount(type); i++) {
 			aiString path;
-			if (pMaterial->GetTexture(type, 0, &path, NULL, NULL, NULL, NULL, NULL) == aiReturn_SUCCESS) {
+			if (pMaterial->GetTexture(type, i, &path, NULL, NULL, NULL, NULL, NULL) == aiReturn_SUCCESS) {
 				std::string p(path.data);
 				if (p.substr(0, 2) == ".\\") {
 					p = p.substr(2, p.size() - 2);
 				}
 				std::string fullPath = directory + "\\" + p;
 				Texture texture(fullPath, ConvertTextureType(type));
-				textures[targetIndex] = texture;
+				rc.addTexture(p,texture);
+				//textures[targetIndex] = texture;
+			}
+		}
+	}
+
+	void RenderSystem::getTexturesOfType(aiTextureType type, aiMaterial* const& pMaterial, std::vector<Texture>& vecToAdd) 
+	{
+		for (int i = 0; i < pMaterial->GetTextureCount(type); i++) {
+			aiString path;
+			if (pMaterial->GetTexture(type, i, &path, NULL, NULL, NULL, NULL, NULL) == aiReturn_SUCCESS) {
+				std::string p(path.data);
+				if (p.substr(0, 2) == ".\\") {
+					p = p.substr(2, p.size() - 2);
+				}
+
+				auto texture = rc.getTexture(p);
+				texture.setType(ConvertTextureType(type));
+				if (texture) {
+					vecToAdd.push_back(texture);
+				}
 			}
 		}
 	}
@@ -408,6 +428,9 @@ namespace ToyEngine {
 				verticesPtr->push_back(mesh->mNormals[i].y);
 				verticesPtr->push_back(mesh->mNormals[i].z);
 			}
+			if (mesh->mTextureCoords[1]!=NULL) {
+				std::cout << "werrarwwr" << std::endl;
+			}
 			if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
 			{
 				hasTexture = true;
@@ -431,21 +454,14 @@ namespace ToyEngine {
 		{
 			aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
 
-			// RN we only want to get diffuse and specualr texture
-
-			if (textures[NUM_OF_TEXTURE_TYPE * mesh->mMaterialIndex].isValid()) {
-				texturesToAdd.push_back(textures[NUM_OF_TEXTURE_TYPE * mesh->mMaterialIndex]);
-			}
-			if (textures[NUM_OF_TEXTURE_TYPE * mesh->mMaterialIndex + 1].isValid()) {
-				texturesToAdd.push_back(textures[NUM_OF_TEXTURE_TYPE * mesh->mMaterialIndex + 1]);
-			}
-			if (textures[NUM_OF_TEXTURE_TYPE * mesh->mMaterialIndex + 2].isValid()) {
-				texturesToAdd.push_back(textures[NUM_OF_TEXTURE_TYPE * mesh->mMaterialIndex + 2]);
-			}
+			// RN we only want to get ambient diffuse and specualr texture
+			getTexturesOfType(aiTextureType_AMBIENT, mat, texturesToAdd);
+			getTexturesOfType(aiTextureType_DIFFUSE, mat, texturesToAdd);
+			getTexturesOfType(aiTextureType_SPECULAR, mat, texturesToAdd);
 		}
 
 		// TODO USE ACTIVE SHADER
-		std::shared_ptr<Shader> shaderPtr = std::make_shared<Shader>("Shaders/phong.vs.glsl", "Shaders/phong.fs.glsl");
+		std::shared_ptr<Shader> shaderPtr = std::make_shared<Shader>("Shaders/BlinnPhong.vs.glsl", "Shaders/BlinnPhong.fs.glsl");
 		shaderPtr->use();
 		shaderPtr->setUniform("spherePosition", LIGHT_BULB_POSITION);
 		shaderPtr->setUniform("ambientColor", PHONG_AMBIENT_COLOR);
@@ -485,6 +501,7 @@ namespace ToyEngine {
 			return TextureType::Specular;
 			break;
 		case aiTextureType_AMBIENT:
+			return TextureType::Ambient;
 			break;
 		case aiTextureType_EMISSIVE:
 			break;
@@ -527,6 +544,7 @@ namespace ToyEngine {
 		default:
 			break;
 		}
-		return TextureType::Diffuse;
+		std::cerr << "Unknown texture type: " << type << std::endl;
+		return TextureType::UNKNOWN;
 	}
 }
