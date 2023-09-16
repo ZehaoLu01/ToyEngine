@@ -323,7 +323,7 @@ namespace ToyEngine {
 				}
 				std::string fullPath = directory + "\\" + p;
 				Texture texture(fullPath, ConvertTextureType(type));
-				rc.addTexture(p,texture);
+				rm.addTexture(p,texture);
 				//textures[targetIndex] = texture;
 			}
 		}
@@ -339,7 +339,7 @@ namespace ToyEngine {
 					p = p.substr(2, p.size() - 2);
 				}
 
-				auto texture = rc.getTexture(p);
+				auto texture = rm.getTexture(p);
 				texture.setType(ConvertTextureType(type));
 				if (texture) {
 					vecToAdd.push_back(texture);

@@ -5,7 +5,7 @@ namespace ui {
 	using ToyEngine::TagComponent;
 	using ToyEngine::RelationComponent;
 
-	void SceneHierarchyPanel::tick()
+	void SceneHierarchyPanel::render()
 	{
 		auto& registry = mScene->getRegistry();
 

@@ -15,6 +15,7 @@
 #include <sstream>
 #include <UI/Controller/PropertiesScreenController.h>
 #include <UI/View/SceneHierarchyPanel.h>
+#include "PropertiesScreen.h"
 
 namespace ui
 {
@@ -48,13 +49,15 @@ namespace ui
 
 		std::string getVec3String(glm::vec3 vec);
 
-		std::shared_ptr<PropertiesScreenController> mController;
+		std::shared_ptr<PropertiesScreenController> mPropertiesScreenController;
 		std::shared_ptr<SceneHierarchyController> mHierarchyContorller;
 		std::shared_ptr<FileExplorerController> mFileExplorerController;
 
 		std::shared_ptr<ImGui::FileBrowser> mFileBrowser;
 		FileExplorer mFileExplorer;
 		SceneHierarchyPanel mHierarchyPanel;
+		PropertiesScreen mPropertiesScreen;
+
 		std::shared_ptr<ToyEngine::MyScene> mContext;
 		std::vector<std::shared_ptr<Controller>> mScreenControllers;
 	};

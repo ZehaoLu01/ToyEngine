@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClCompile Include="a.cpp" />
     <ClCompile Include="Engine\Scene.cpp" />
+    <ClCompile Include="UI\View\PropertiesScreen.cpp" />
+    <ClCompile Include="Renderer\Resource\ResourceManager.cpp" />
     <ClCompile Include="UI\Controller\FileExplorerController.cpp" />
     <ClCompile Include="UI\Controller\SceneHierarchyController.cpp" />
     <ClCompile Include="UI\Controller\Controller.cpp" />
@@ -366,6 +368,8 @@
     <ClInclude Include="include\UI\Model\ScreenModel.h" />
     <ClInclude Include="include\UI\Controller\PropertiesScreenController.h" />
     <ClInclude Include="include\UI\View\SceneHierarchyPanel.h" />
+    <ClInclude Include="include\Resource\ResourceManager.h" />
+    <ClInclude Include="include\UI\View\PropertiesScreen.h" />
     <ClInclude Include="submodule\FileExplorer\imfilebrowser.h" />
   </ItemGroup>
   <ItemGroup>

@@ -33,6 +33,10 @@ namespace ui {
 
 		void render();
 
+		void drawFolderIcon(std::filesystem::directory_entry& i);
+
+		void DrawFileIcon(std::filesystem::directory_entry& i);
+
 	private:
 		ImVec4 FILE_BACKGROUND_COLOR = ImVec4(1.f, 1.f, 1.f, 0.6f);
 		std::filesystem::path mRootDirectory = std::filesystem::path("Resources");

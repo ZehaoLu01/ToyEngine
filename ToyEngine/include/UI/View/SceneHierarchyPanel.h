@@ -24,7 +24,7 @@ namespace ui {
 			}
 
 
-			void tick();
+			void render();
 
 			entt::entity getSelectedEntity() const { return mSelectionContext; }
 
