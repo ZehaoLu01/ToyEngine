@@ -231,26 +231,10 @@ namespace ToyEngine {
 		mCamera = camera;
 		glEnable(GL_DEPTH_TEST);
 
-		auto shaderPtr = std::make_shared<Shader>("Shaders/BlinnPhong.vs.glsl", "Shaders/BlinnPhong.fs.glsl");
-
 		initGrid();
-
-		//===========================================================
-		// Complex model
-		mActiveShader = std::make_shared<Shader>("Shaders/BlinnPhong.vs.glsl", "Shaders/BlinnPhong.fs.glsl");
-		mActiveShader->use();
-		mActiveShader->setUniform("spherePosition", LIGHT_BULB_POSITION);
-		mActiveShader->setUniform("ambientColor", BLINN_PHONG_AMBIENT_COLOR);
-		mActiveShader->setUniform("diffuseColor", BLINN_PHONG_DIFFUSE_COLOR);
-		mActiveShader->setUniform("specularColor", BLINN_PHONG_SPECULAR_COLOR);
-		mActiveShader->setUniform("kAmbient", 0.3f);
-		mActiveShader->setUniform("kDiffuse", 0.6f);
-		mActiveShader->setUniform("kSpecular", 1.0f);
-		mActiveShader->setUniform("shininess", 10.0f);
 
 		//ImGui
 		setupImGUI();
-		auto propertiesScreenController = std::make_shared<ui::PropertiesScreenController>(scene->getRegistry());
 		ui::ImGuiMenu::getInstance().setupControllers(scene);
 	}
 

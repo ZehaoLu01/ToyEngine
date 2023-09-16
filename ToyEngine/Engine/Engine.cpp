@@ -44,6 +44,8 @@ namespace ToyEngine{
 	void MyEngine::init() {
         // Must register callback first then init imgui.
         // See onenote for details
+
+        // TODO: Move rendering stuff together.
         glfwSetScrollCallback(mWindow.get(), scrollCallback);
         glfwSetCursorPosCallback(mWindow.get(), cursorMoveCallback);
 

@@ -7,12 +7,17 @@
 
 void ToyEngine::MyScene::update()
 {
+	processRendering();
+}
+
+void ToyEngine::MyScene::processRendering()
+{
 	auto view = mRegistry.view<MeshComponent, TransformComponent, TextureComponent>();
-	
+
 	RenderSystem::instance.preDraw();
 
 	RenderSystem::instance.drawGridLine();
-	RenderSystem::instance.drawCoordinateIndicator({0,0,0});
+	RenderSystem::instance.drawCoordinateIndicator({ 0,0,0 });
 
 	for (auto entity : view) {
 		// reference?
@@ -29,8 +34,5 @@ void ToyEngine::MyScene::init()
 {
 	mRootEntity = mRegistry.create();
 	auto transform = mRegistry.emplace<TransformComponent>(mRootEntity);
-
-	// TODO: should remove this. This is for testing. The model is only for testing for now.
-	//auto created = RenderSystem::instance.loadModel("C:/repo/ToyEngine/ToyEngine/Resources/model/backpack.obj", "bag",mRegistry, mRootEntity, transform);
 }
 

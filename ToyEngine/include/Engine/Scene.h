@@ -12,6 +12,7 @@ namespace ToyEngine {
 			void init();
 
 			void update();
+			void processRendering();
 			MyScene() = default;
 
 			entt::registry& getRegistry() {
