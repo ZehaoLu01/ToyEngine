@@ -12,7 +12,7 @@ void ToyEngine::MyScene::update()
 
 void ToyEngine::MyScene::processRendering()
 {
-	auto view = mRegistry.view<MeshComponent, TransformComponent, TextureComponent>();
+	auto view = mRegistry.view<MeshComponent, TransformComponent, MaterialComponent>();
 
 	RenderSystem::instance.preDraw();
 
@@ -21,7 +21,7 @@ void ToyEngine::MyScene::processRendering()
 
 	for (auto entity : view) {
 		// reference?
-		auto [mesh, transform, texture] = mRegistry.get<MeshComponent, TransformComponent, TextureComponent>(entity);
+		auto [mesh, transform, texture] = mRegistry.get<MeshComponent, TransformComponent, MaterialComponent>(entity);
 		RenderSystem::instance.drawMesh(transform, mesh, texture);
 	}
 

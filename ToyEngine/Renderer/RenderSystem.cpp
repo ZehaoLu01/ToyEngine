@@ -102,7 +102,7 @@ namespace ToyEngine {
 		lineZ.draw();
 	}
 
-	void RenderSystem::drawMesh(const TransformComponent& transform, const MeshComponent& mesh, TextureComponent texture)
+	void RenderSystem::drawMesh(const TransformComponent& transform, const MeshComponent& mesh, MaterialComponent texture)
 	{	
 		auto textures = texture.textures;
 
@@ -459,7 +459,7 @@ namespace ToyEngine {
 		auto& transformComp = registry.emplace<TransformComponent>(entity);
 		transformComp.addParentTransform(parenTransform);
 		auto& meshComp = registry.emplace<MeshComponent>(entity, verticesPtr,indicesPtr,shaderPtr, hasNormal, hasTexture);
-		auto& textureComp = registry.emplace<TextureComponent>(entity, texturesToAdd);
+		auto& materialComp = registry.emplace<MaterialComponent>(entity, texturesToAdd);
 		auto& relationComp = registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());
 
 		if (std::string(mesh->mName.C_Str()).size()) {

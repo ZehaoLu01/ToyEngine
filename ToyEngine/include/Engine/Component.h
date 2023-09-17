@@ -139,9 +139,9 @@ namespace ToyEngine {
         }
 	};
 
-    struct TextureComponent {
+    struct MaterialComponent {
         std::vector<Texture> textures;
-        TextureComponent(std::vector<Texture> textures) :textures(textures) {};
+        MaterialComponent(std::vector<Texture> textures) :textures(textures) {};
     };
 
     struct RelationComponent {
