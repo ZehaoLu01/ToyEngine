@@ -21,13 +21,13 @@ out vec3 viewPosition;
 out vec2 aTextureCoordinate;
 
 void main() {
-    // HINT: Compute the vertex position in VCS
+    // Compute the vertex position in VCS
     viewPosition = (view * model * vec4(position, 1.0)).xyz;
 
-    // HINT: Compute the light direction in VCS
+    // Compute the light direction in VCS
     lightDirection = normalize(view * vec4(spherePosition, 1.0) - view * model * vec4(position, 1.0)).xyz;
     
-    // HINT: Interpolate the normal
+    // Interpolate the normal
     interpolatedNormal = normalize((normalMat * vec4(normal,0.0f)).xyz);
 
     aTextureCoordinate = textureCoordinate;

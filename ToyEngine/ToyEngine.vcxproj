@@ -519,6 +519,8 @@
     <None Include="Shaders\LightFragmentShader.glsl" />
     <None Include="Shaders\phong.fs.glsl" />
     <None Include="Shaders\phong.vs.glsl" />
+    <None Include="Shaders\simpleMeshShader.frag" />
+    <None Include="Shaders\simpleMeshShader.vert" />
     <None Include="Shaders\SingleColorFragmentShader.glsl" />
     <None Include="Shaders\sphere.fs.glsl" />
     <None Include="Shaders\sphere.vs.glsl" />

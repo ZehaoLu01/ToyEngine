@@ -4,35 +4,64 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <Renderer/RenderSystem.h>
+#include <Engine/Component.h>
 
-void ToyEngine::MyScene::update()
-{
-	processRendering();
+namespace ToyEngine {
+    void MyScene::update()
+    {
+        processRendering();
+    }
+
+    void MyScene::processRendering()
+    {
+        auto view = mRegistry.view<MeshComponent, TransformComponent, MaterialComponent>();
+
+        RenderSystem::instance.preDraw();
+
+        RenderSystem::instance.drawGridLine();
+        RenderSystem::instance.drawCoordinateIndicator({ 0,0,0 });
+
+        for (auto entity : view) {
+            // reference?
+            auto [mesh, transform, texture] = mRegistry.get<MeshComponent, TransformComponent, MaterialComponent>(entity);
+            RenderSystem::instance.drawMesh(transform, mesh, texture);
+        }
+
+        RenderSystem::instance.drawImGuiMenu();
+
+        RenderSystem::instance.afterDraw();
+    }
+
+    void MyScene::init()
+    {
+        mRootEntity = mRegistry.create();
+        auto transform = mRegistry.emplace<TransformComponent>(mRootEntity);
+    }
+
+    std::tuple<std::vector<entt::entity>, std::vector<entt::entity>, std::vector<entt::entity>> MyScene::getLightEntities() {
+        // get all entities in the ecs that have a light component
+        auto entityHandles = mRegistry.view<LightComponent>();
+        std::vector<entt::entity> directionalLights, pointLights, spotLights;
+
+        for (auto entityHandle : entityHandles) {
+            entt::entity entity = { entityHandle };
+
+            std::string lightType = mRegistry.get<LightComponent>(entity).type;
+
+            if (lightType == "directional") {
+                directionalLights.push_back(entity);
+            }
+            else if (lightType == "point") {
+                pointLights.push_back(entity);
+            }
+            else if (lightType == "spotlight") {
+                spotLights.push_back(entity);
+            }
+            else {
+                std::cerr << "Invalid light type detected in Light component: " + lightType << std::endl;
+            }
+        }
+
+        return { directionalLights, pointLights, spotLights };
+    }
 }
-
-void ToyEngine::MyScene::processRendering()
-{
-	auto view = mRegistry.view<MeshComponent, TransformComponent, MaterialComponent>();
-
-	RenderSystem::instance.preDraw();
-
-	RenderSystem::instance.drawGridLine();
-	RenderSystem::instance.drawCoordinateIndicator({ 0,0,0 });
-
-	for (auto entity : view) {
-		// reference?
-		auto [mesh, transform, texture] = mRegistry.get<MeshComponent, TransformComponent, MaterialComponent>(entity);
-		RenderSystem::instance.drawMesh(transform, mesh, texture);
-	}
-
-	RenderSystem::instance.drawImGuiMenu();
-
-	RenderSystem::instance.afterDraw();
-}
-
-void ToyEngine::MyScene::init()
-{
-	mRootEntity = mRegistry.create();
-	auto transform = mRegistry.emplace<TransformComponent>(mRootEntity);
-}
-

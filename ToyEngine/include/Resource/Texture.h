@@ -19,6 +19,8 @@ namespace ToyEngine {
 		Specular,
 		Diffuse,
 		Color,
+		Normal,
+		Height,
 		UNKNOWN
 	};
 

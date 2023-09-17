@@ -1,5 +1,5 @@
 #version 330 core
-// HINT: Don't forget to define the uniforms here after you pass them in in A3.js
+
 uniform vec3 ambientColor;
 uniform vec3 diffuseColor;
 uniform vec3 specularColor;

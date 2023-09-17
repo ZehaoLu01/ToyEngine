@@ -1,9 +1,10 @@
 #pragma once
 
-#include<entt/entity/registry.hpp>
+#include<entt/entt.hpp>
 #include<memory>
 #include<vector>
 #include <Renderer/Camera.h>
+#include <tuple>
 
 
 namespace ToyEngine {
@@ -22,6 +23,8 @@ namespace ToyEngine {
 			entt::entity getRootEntity() {
 				return mRootEntity;
 			}
+
+			std::tuple<std::vector<entt::entity>, std::vector<entt::entity>, std::vector<entt::entity>> getLightEntities();
 
 		private:
 			entt::registry mRegistry;

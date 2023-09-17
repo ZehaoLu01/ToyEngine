@@ -81,6 +81,13 @@ namespace ToyEngine {
 			break;
 		case ToyEngine::Ambient:
 			return "ambient";
+			break;
+		case ToyEngine::Height:
+			return "height";
+			break;
+		case ToyEngine::Normal:
+			return "normal";
+			break;
 		default:
 			std::cerr << "TextureType string is not defined";
 			return "";

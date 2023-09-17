@@ -35,6 +35,8 @@ namespace ToyEngine{
 			void setupTextureOfType(aiTextureType type, aiMaterial* const& pMaterial, std::string& directory, std::vector<ToyEngine::Texture>& textures, unsigned int i);
 			void getTexturesOfType(aiTextureType type, aiMaterial* const& pMaterial, std::vector<Texture>& vecToAdd);
 
+			void applyLighting(Shader* shader);
+
 			static RenderSystem instance;
 
 		private:
@@ -56,6 +58,8 @@ namespace ToyEngine{
 			GLuint mGridVAOIndex;
 			std::shared_ptr<Shader> mGridShader;
 			std::shared_ptr<Shader> mActiveShader;
+
+			std::shared_ptr<MyScene> mScene;
 
 			glm::vec3 mGridLineColor = glm::vec3(255, 0, 0);
 			

@@ -173,6 +173,8 @@ namespace ToyEngine {
 		projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
 		mesh.shader->setUniform("projection", projection);
 
+		applyLighting(mesh.shader.get());
+
 		glBindVertexArray(mesh.VAOIndex);
 		glDrawElements(GL_TRIANGLES, mesh.vertexSize, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
@@ -229,6 +231,7 @@ namespace ToyEngine {
 	void RenderSystem::init(WindowPtr window, std::shared_ptr<Camera> camera, std::shared_ptr<MyScene> scene) {
 		mWindow = window;
 		mCamera = camera;
+		mScene = scene;
 		glEnable(GL_DEPTH_TEST);
 
 		initGrid();
@@ -256,7 +259,9 @@ namespace ToyEngine {
 	entt::entity RenderSystem::loadModel(std::string path, std::string modelName, entt::registry& registry, entt::entity parent)
 	{
 		Assimp::Importer import;
-		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
+
+		// TODO: What if the model has already been loaded before?
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
@@ -274,6 +279,8 @@ namespace ToyEngine {
 			setupTextureOfType(aiTextureType_AMBIENT, pMaterial, directory, textures, NUM_OF_TEXTURE_TYPE * i);
 			setupTextureOfType(aiTextureType_DIFFUSE, pMaterial, directory, textures, NUM_OF_TEXTURE_TYPE * i + 1);
 			setupTextureOfType(aiTextureType_SPECULAR, pMaterial, directory, textures, NUM_OF_TEXTURE_TYPE * i + 2);
+			setupTextureOfType(aiTextureType_NORMALS, pMaterial, directory, textures, NUM_OF_TEXTURE_TYPE * i + 2);
+			setupTextureOfType(aiTextureType_HEIGHT, pMaterial, directory, textures, NUM_OF_TEXTURE_TYPE * i + 2);
 		}
 
 
@@ -315,6 +322,7 @@ namespace ToyEngine {
 
 	void RenderSystem::getTexturesOfType(aiTextureType type, aiMaterial* const& pMaterial, std::vector<Texture>& vecToAdd) 
 	{
+		int count = 0;
 		for (int i = 0; i < pMaterial->GetTextureCount(type); i++) {
 			aiString path;
 			if (pMaterial->GetTexture(type, i, &path, NULL, NULL, NULL, NULL, NULL) == aiReturn_SUCCESS) {
@@ -328,8 +336,11 @@ namespace ToyEngine {
 				if (texture) {
 					vecToAdd.push_back(texture);
 				}
+
+				count++;
 			}
 		}
+		std::cout << "Successfully loaded " << count << " textures of type " << ConvertTextureType(type) << std::endl;
 	}
 
 	void RenderSystem::bindSiblings(entt::registry& registry, entt::entity curr, entt::entity& prev)
@@ -400,27 +411,36 @@ namespace ToyEngine {
 
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
+			//TODO: extract a "VertexData" struct
+
 			// process vertex positions, normals and texture coordinates
 			//...
 			verticesPtr->push_back(mesh->mVertices[i].x);
 			verticesPtr->push_back(mesh->mVertices[i].y);
 			verticesPtr->push_back(mesh->mVertices[i].z);
-			if (mesh->HasNormals())
-			{
-				hasNormal = true;
-				verticesPtr->push_back(mesh->mNormals[i].x);
-				verticesPtr->push_back(mesh->mNormals[i].y);
-				verticesPtr->push_back(mesh->mNormals[i].z);
-			}
-			if (mesh->mTextureCoords[1]!=NULL) {
-				std::cout << "werrarwwr" << std::endl;
-			}
-			if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+
+			verticesPtr->push_back(mesh->mNormals[i].x);
+			verticesPtr->push_back(mesh->mNormals[i].y);
+			verticesPtr->push_back(mesh->mNormals[i].z);
+
+			if (mesh->HasTextureCoords(0)) // does the mesh contain texture coordinates?
 			{
 				hasTexture = true;
 				verticesPtr->push_back(mesh->mTextureCoords[0][i].x);
 				verticesPtr->push_back(mesh->mTextureCoords[0][i].y);
 			}
+			else {
+				verticesPtr->push_back(0);
+				verticesPtr->push_back(0);
+			}
+
+			verticesPtr->push_back(mesh->mTangents[i].x);
+			verticesPtr->push_back(mesh->mTangents[i].y);
+			verticesPtr->push_back(mesh->mTangents[i].z);
+
+			verticesPtr->push_back(mesh->mBitangents[i].x);
+			verticesPtr->push_back(mesh->mBitangents[i].y);
+			verticesPtr->push_back(mesh->mBitangents[i].z);
 		}
 
 		// process indices
@@ -442,19 +462,22 @@ namespace ToyEngine {
 			getTexturesOfType(aiTextureType_AMBIENT, mat, texturesToAdd);
 			getTexturesOfType(aiTextureType_DIFFUSE, mat, texturesToAdd);
 			getTexturesOfType(aiTextureType_SPECULAR, mat, texturesToAdd);
+			getTexturesOfType(aiTextureType_NORMALS, mat, texturesToAdd);
+			getTexturesOfType(aiTextureType_HEIGHT, mat, texturesToAdd);
 		}
 
 		// TODO USE ACTIVE SHADER
-		std::shared_ptr<Shader> shaderPtr = std::make_shared<Shader>("Shaders/BlinnPhong.vs.glsl", "Shaders/BlinnPhong.fs.glsl");
-		shaderPtr->use();
-		shaderPtr->setUniform("spherePosition", LIGHT_BULB_POSITION);
-		shaderPtr->setUniform("ambientColor", PHONG_AMBIENT_COLOR);
-		shaderPtr->setUniform("diffuseColor", PHONG_DIFFUSE_COLOR);
-		shaderPtr->setUniform("specularColor", PHONG_SPECULAR_COLOR);
-		shaderPtr->setUniform("kAmbient", 0.3f);
-		shaderPtr->setUniform("kDiffuse", 0.6f);
-		shaderPtr->setUniform("kSpecular", 1.0f);
-		shaderPtr->setUniform("shininess", 10.0f);
+		//std::shared_ptr<Shader> shaderPtr = std::make_shared<Shader>("Shaders/BlinnPhong.vs.glsl", "Shaders/BlinnPhong.fs.glsl");
+		//shaderPtr->use();
+		//shaderPtr->setUniform("spherePosition", LIGHT_BULB_POSITION);
+		//shaderPtr->setUniform("ambientColor", PHONG_AMBIENT_COLOR);
+		//shaderPtr->setUniform("diffuseColor", PHONG_DIFFUSE_COLOR);
+		//shaderPtr->setUniform("specularColor", PHONG_SPECULAR_COLOR);
+		//shaderPtr->setUniform("kAmbient", 0.3f);
+		//shaderPtr->setUniform("kDiffuse", 0.6f);
+		//shaderPtr->setUniform("kSpecular", 1.0f);
+		//shaderPtr->setUniform("shininess", 10.0f);
+		std::shared_ptr<Shader> shaderPtr = std::make_shared<Shader>("Shaders/simpleMeshShader.vert", "Shaders/simpleMeshShader.frag");
 
 		auto& transformComp = registry.emplace<TransformComponent>(entity);
 		transformComp.addParentTransform(parenTransform);
@@ -470,6 +493,62 @@ namespace ToyEngine {
 		}
 
 		return entity;
+	}
+
+	void RenderSystem::applyLighting(Shader* shader) {
+		entt::registry& registry = mScene->getRegistry();
+		
+		auto lightEntities = mScene->getLightEntities();
+		std::vector<entt::entity> directionalLights = std::get<0>(lightEntities);
+		std::vector<entt::entity> pointLights = std::get<1>(lightEntities);
+		std::vector<entt::entity> spotLights = std::get<2>(lightEntities);
+
+		// define current number of point lights
+		shader->setUniform("numberOfDirLights", (int)directionalLights.size());
+		shader->setUniform("numberOfPointLights", (int)pointLights.size());
+		shader->setUniform("numberOfSpotLights", (int)spotLights.size());
+
+		for (int i = 0; i < directionalLights.size(); i++) {
+			entt::entity lightEntity = directionalLights.at(i);
+			LightComponent lightComponent = registry.get<LightComponent>(lightEntity);
+			std::string prefix = "dirLights[" + std::to_string(i) + "]";
+
+			// This line maybe buggy!!
+			shader->setUniform(prefix + ".direction", registry.get<TransformComponent>(lightEntity).rotation_eular);   // TODO: instead of direction, use entity rotation
+			shader->setUniform(prefix + ".ambient", lightComponent.ambient);
+			shader->setUniform(prefix + ".diffuse", lightComponent.diffuse);
+			shader->setUniform(prefix + ".specular", lightComponent.specular);
+		}
+
+		for (int i = 0; i < pointLights.size(); i++) {
+			entt::entity lightEntity = pointLights.at(i);
+			LightComponent lightComponent = registry.get<LightComponent>(lightEntity);
+			std::string prefix = "pointLights[" + std::to_string(i) + "]";
+			// local or global?
+			shader->setUniform(prefix + ".position", registry.get<TransformComponent>(lightEntity).localPos);
+			shader->setUniform(prefix + ".ambient", lightComponent.ambient);
+			shader->setUniform(prefix + ".diffuse", lightComponent.diffuse);
+			shader->setUniform(prefix + ".specular", lightComponent.specular);
+			shader->setUniform(prefix + ".constant", lightComponent.constant);
+			shader->setUniform(prefix + ".linear", lightComponent.linear);
+			shader->setUniform(prefix + ".quadratic", lightComponent.quadratic);
+		}
+
+		for (int i = 0; i < spotLights.size(); i++) {
+			entt::entity lightEntity = spotLights.at(i);
+			LightComponent lightComponent = registry.get<LightComponent>(lightEntity);
+			std::string prefix = "spotLights[" + std::to_string(i) + "]";
+			shader->setUniform(prefix + ".position", registry.get<TransformComponent>(lightEntity).localPos);
+			shader->setUniform(prefix + ".direction", registry.get<TransformComponent>(lightEntity).front());  // TODO: consider changing this to .rotation
+			shader->setUniform(prefix + ".ambient", lightComponent.ambient);
+			shader->setUniform(prefix + ".diffuse", lightComponent.diffuse);
+			shader->setUniform(prefix + ".specular", lightComponent.specular);
+			shader->setUniform(prefix + ".constant", lightComponent.constant);
+			shader->setUniform(prefix + ".linear", lightComponent.linear);
+			shader->setUniform(prefix + ".quadratic", lightComponent.quadratic);
+			shader->setUniform(prefix + ".cutOff", glm::cos(glm::radians(lightComponent.cutOff)));
+			shader->setUniform(prefix + ".outerCutOff", glm::cos(glm::radians(lightComponent.outerCutOff)));
+		}
 	}
 
 	TextureType RenderSystem::ConvertTextureType(aiTextureType type)
@@ -490,8 +569,10 @@ namespace ToyEngine {
 		case aiTextureType_EMISSIVE:
 			break;
 		case aiTextureType_HEIGHT:
+			return TextureType::Height;
 			break;
 		case aiTextureType_NORMALS:
+			return TextureType::Normal;
 			break;
 		case aiTextureType_SHININESS:
 			break;

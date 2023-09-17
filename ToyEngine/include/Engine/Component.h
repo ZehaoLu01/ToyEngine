@@ -18,10 +18,10 @@ namespace ToyEngine {
         glm::vec2 TexCoords;
     };
 
-	struct MeshComponent {
-		GLuint VBOIndex;
-		GLuint VAOIndex;
-		GLuint EBOIndex;
+    struct MeshComponent {
+        GLuint VBOIndex;
+        GLuint VAOIndex;
+        GLuint EBOIndex;
 
         std::shared_ptr<Shader> shader;
 
@@ -30,8 +30,8 @@ namespace ToyEngine {
         bool hasNormal = false;
         bool hasTexture = false;
 
-		// Vertex data includes coordinate, normal and 
-        MeshComponent(VertexDataPtr vertexDataPtr, IndexDataPtr indicesPtr, std::shared_ptr<Shader> shaderInput, bool hasNormal = true, bool hasTexture = true) :shader(shaderInput), hasNormal(hasNormal),hasTexture(hasTexture) {
+        // Vertex data includes coordinate, normal and 
+        MeshComponent(VertexDataPtr vertexDataPtr, IndexDataPtr indicesPtr, std::shared_ptr<Shader> shaderInput, bool hasNormal = true, bool hasTexture = true) :shader(shaderInput), hasNormal(hasNormal), hasTexture(hasTexture) {
             try {
                 //if (!hasNormal || !hasTexture) {
                //    throw std::invalid_argument("vertex data without texture or normal is not support currrently");
@@ -83,18 +83,18 @@ namespace ToyEngine {
             catch (...) {
                 std::cerr << "Something went wrong when creating Mesh Component!!!" << std::endl;
             }
-           
-		}
-	};
 
-	struct TransformComponent {
-		glm::vec3 localPos = glm::vec3(0.0f, 0.0f, 0.0f);
-		glm::vec3 rotation_eular = glm::vec3(0.0f, 0.0f, 0.0f);
-		glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
+        }
+    };
+
+    struct TransformComponent {
+        glm::vec3 localPos = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 rotation_eular = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
         // Reference is to avoid expensive update operations on parent transforms
         bool isReference = false;
-        const TransformComponent* referencedTransform=nullptr;
+        const TransformComponent* referencedTransform = nullptr;
 
         TransformComponent() = default;
         TransformComponent(glm::vec3 pos, glm::vec3 rotation, glm::vec3 scaleInput) :
@@ -103,7 +103,7 @@ namespace ToyEngine {
         };
 
         // TODO: This may be error prone. Think about how to adjust this.
-         void addParentTransform(const TransformComponent& other){
+        void addParentTransform(const TransformComponent& other) {
             isReference = true;
             referencedTransform = &other;
         };
@@ -118,7 +118,7 @@ namespace ToyEngine {
             return worldPos;
         }
 
-        glm::vec3 getWorldRotation() const{
+        glm::vec3 getWorldRotation() const {
             const TransformComponent* current = this;
             glm::vec3 worldRot = rotation_eular;
             while (current->isReference) {
@@ -128,7 +128,7 @@ namespace ToyEngine {
             return worldRot;
         }
 
-        glm::vec3 getWorldScale() const{
+        glm::vec3 getWorldScale() const {
             const TransformComponent* current = this;
             glm::vec3 worldScale = scale;
             while (current->isReference) {
@@ -137,7 +137,29 @@ namespace ToyEngine {
             }
             return worldScale;
         }
-	};
+
+        glm::vec3 front() {
+            float yaw = glm::degrees(rotation_eular.y);
+            float pitch = glm::degrees(rotation_eular.x);
+            float roll = glm::degrees(rotation_eular.z);
+
+            glm::vec3 front;
+            front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+            front.y = sin(glm::radians(pitch));
+            front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+
+            return glm::normalize(front);
+        }
+
+        glm::vec3 right() {
+            glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+            return glm::normalize(glm::cross(front(), up));
+        }
+
+        glm::vec3 up() {
+            return glm::vec3(0.0f, 1.0f, 0.0f);
+        }
+    };
 
     struct MaterialComponent {
         std::vector<Texture> textures;
@@ -146,13 +168,13 @@ namespace ToyEngine {
 
     struct RelationComponent {
         entt::entity parent;
-        entt::entity next=entt::null;
-        entt::entity prev=entt::null;
+        entt::entity next = entt::null;
+        entt::entity prev = entt::null;
 
         //TODO: don't use shared_ptr
         std::shared_ptr<std::vector<entt::entity>> children;
         RelationComponent(entt::entity parent, std::shared_ptr<std::vector<entt::entity>> children) :parent(parent), children(children) {};
-        RelationComponent(entt::entity parent, std::shared_ptr<std::vector<entt::entity>> children, entt::entity prev, entt::entity next) :parent(parent), children(children),prev(prev), next(next) {};
+        RelationComponent(entt::entity parent, std::shared_ptr<std::vector<entt::entity>> children, entt::entity prev, entt::entity next) :parent(parent), children(children), prev(prev), next(next) {};
 
         RelationComponent() = default;
     };
@@ -161,5 +183,107 @@ namespace ToyEngine {
         std::string name;
         TagComponent() = default;
         TagComponent(const std::string& input) : name(input) {};
+    };
+    struct LightComponent {
+        LightComponent() = default;
+
+        LightComponent(std::string type) {
+            if (type != "directional" && type != "point" && type != "spotlight") {
+                std::cerr << "Unknown light type: " << type << std::endl;
+            }
+
+            cutOff = 0.0f;
+            outerCutOff = 0.0f;
+
+            ambient = glm::vec3(0, 0, 0);
+            diffuse = glm::vec3(0, 0, 0);
+            specular = glm::vec3(0, 0, 0);
+
+            constant = 0.0f;
+            linear = 0.0f;
+            quadratic = 0.0f;
+
+            setLightType(type);
+        }
+
+        std::string type;
+
+        float cutOff;
+        float outerCutOff;
+
+        glm::vec3 ambient;
+        glm::vec3 diffuse;
+        glm::vec3 specular;
+
+        float constant;
+        float linear;
+        float quadratic;
+        unsigned int VBO, VAO;
+
+        void setLightType(std::string newLightType) {
+            this->type = newLightType;
+
+            float cubeVertices[] = {
+                // positions          // normals           // texture coords
+                -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+                0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
+                0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+                0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+                -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,
+                -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+
+                -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+                0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+                0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+                -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+
+                -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+                -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+                -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+                -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+
+                0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+                0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+                0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+                0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+
+                -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+                0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+                0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+                0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+                -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+                -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+
+                -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+                0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+                0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+                -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
+            };
+
+            // configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
+            glGenVertexArrays(1, &VAO);
+            glBindVertexArray(VAO);
+            glGenBuffers(1, &VBO);
+
+            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+
+            // update the lamp's position attribute's stride to reflect the updated buffer data
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+        }
+
+        void draw() {
+            glBindVertexArray(VAO);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
     };
 }
