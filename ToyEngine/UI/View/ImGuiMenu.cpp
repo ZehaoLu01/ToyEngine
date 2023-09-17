@@ -76,8 +76,10 @@ namespace ui{
 
 	void ImGuiMenu::setupControllers(std::shared_ptr<ToyEngine::MyScene> scene)
 	{
-		mHierarchyContorller = std::make_shared<SceneHierarchyController>(scene->getRegistry());
-		mPropertiesScreenController = std::make_shared<PropertiesScreenController>(scene->getRegistry());
+		mHierarchyContorller = std::make_shared<SceneHierarchyController>(std::make_unique<SceneHierarchyModel>(scene->getRegistry()));
+		mPropertiesScreenController = std::make_shared<PropertiesScreenController>(std::make_unique<PropertiesScreenModel>(scene));
+
+		//TODO: Maybe I should use file explorer model.
 		mFileExplorerController = std::make_shared<FileExplorerController>(scene->getRegistry());
 
 		mScreenControllers = std::vector<std::shared_ptr<Controller>>({mHierarchyContorller,mPropertiesScreenController,mFileExplorerController});
@@ -90,17 +92,18 @@ namespace ui{
 
 		mPropertiesScreen = PropertiesScreen(mContext, mPropertiesScreenController);
 		mHierarchyPanel = SceneHierarchyPanel(scene, mHierarchyContorller, [](entt::entity entity) {
-				ViewEvent event(ImGuiMenu::getInstance().mContext->getRegistry());
-				event.viewEventType = ViewEventType::ButtonEvent;
-				event.name = "changeSelectionButtonDown";
-				event.value = std::to_string((uint32_t)entity);
+			ViewEvent event(ImGuiMenu::getInstance().mContext->getRegistry());
+			event.viewEventType = ViewEventType::ButtonEvent;
+			event.name = "changeSelectionButtonDown";
+			event.value = std::to_string((uint32_t)entity);
 
-				for (auto controller : ImGuiMenu::getInstance().mScreenControllers) {
-					controller->addViewEvent(event);
-				}
+			for (auto controller : ImGuiMenu::getInstance().mScreenControllers) {
+				controller->addViewEvent(event);
+			}
 			}
 		);
 		mFileExplorer = FileExplorer(mFileExplorerController, scene);
+
 	}
 
 	ImGuiMenu::ImGuiMenu()

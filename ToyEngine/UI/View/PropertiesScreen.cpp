@@ -40,17 +40,14 @@ namespace ui {
 			ImGui::TableNextColumn();
 			ImGui::Text("x: ");
 			ImGui::InputFloat("##value pos_x", &newPositionVal.x);
-			ImGui::Text("current val: %f", oldPositionVal.x);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("y: ");
 			ImGui::InputFloat("##value pos_y", &newPositionVal.y);
-			ImGui::Text("current val: %f", oldPositionVal.y);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("z: ");
 			ImGui::InputFloat("##value pos_z", &newPositionVal.z);
-			ImGui::Text("current val: %f", oldPositionVal.z);
 
 			ImGui::EndTable();
 
@@ -76,18 +73,15 @@ namespace ui {
 			ImGui::TableNextColumn();
 			ImGui::Text("pitch: ");
 			ImGui::InputFloat("##value pitch", &newRotationVal.x);
-			ImGui::Text("current val: %f", oldRotationVal.x);
 
 
 			ImGui::TableNextColumn();
 			ImGui::Text("yaw: ");
 			ImGui::InputFloat("##value yaw", &newRotationVal.y);
-			ImGui::Text("current val: %f", oldRotationVal.y);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("row: ");
 			ImGui::InputFloat("##value row", &newRotationVal.z);
-			ImGui::Text("current val: %f", oldRotationVal.z);
 
 			ImGui::EndTable();
 
@@ -112,17 +106,14 @@ namespace ui {
 			ImGui::TableNextColumn();
 			ImGui::Text("x: ");
 			ImGui::InputFloat("##value scale_x", &newScaleVal.x);
-			ImGui::Text("current val: %f", oldScaleVal.x);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("y: ");
 			ImGui::InputFloat("##value scale_y", &newScaleVal.y);
-			ImGui::Text("current val: %f", oldScaleVal.y);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("z: ");
 			ImGui::InputFloat("##value scale_z", &newScaleVal.z);
-			ImGui::Text("current val: %f", oldScaleVal.z);
 
 			ImGui::EndTable();
 
@@ -151,19 +142,23 @@ namespace ui {
 			ImGui::TableNextColumn();
 			ImGui::Text("x: ");
 			ImGui::InputFloat("##value x", &point_light_position_x);
-			ImGui::Text("current val: %f", point_light_position_x);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("y: ");
 			ImGui::InputFloat("##value y", &point_light_position_y);
-			ImGui::Text("current val: %f", point_light_position_y);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("z: ");
 			ImGui::InputFloat("##value z", &point_light_position_z);
-			ImGui::Text("current val: %f", point_light_position_z);
 
 			ImGui::EndTable();
+		}
+
+		if (ImGui::Button("Add light cube")) {
+			ViewEvent event(mContext->getRegistry());
+			event.viewEventType = ViewEventType::ButtonEvent;
+			event.name = "onCreateLightCubeButtonDown";
+			mPropertiesScreenController->addViewEvent(event);
 		}
 	}
 

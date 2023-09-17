@@ -1,9 +1,9 @@
 #include "UI/Controller/PropertiesScreenController.h"
-
+#include "Renderer/RenderSystem.h"
 namespace ui {
-	PropertiesScreenController::PropertiesScreenController(entt::registry& registry) : mRegistry(registry)
+	PropertiesScreenController::PropertiesScreenController(std::unique_ptr<PropertiesScreenModel>&& model): mPropertiesScreenModel(std::move(model)), mRegistry(mPropertiesScreenModel->getRegistry())
 	{
-		mPropertiesScreenModel = std::make_shared<PropertiesScreenModel>(registry);
+		
 	}
 
 	void PropertiesScreenController::registerBindings()
@@ -24,7 +24,7 @@ namespace ui {
 					sharedThis->mPropertiesScreenModel->setPosition(newVal);
 				}
 			}
-			);
+		);
 
 		bindVec3("properties.rotation", [weakThis]() {
 			if (auto baseSharedThis = weakThis.lock()) {
@@ -54,6 +54,13 @@ namespace ui {
 				}
 			});
 
+		bindButtonInteractHandler("onCreateLightCubeButtonDown", [weakThis](auto viewEvent) {
+			if (auto baseSharedThis = weakThis.lock()) {
+				auto sharedThis = std::dynamic_pointer_cast<PropertiesScreenController>(baseSharedThis);
+				// TODO: improve this.
+				sharedThis->mPropertiesScreenModel->addLightCube();
+			}
+		});
 	}
 	void PropertiesScreenController::onSelectionChange(entt::entity entity)
 	{

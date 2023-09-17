@@ -27,11 +27,7 @@ namespace ui
 	public:
 		void tick();
 
-		void renderHierarchyMenu();
-
 		void renderLoggingMenu();
-
-		void renderObjectPropertyMenu();
 
 		static ImGuiMenu& getInstance();
 
@@ -41,13 +37,6 @@ namespace ui
 		void operator=(ImGuiMenu const&) = delete;
 	private:
 		ImGuiMenu();
-
-		void drawPositionProps();
-		void drawRotationProps();
-		void drawScaleProps();
-		void drawLightProps();
-
-		std::string getVec3String(glm::vec3 vec);
 
 		std::shared_ptr<PropertiesScreenController> mPropertiesScreenController;
 		std::shared_ptr<SceneHierarchyController> mHierarchyContorller;

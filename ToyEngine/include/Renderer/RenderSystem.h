@@ -27,6 +27,7 @@ namespace ToyEngine{
 			void drawCoordinateIndicator(glm::vec3 position);
 			void drawMesh(const TransformComponent& transform, const MeshComponent& mesh, MaterialComponent textures);
 			void drawImGuiMenu();
+			void drawLightingCube();
 			void initGrid();
 			void init(WindowPtr window, std::shared_ptr<Camera> camera, std::shared_ptr<MyScene> scene);
 			void setupImGUI();
@@ -58,6 +59,7 @@ namespace ToyEngine{
 			GLuint mGridVAOIndex;
 			std::shared_ptr<Shader> mGridShader;
 			std::shared_ptr<Shader> mActiveShader;
+			std::shared_ptr<Shader> mLightCubeShader;
 
 			std::shared_ptr<MyScene> mScene;
 

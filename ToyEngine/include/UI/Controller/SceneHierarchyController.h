@@ -7,7 +7,7 @@ namespace ui {
 	class SceneHierarchyController : public Controller
 	{
 	public:
-		SceneHierarchyController(entt::registry& registry);
+		SceneHierarchyController(std::unique_ptr<ui::SceneHierarchyModel>&& model);
 
 		virtual void registerBindings() override {
 		
@@ -18,7 +18,7 @@ namespace ui {
 		virtual void onSelectionChange(entt::entity) override;
 
 	private:
-		std::shared_ptr<ui::SceneHierarchyModel> mSceneHierarchyModel;
+		std::unique_ptr<ui::SceneHierarchyModel> mSceneHierarchyModel;
 
 		entt::registry& mRegistry;
 	};

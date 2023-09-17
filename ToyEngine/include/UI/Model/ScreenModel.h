@@ -10,12 +10,20 @@ namespace ui{
 	class ScreenModel
 	{
 	public:
+		ScreenModel(entt::registry& registry) :mRegistry(registry) {};
+
 		entt::entity mSelectedEntity=entt::null;
 
 		void setSelectedEntity(entt::entity entity) {
 			mSelectedEntity = entity;
 		}
+		
+		entt::registry& getRegistry() {
+			return mRegistry;
+		}
 
+	protected:
+		entt::registry& mRegistry;
 	};
 
 }

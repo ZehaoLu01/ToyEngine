@@ -192,6 +192,30 @@ namespace ToyEngine {
 		ui::ImGuiMenu::getInstance().tick();
 	}
 
+	void RenderSystem::drawLightingCube()
+	{
+		mLightCubeShader->use();
+
+		auto view = mCamera->GetViewMatrix();
+		//view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
+		mLightCubeShader->setUniform("view", view);
+
+		auto projection = glm::mat4(1);
+		projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
+		
+		mLightCubeShader->setUniform("projection", projection);
+		mLightCubeShader->setUniform("view", view);
+		auto lightEntities = mScene->getLightEntities();
+		std::vector<entt::entity> pointLights = std::get<1>(lightEntities);
+		for (entt::entity entity : pointLights) {
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, mScene->getRegistry().get<TransformComponent>(entity).localPos);
+			model = glm::scale(model, glm::vec3(0.2f)); // smaller cube
+			mLightCubeShader->setUniform("model", model);
+			mScene->getRegistry().get<LightComponent>(entity).draw();
+		}
+	}
+
 	void RenderSystem::initGrid()
 	{
 		mGridShader = std::make_shared<Shader>("Shaders/GridVertex.glsl", "Shaders/GridFragment.glsl");
@@ -239,6 +263,8 @@ namespace ToyEngine {
 		//ImGui
 		setupImGUI();
 		ui::ImGuiMenu::getInstance().setupControllers(scene);
+
+		mLightCubeShader = std::make_shared<Shader>("Shaders/lightingShader.vert", "Shaders/lightingShader.frag");
 	}
 
 	void RenderSystem::setupImGUI()

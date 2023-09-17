@@ -7,7 +7,7 @@ namespace ui {
 	class PropertiesScreenController: public Controller
 	{
 	public:
-		PropertiesScreenController(entt::registry& registry);
+		PropertiesScreenController(std::unique_ptr<PropertiesScreenModel>&& model);
 
 		virtual void registerBindings() override;
 
@@ -15,7 +15,7 @@ namespace ui {
 		virtual void onSelectionChange(entt::entity) override;
 
 		
-		std::shared_ptr<ui::PropertiesScreenModel> mPropertiesScreenModel;
+		std::unique_ptr<ui::PropertiesScreenModel> mPropertiesScreenModel;
 	
 		entt::registry& mRegistry;
 	};

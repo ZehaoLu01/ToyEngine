@@ -6,12 +6,14 @@
 #include <memory>
 #include <entt/entt.hpp>
 #include <Engine/Component.h>
+#include <Engine/Scene.h>
 
 namespace ui {
 	class PropertiesScreenModel: public ScreenModel, public std::enable_shared_from_this<PropertiesScreenModel> {
 
 	public:
-		PropertiesScreenModel(entt::registry& registry);
+		ui::PropertiesScreenModel(std::shared_ptr<ToyEngine::MyScene> scene);
+
 
 		glm::vec3 getPosition() {
 			if (mSelectedEntity!=entt::null) {
@@ -50,7 +52,13 @@ namespace ui {
 			}
 		}
 
+		void addLightCube() {
+			mScene->addLighting();
+		}
+
 	private:
-		entt::registry& mRegistry;
+		std::shared_ptr<ToyEngine::MyScene> mScene;
+		
+
 	};
 }

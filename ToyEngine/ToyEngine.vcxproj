@@ -517,6 +517,8 @@
     <None Include="Shaders\GridFragment.glsl" />
     <None Include="Shaders\GridVertex.glsl" />
     <None Include="Shaders\LightFragmentShader.glsl" />
+    <None Include="Shaders\lightingShader.frag" />
+    <None Include="Shaders\lightingShader.vert" />
     <None Include="Shaders\phong.fs.glsl" />
     <None Include="Shaders\phong.vs.glsl" />
     <None Include="Shaders\simpleMeshShader.frag" />

@@ -1,7 +1,7 @@
 #include <UI/Controller/SceneHierarchyController.h>
 #include <iostream>
 namespace ui {
-	SceneHierarchyController::SceneHierarchyController(entt::registry& registry): mRegistry(registry),mSceneHierarchyModel(std::make_shared<SceneHierarchyModel>(registry))
+	SceneHierarchyController::SceneHierarchyController(std::unique_ptr<ui::SceneHierarchyModel>&& model):mSceneHierarchyModel(std::move(model)), mRegistry(mSceneHierarchyModel->getRegistry())
 	{
 	
 	};

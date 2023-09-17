@@ -5,6 +5,8 @@
 #include<vector>
 #include <Renderer/Camera.h>
 #include <tuple>
+#include <Engine/Component.h>
+#include <entt/entt.hpp>
 
 
 namespace ToyEngine {
@@ -26,6 +28,11 @@ namespace ToyEngine {
 
 			std::tuple<std::vector<entt::entity>, std::vector<entt::entity>, std::vector<entt::entity>> getLightEntities();
 
+			void addLighting() {
+				auto entity = mRegistry.create();
+				mRegistry.emplace<LightComponent>(entity, "point");
+				mRegistry.emplace<TransformComponent>(entity);
+			}
 		private:
 			entt::registry mRegistry;
 
