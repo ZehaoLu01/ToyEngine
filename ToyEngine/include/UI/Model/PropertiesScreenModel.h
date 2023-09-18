@@ -56,6 +56,10 @@ namespace ui {
 			mScene->addPointLight();
 		}
 
+		void addLightCube(glm::vec3 pos, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic) {
+			mScene->addPointLight(pos, ambient, diffuse, specular, constant, linear, quadratic);
+		}
+
 	private:
 		std::shared_ptr<ToyEngine::MyScene> mScene;
 		

@@ -75,4 +75,12 @@ namespace ToyEngine {
         mRegistry.emplace<TagComponent>(entity, "pointLight");
         mRegistry.emplace<RelationComponent>(entity);
     }
+
+    void MyScene::addPointLight(glm::vec3 pos, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic) {
+        auto entity = mRegistry.create();
+        mRegistry.emplace<LightComponent>(entity, "point", ambient, diffuse, specular, constant, linear, quadratic);
+        mRegistry.emplace<TransformComponent>(entity, pos, glm::vec3{.0f,.0f,.0f}, glm::vec3{ .0f,.0f,.0f });
+        mRegistry.emplace<TagComponent>(entity, "pointLight");
+        mRegistry.emplace<RelationComponent>(entity);
+    }
 }

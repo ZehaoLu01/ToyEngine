@@ -29,6 +29,7 @@ namespace ToyEngine {
 			std::tuple<std::vector<entt::entity>, std::vector<entt::entity>, std::vector<entt::entity>> getLightEntities();
 
 			void addPointLight();
+			void addPointLight(glm::vec3 pos, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic);
 		private:
 			entt::registry mRegistry;
 

@@ -298,8 +298,8 @@ namespace ToyEngine {
 
 		mLightCubeShader = std::make_shared<Shader>("Shaders/lightingShader.vert", "Shaders/lightingShader.frag");
 
-		mMissingTextureDiffuse = Texture("Resources\\Images\\FunnyPicture.jpg", ToyEngine::TextureType::Diffuse);
-		mMissingTextureSpecular = Texture("Resources\\Images\\FunnyPicture.jpg", ToyEngine::TextureType::Specular);
+		mMissingTextureDiffuse = Texture("Resources\\Images\\missing_texture_diffuse.png", ToyEngine::TextureType::Diffuse);
+		mMissingTextureSpecular = Texture("Resources\\Images\\missing_texture_specular.png", ToyEngine::TextureType::Specular);
 	}
 
 	void RenderSystem::setupImGUI()

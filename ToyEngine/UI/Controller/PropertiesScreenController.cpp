@@ -26,7 +26,8 @@ namespace ui {
 			}
 		);
 
-		bindVec3("properties.rotation", [weakThis]() {
+		bindVec3("properties.rotation", 
+			[weakThis]() {
 			if (auto baseSharedThis = weakThis.lock()) {
 				auto sharedThis = std::dynamic_pointer_cast<PropertiesScreenController>(baseSharedThis);
 				return sharedThis->mPropertiesScreenModel->getRotation();
@@ -40,7 +41,9 @@ namespace ui {
 				}
 			});
 
-		bindVec3("properties.scale", [weakThis]() {
+		bindVec3("properties.scale", 
+			[weakThis]() 
+			{
 			if (auto baseSharedThis = weakThis.lock()) {
 				auto sharedThis = std::dynamic_pointer_cast<PropertiesScreenController>(baseSharedThis);
 				return sharedThis->mPropertiesScreenModel->getScale();
@@ -54,11 +57,21 @@ namespace ui {
 				}
 			});
 
-		bindButtonInteractHandler("onCreateLightCubeButtonDown", [weakThis](auto viewEvent) {
+		bindButtonInteractHandler("onCreateLightCubeButtonDown", [weakThis](const ViewEvent& event) {
 			if (auto baseSharedThis = weakThis.lock()) {
 				auto sharedThis = std::dynamic_pointer_cast<PropertiesScreenController>(baseSharedThis);
 				// TODO: improve this.
-				sharedThis->mPropertiesScreenModel->addLightCube();
+				auto& vectors = event.vectorGroup;
+				auto& floats = event.floatGroup;
+				if (vectors.empty()) {	
+					sharedThis->mPropertiesScreenModel->addLightCube();
+				}
+
+				if (vectors.size() < 4 || floats.size() < 3) {
+					std::cerr << "Create Light Cube Button invalid event arguments." << std::endl;
+				}
+
+				sharedThis->mPropertiesScreenModel->addLightCube(vectors[0], vectors[1], vectors[2], vectors[3], floats[0], floats[1], floats[2]);
 			}
 		});
 	}

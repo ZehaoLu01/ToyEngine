@@ -187,38 +187,37 @@ namespace ToyEngine {
     struct LightComponent {
         LightComponent() = default;
 
+        LightComponent(std::string type, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic)
+            :ambient(ambient), diffuse(diffuse), specular(specular), constant(constant), linear(linear), quadratic(quadratic) 
+        {
+            if (type != "directional" && type != "point" && type != "spotlight") {
+                std::cerr << "Unknown light type: " << type << std::endl;
+            }
+            setLightType(type);
+        };
+
         LightComponent(std::string type) {
             if (type != "directional" && type != "point" && type != "spotlight") {
                 std::cerr << "Unknown light type: " << type << std::endl;
             }
-
-            cutOff = 0.0f;
-            outerCutOff = 0.0f;
-
-            ambient = glm::vec3(1, 1, 1);
-            diffuse = glm::vec3(10, 10, 10);
-            specular = glm::vec3(1, 1, 1);
-
-            // For other combination https://wiki.ogre3d.org/tiki-index.php?page=-Point+Light+Attenuation
-            constant = 1.0f;
-            linear = 0.09f;
-            quadratic = 0.032f;
-
             setLightType(type);
         }
 
         std::string type;
 
-        float cutOff;
-        float outerCutOff;
+        float cutOff = .0f;
+        float outerCutOff = .0f;
 
-        glm::vec3 ambient;
-        glm::vec3 diffuse;
-        glm::vec3 specular;
+        glm::vec3 ambient = glm::vec3(1, 1, 1);
+        glm::vec3 diffuse = glm::vec3(1, 1, 1);
+        glm::vec3 specular = glm::vec3(1, 1, 1);
 
-        float constant;
-        float linear;
-        float quadratic;
+        // For other combination https://wiki.ogre3d.org/tiki-index.php?page=-Point+Light+Attenuation
+
+        float constant = 1.0f;
+        float linear = 0.09f;
+        float quadratic = 0.032f;
+
         unsigned int VBO, VAO;
 
         void setLightType(std::string newLightType) {

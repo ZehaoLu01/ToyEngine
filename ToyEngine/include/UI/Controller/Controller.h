@@ -46,6 +46,9 @@ namespace ui
 
 		entt::entity parentEntity;
 		
+		std::vector<glm::vec3> vectorGroup;
+		std::vector<float>floatGroup;
+		
 		ViewEvent() = default;
 		ViewEvent(entt::registry& registry) :registry(registry) {};
 
