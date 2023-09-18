@@ -66,6 +66,9 @@ namespace ToyEngine{
 			glm::vec3 mGridLineColor = glm::vec3(255, 0, 0);
 			
 			ResourceManager rm;
+
+			Texture mMissingTextureDiffuse;
+			Texture mMissingTextureSpecular;
 	};
 }
 

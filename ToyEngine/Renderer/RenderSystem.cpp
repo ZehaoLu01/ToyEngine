@@ -108,36 +108,57 @@ namespace ToyEngine {
 
 		mesh.shader->use();
 
-		int diffuseNr = 0;
-		int specularNr = 0;
-		int ambientNr = 0;
+		unsigned int diffuseMap = mMissingTextureDiffuse.getTextureIndex();
+		unsigned int specularMap = mMissingTextureSpecular.getTextureIndex();
+		float materialShininess = 32.0f;
 
-		for (int i = 0; i < textures.size(); i++)
-		{
-			glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
-			// retrieve texture number (the N in diffuse_textureN)
-			std::string number;
-			std::string name = textures[i].getTypeName();
-			if (name == "diffuse") {
-				name = "texture_diffuse";
-				number = std::to_string(diffuseNr++);
-			}
-			else if (name == "specular") {
-				name = "texture_specular";
-				number = std::to_string(specularNr++);
-			}
-			else if (name == "ambient") {
-				name = "texture_ambient";
-				number = std::to_string(ambientNr++);
-			}
-			mesh.shader->setUniform(name + number, i);
-			glBindTexture(GL_TEXTURE_2D, textures[i].getTextureIndex());
-		}
-		mesh.shader->setUniform("ambientSize", ambientNr);
-		mesh.shader->setUniform("diffuseSize", diffuseNr);
-		mesh.shader->setUniform("specularSize", specularNr);
+		// bind diffuse map
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseMap);
+
+		// bind specular map
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, specularMap);
+
+		// bind texture maps
+		mesh.shader->setUniform("material.diffuse", 0);
+		mesh.shader->setUniform("material.specular", 1);
+		mesh.shader->setUniform("material.shininess", materialShininess);
+
+		//int diffuseNr = 0;
+		//int specularNr = 0;
+		//int ambientNr = 0;
+
+		//for (int i = 0; i < textures.size(); i++)
+		//{
+		//	glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
+		//	// retrieve texture number (the N in diffuse_textureN)
+		//	std::string number;
+		//	std::string name = textures[i].getTypeName();
+		//	if (name == "diffuse") {
+		//		name = "texture_diffuse";
+		//		number = std::to_string(diffuseNr++);
+		//	}
+		//	else if (name == "specular") {
+		//		name = "texture_specular";
+		//		number = std::to_string(specularNr++);
+		//	}
+		//	else if (name == "ambient") {
+		//		name = "texture_ambient";
+		//		number = std::to_string(ambientNr++);
+		//	}
+		//	mesh.shader->setUniform(name + number, i);
+		//	glBindTexture(GL_TEXTURE_2D, textures[i].getTextureIndex());
+		//}
+		//mesh.shader->setUniform("ambientSize", ambientNr);
+		//mesh.shader->setUniform("diffuseSize", diffuseNr);
+		//mesh.shader->setUniform("specularSize", specularNr);
 
 		glActiveTexture(GL_TEXTURE0);
+
+
+		applyLighting(mesh.shader.get());
+
 
 		auto model = glm::mat4(1.0f);
 
@@ -166,14 +187,13 @@ namespace ToyEngine {
 		view = mCamera->GetViewMatrix();
 		//view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
 		mesh.shader->setUniform("view", view);
+		mesh.shader->setUniform("viewPos", mCamera->Position);
 
 		mesh.shader->setUniform("normalMat", glm::transpose(glm::inverse(view * model)));
 
 		auto projection = glm::mat4(1);
 		projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
 		mesh.shader->setUniform("projection", projection);
-
-		applyLighting(mesh.shader.get());
 
 		glBindVertexArray(mesh.VAOIndex);
 		glDrawElements(GL_TRIANGLES, mesh.vertexSize, GL_UNSIGNED_INT, 0);
@@ -265,6 +285,9 @@ namespace ToyEngine {
 		ui::ImGuiMenu::getInstance().setupControllers(scene);
 
 		mLightCubeShader = std::make_shared<Shader>("Shaders/lightingShader.vert", "Shaders/lightingShader.frag");
+
+		mMissingTextureDiffuse = Texture("Resources\\Images\\FunnyPicture.jpg", ToyEngine::TextureType::Diffuse);
+		mMissingTextureSpecular = Texture("Resources\\Images\\FunnyPicture.jpg", ToyEngine::TextureType::Specular);
 	}
 
 	void RenderSystem::setupImGUI()

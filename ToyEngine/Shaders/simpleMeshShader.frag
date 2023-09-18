@@ -91,6 +91,11 @@ void main()
     result += CalcSpotLight(spotLights[i], norm, FragPos, viewDir);
 
     FragColor = vec4(result, 1.0);
+
+
+    //testing
+    //vec3 test = texture(material.specular, TexCoords).xyz;
+    //FragColor = vec4(viewDir, 1.0);
 }
 
 // calculates the color when using a directional light.
@@ -122,6 +127,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     float distance = length(light.position - fragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
     // combine results
+    // should be material.ambient
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
     vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoords));

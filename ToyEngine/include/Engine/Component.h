@@ -195,13 +195,13 @@ namespace ToyEngine {
             cutOff = 0.0f;
             outerCutOff = 0.0f;
 
-            ambient = glm::vec3(0, 0, 0);
-            diffuse = glm::vec3(0, 0, 0);
-            specular = glm::vec3(0, 0, 0);
+            ambient = glm::vec3(1, 1, 1);
+            diffuse = glm::vec3(1, 1, 1);
+            specular = glm::vec3(1, 1, 1);
 
-            constant = 0.0f;
-            linear = 0.0f;
-            quadratic = 0.0f;
+            constant = 1.0f;
+            linear = 1.0f;
+            quadratic = 1.0f;
 
             setLightType(type);
         }
