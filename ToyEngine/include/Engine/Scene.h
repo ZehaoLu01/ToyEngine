@@ -28,11 +28,7 @@ namespace ToyEngine {
 
 			std::tuple<std::vector<entt::entity>, std::vector<entt::entity>, std::vector<entt::entity>> getLightEntities();
 
-			void addLighting() {
-				auto entity = mRegistry.create();
-				mRegistry.emplace<LightComponent>(entity, "point");
-				mRegistry.emplace<TransformComponent>(entity);
-			}
+			void addPointLight();
 		private:
 			entt::registry mRegistry;
 

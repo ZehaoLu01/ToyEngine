@@ -66,4 +66,13 @@ namespace ToyEngine {
 
         return { directionalLights, pointLights, spotLights };
     }
+
+    void MyScene::addPointLight()
+    {
+        auto entity = mRegistry.create();
+        mRegistry.emplace<LightComponent>(entity, "point");
+        mRegistry.emplace<TransformComponent>(entity);
+        mRegistry.emplace<TagComponent>(entity, "pointLight");
+        mRegistry.emplace<RelationComponent>(entity);
+    }
 }

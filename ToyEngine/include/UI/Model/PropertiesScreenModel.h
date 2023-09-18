@@ -53,7 +53,7 @@ namespace ui {
 		}
 
 		void addLightCube() {
-			mScene->addLighting();
+			mScene->addPointLight();
 		}
 
 	private:
