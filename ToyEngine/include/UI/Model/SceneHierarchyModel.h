@@ -73,8 +73,6 @@ namespace ui {
 		glm::vec3 mRotation;
 		glm::vec3 mScale;
 
-		entt::registry& mRegistry;
-
 		std::vector<std::string> mTags;
 		std::unordered_map<std::string, entt::entity> mTagToEntityDict;
 	};

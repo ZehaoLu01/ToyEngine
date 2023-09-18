@@ -2,7 +2,7 @@
 
 namespace ui {
 
-	SceneHierarchyModel::SceneHierarchyModel(entt::registry& registry):mRegistry(registry)
+	SceneHierarchyModel::SceneHierarchyModel(entt::registry& registry):ScreenModel(registry)
 	{
 	}
 }
