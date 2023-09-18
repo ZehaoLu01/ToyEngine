@@ -167,7 +167,7 @@ namespace ToyEngine {
     };
 
     struct RelationComponent {
-        entt::entity parent;
+        entt::entity parent = entt::null;
         entt::entity next = entt::null;
         entt::entity prev = entt::null;
 
@@ -196,12 +196,13 @@ namespace ToyEngine {
             outerCutOff = 0.0f;
 
             ambient = glm::vec3(1, 1, 1);
-            diffuse = glm::vec3(1, 1, 1);
+            diffuse = glm::vec3(10, 10, 10);
             specular = glm::vec3(1, 1, 1);
 
+            // For other combination https://wiki.ogre3d.org/tiki-index.php?page=-Point+Light+Attenuation
             constant = 1.0f;
-            linear = 1.0f;
-            quadratic = 1.0f;
+            linear = 0.09f;
+            quadratic = 0.032f;
 
             setLightType(type);
         }

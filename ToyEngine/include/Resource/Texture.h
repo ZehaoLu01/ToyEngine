@@ -71,6 +71,11 @@ namespace ToyEngine {
 		void setType(TextureType type) {
 			mTextureType = type;
 		}
+
+		TextureType getTextureType() {
+			return mTextureType;
+		}
+
 	private:
 		GLenum convertChannelsToFormat(unsigned int channels);
 

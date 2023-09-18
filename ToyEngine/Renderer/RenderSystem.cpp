@@ -102,15 +102,27 @@ namespace ToyEngine {
 		lineZ.draw();
 	}
 
-	void RenderSystem::drawMesh(const TransformComponent& transform, const MeshComponent& mesh, MaterialComponent texture)
+	void RenderSystem::drawMesh(const TransformComponent& transform, const MeshComponent& mesh, MaterialComponent material)
 	{	
-		auto textures = texture.textures;
+		auto textures = material.textures;
 
 		mesh.shader->use();
 
 		unsigned int diffuseMap = mMissingTextureDiffuse.getTextureIndex();
 		unsigned int specularMap = mMissingTextureSpecular.getTextureIndex();
 		float materialShininess = 32.0f;
+
+
+
+		for (int i = 0; i < textures.size(); i++)
+		{
+			if (textures[i].getTextureType() == TextureType::Diffuse) {
+				diffuseMap = textures[i].getTextureIndex();
+			}
+			if (textures[i].getTextureType() == TextureType::Specular) {
+				diffuseMap = textures[i].getTextureIndex();
+			}
+		}
 
 		// bind diffuse map
 		glActiveTexture(GL_TEXTURE0);
