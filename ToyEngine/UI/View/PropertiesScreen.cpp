@@ -39,15 +39,15 @@ namespace ui {
 		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
 			ImGui::TableNextColumn();
 			ImGui::Text("x: ");
-			ImGui::InputFloat("##value pos_x", &newPositionVal.x);
+			ImGui::DragFloat("##value pos_x", &newPositionVal.x);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("y: ");
-			ImGui::InputFloat("##value pos_y", &newPositionVal.y);
+			ImGui::DragFloat("##value pos_y", &newPositionVal.y);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("z: ");
-			ImGui::InputFloat("##value pos_z", &newPositionVal.z);
+			ImGui::DragFloat("##value pos_z", &newPositionVal.z);
 
 			ImGui::EndTable();
 
@@ -72,16 +72,16 @@ namespace ui {
 		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
 			ImGui::TableNextColumn();
 			ImGui::Text("pitch: ");
-			ImGui::InputFloat("##value pitch", &newRotationVal.x);
+			ImGui::DragFloat("##value pitch", &newRotationVal.x, 5.0f);
 
 
 			ImGui::TableNextColumn();
 			ImGui::Text("yaw: ");
-			ImGui::InputFloat("##value yaw", &newRotationVal.y);
+			ImGui::DragFloat("##value yaw", &newRotationVal.y, 5.0f);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("row: ");
-			ImGui::InputFloat("##value row", &newRotationVal.z);
+			ImGui::DragFloat("##value row", &newRotationVal.z, 5.0f);
 
 			ImGui::EndTable();
 
@@ -105,15 +105,15 @@ namespace ui {
 		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
 			ImGui::TableNextColumn();
 			ImGui::Text("x: ");
-			ImGui::InputFloat("##value scale_x", &newScaleVal.x);
+			ImGui::DragFloat("##value scale_x", &newScaleVal.x, 0.1f);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("y: ");
-			ImGui::InputFloat("##value scale_y", &newScaleVal.y);
+			ImGui::DragFloat("##value scale_y", &newScaleVal.y, 0.1f);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("z: ");
-			ImGui::InputFloat("##value scale_z", &newScaleVal.z);
+			ImGui::DragFloat("##value scale_z", &newScaleVal.z, 0.1f);
 
 			ImGui::EndTable();
 
@@ -147,15 +147,15 @@ namespace ui {
 		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
 			ImGui::TableNextColumn();
 			ImGui::Text("x: ");
-			ImGui::InputFloat("##value x", &point_light_position.x);
+			ImGui::DragFloat("##value x", &point_light_position.x, 0.1f);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("y: ");
-			ImGui::InputFloat("##value y", &point_light_position.y);
+			ImGui::DragFloat("##value y", &point_light_position.y, 0.1f);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("z: ");
-			ImGui::InputFloat("##value z", &point_light_position.z);
+			ImGui::DragFloat("##value z", &point_light_position.z, 0.1f);
 
 			ImGui::EndTable();
 		}
@@ -164,15 +164,15 @@ namespace ui {
 		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
 			ImGui::TableNextColumn();
 			ImGui::Text("x: ");
-			ImGui::InputFloat("##value x", &point_light_ambient.x);
+			ImGui::DragFloat("##value x", &point_light_ambient.x, 0.1f);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("y: ");
-			ImGui::InputFloat("##value y", &point_light_ambient.y);
+			ImGui::DragFloat("##value y", &point_light_ambient.y, 0.1f);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("z: ");
-			ImGui::InputFloat("##value z", &point_light_ambient.z);
+			ImGui::DragFloat("##value z", &point_light_ambient.z, 0.1f);
 
 			ImGui::EndTable();
 		}
@@ -181,15 +181,15 @@ namespace ui {
 		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
 			ImGui::TableNextColumn();
 			ImGui::Text("x: ");
-			ImGui::InputFloat("##value x", &point_light_diffuse.x);
+			ImGui::DragFloat("##value x", &point_light_diffuse.x, 0.1f);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("y: ");
-			ImGui::InputFloat("##value y", &point_light_diffuse.y);
+			ImGui::DragFloat("##value y", &point_light_diffuse.y, 0.1f);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("z: ");
-			ImGui::InputFloat("##value z", &point_light_diffuse.z);
+			ImGui::DragFloat("##value z", &point_light_diffuse.z, 0.1f);
 
 			ImGui::EndTable();
 		}
@@ -198,15 +198,15 @@ namespace ui {
 		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
 			ImGui::TableNextColumn();
 			ImGui::Text("x: ");
-			ImGui::InputFloat("##value x", &point_light_specular.x);
+			ImGui::DragFloat("##value x", &point_light_specular.x, 0.1f);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("y: ");
-			ImGui::InputFloat("##value y", &point_light_specular.y);
+			ImGui::DragFloat("##value y", &point_light_specular.y, 0.1f);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("z: ");
-			ImGui::InputFloat("##value z", &point_light_specular.z);
+			ImGui::DragFloat("##value z", &point_light_specular.z, 0.1f);
 
 			ImGui::EndTable();
 		}
@@ -215,15 +215,15 @@ namespace ui {
 		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
 			ImGui::TableNextColumn();
 			ImGui::Text("constants: ");
-			ImGui::InputFloat("##value x", &constant);
+			ImGui::DragFloat("##value x", &constant, 0.1f);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("linear: ");
-			ImGui::InputFloat("##value y", &linear);
+			ImGui::DragFloat("##value y", &linear, 0.1f);
 
 			ImGui::TableNextColumn();
 			ImGui::Text("quadratic: ");
-			ImGui::InputFloat("##value z", &quadratic);
+			ImGui::DragFloat("##value z", &quadratic, 0.1f);
 
 			ImGui::EndTable();
 		}
