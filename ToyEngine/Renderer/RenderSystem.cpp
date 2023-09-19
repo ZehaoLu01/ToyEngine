@@ -137,35 +137,6 @@ namespace ToyEngine {
 		mesh.shader->setUniform("material.specular", 1);
 		mesh.shader->setUniform("material.shininess", materialShininess);
 
-		//int diffuseNr = 0;
-		//int specularNr = 0;
-		//int ambientNr = 0;
-
-		//for (int i = 0; i < textures.size(); i++)
-		//{
-		//	glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
-		//	// retrieve texture number (the N in diffuse_textureN)
-		//	std::string number;
-		//	std::string name = textures[i].getTypeName();
-		//	if (name == "diffuse") {
-		//		name = "texture_diffuse";
-		//		number = std::to_string(diffuseNr++);
-		//	}
-		//	else if (name == "specular") {
-		//		name = "texture_specular";
-		//		number = std::to_string(specularNr++);
-		//	}
-		//	else if (name == "ambient") {
-		//		name = "texture_ambient";
-		//		number = std::to_string(ambientNr++);
-		//	}
-		//	mesh.shader->setUniform(name + number, i);
-		//	glBindTexture(GL_TEXTURE_2D, textures[i].getTextureIndex());
-		//}
-		//mesh.shader->setUniform("ambientSize", ambientNr);
-		//mesh.shader->setUniform("diffuseSize", diffuseNr);
-		//mesh.shader->setUniform("specularSize", specularNr);
-
 		glActiveTexture(GL_TEXTURE0);
 
 
@@ -585,7 +556,6 @@ namespace ToyEngine {
 			entt::entity lightEntity = pointLights.at(i);
 			LightComponent lightComponent = registry.get<LightComponent>(lightEntity);
 			std::string prefix = "pointLights[" + std::to_string(i) + "]";
-			// local or global?
 			shader->setUniform(prefix + ".position", registry.get<TransformComponent>(lightEntity).localPos);
 			shader->setUniform(prefix + ".ambient", lightComponent.ambient);
 			shader->setUniform(prefix + ".diffuse", lightComponent.diffuse);
