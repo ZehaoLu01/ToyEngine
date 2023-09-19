@@ -29,7 +29,11 @@ namespace ToyEngine {
 		Texture() = default;
 
 		Texture(std::string path, TextureType type):mPath(path), mTextureType(type) {
-			load();
+			loadFromPath();
+		}
+
+		Texture(std::string path, TextureType type, stbi_uc const* buffer, int len):mPath(path),mTextureType(type) {
+			loadFromBuf(buffer, len);
 		}
 
 		Texture(const Texture& other);
@@ -72,7 +76,8 @@ namespace ToyEngine {
 	private:
 		GLenum convertChannelsToFormat(unsigned int channels);
 
-		void load();
+		void loadFromPath();
+		void loadFromBuf(stbi_uc const* buffer, int len);
 
 		int mWidth=-1;
 		int mHeight=-1;

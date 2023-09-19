@@ -104,17 +104,12 @@ namespace ToyEngine {
 
 	void RenderSystem::drawMesh(const TransformComponent& transform, const MeshComponent& mesh, MaterialComponent material)
 	{	
-		auto textures = material.textures;
-
 		mesh.shader->use();
 
-		unsigned int diffuseMap = mMissingTextureDiffuse.getTextureIndex();
-		unsigned int specularMap = mMissingTextureSpecular.getTextureIndex();
-		float materialShininess = 32.0f;
+		//unsigned int diffuseMap = mMissingTextureDiffuse.getTextureIndex();
+		//unsigned int specularMap = mMissingTextureSpecular.getTextureIndex();
 
-
-
-		for (int i = 0; i < textures.size(); i++)
+	/*	for (int i = 0; i < textures.size(); i++)
 		{
 			if (textures[i].getTextureType() == TextureType::Diffuse) {
 				diffuseMap = textures[i].getTextureIndex();
@@ -122,20 +117,21 @@ namespace ToyEngine {
 			if (textures[i].getTextureType() == TextureType::Specular) {
 				diffuseMap = textures[i].getTextureIndex();
 			}
-		}
+		}*/
 
 		// bind diffuse map
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, diffuseMap);
+		//TODO: Use multiple textures
+		glBindTexture(GL_TEXTURE_2D, material.diffuseTextures[0]);
 
 		// bind specular map
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, specularMap);
+		glBindTexture(GL_TEXTURE_2D, material.specularTexture);
 
 		// bind texture maps
 		mesh.shader->setUniform("material.diffuse", 0);
 		mesh.shader->setUniform("material.specular", 1);
-		mesh.shader->setUniform("material.shininess", materialShininess);
+		mesh.shader->setUniform("material.shininess", material.shininess);
 
 		//int diffuseNr = 0;
 		//int specularNr = 0;
@@ -212,7 +208,7 @@ namespace ToyEngine {
 		glBindVertexArray(0);
 
 		// Clear texture binding so that current binding will not affect other meshes.
-		for (int i = 0; i < textures.size(); i++)
+		for (int i = 0; i < 5; i++)
 		{
 			glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
 			glBindTexture(GL_TEXTURE_2D, 0);
@@ -332,18 +328,18 @@ namespace ToyEngine {
 
 		std::vector<Texture> textures(scene->mNumMaterials * NUM_OF_TEXTURE_TYPE);
 
-		std::string directory = path.substr(0, path.find_last_of('\\'));
+		//TODO: change to path
+		std::string directory = path;
 
 
-		for (unsigned int i = 0; i < scene->mNumMaterials; i++) {
-			const auto pMaterial = scene->mMaterials[i];
-			setupTextureOfType(aiTextureType_AMBIENT, pMaterial, directory, textures, NUM_OF_TEXTURE_TYPE * i);
-			setupTextureOfType(aiTextureType_DIFFUSE, pMaterial, directory, textures, NUM_OF_TEXTURE_TYPE * i + 1);
-			setupTextureOfType(aiTextureType_SPECULAR, pMaterial, directory, textures, NUM_OF_TEXTURE_TYPE * i + 2);
-			setupTextureOfType(aiTextureType_NORMALS, pMaterial, directory, textures, NUM_OF_TEXTURE_TYPE * i + 2);
-			setupTextureOfType(aiTextureType_HEIGHT, pMaterial, directory, textures, NUM_OF_TEXTURE_TYPE * i + 2);
-		}
-
+		//for (unsigned int i = 0; i < scene->mNumMaterials; i++) {
+		//	const auto pMaterial = scene->mMaterials[i];
+		//	setupTextureOfType(entity, aiTextureType_AMBIENT, pMaterial, directory, textures);
+		//	setupTextureOfType(entity, aiTextureType_DIFFUSE, pMaterial, directory, textures);
+		//	setupTextureOfType(entity, aiTextureType_SPECULAR, pMaterial, directory, textures);
+		//	setupTextureOfType(entity, aiTextureType_NORMALS, pMaterial, directory, textures);
+		//	setupTextureOfType(entity, aiTextureType_HEIGHT, pMaterial, directory, textures);
+		//}
 
 		entt::entity entity = registry.create();
 
@@ -351,7 +347,7 @@ namespace ToyEngine {
 		auto& newTrasnform = registry.emplace<TransformComponent>(entity);
 		newTrasnform.addParentTransform(parentTransform);
 
-		auto child = processNode(scene->mRootNode, scene, registry, entity, textures);
+		auto child = processNode(scene->mRootNode, scene, registry, entity, textures, directory);
 		//TODO: PRE, NEXT
 		auto& relation = registry.emplace<RelationComponent>(entity, parent, std::make_shared<std::vector<entt::entity>>());
 		if (modelName.size() == 0) {
@@ -364,45 +360,183 @@ namespace ToyEngine {
 		return entity;
 	}
 
-	void RenderSystem::setupTextureOfType(aiTextureType type, aiMaterial* const& pMaterial, std::string& directory, std::vector<ToyEngine::Texture>& textures, unsigned int targetIndex)
+	void RenderSystem::setupTextureOfType(entt::entity entity, aiTextureType type, aiMaterial* const& pMaterial, const std::string& directory, const aiScene* scene)
 	{
+		float shininess = 20.f;
+		if (AI_SUCCESS != aiGetMaterialFloat(pMaterial, AI_MATKEY_SHININESS, &shininess)) {
+			shininess = 20.f;
+		}
+		
+
+		const aiTexture* assimpTexture = nullptr;
+
+		// get ambient/diffuse/specualr color
+		aiColor4D aiColor = aiColor4D(1.0, 1.0, 1.0, 1.0);
+		if (type == aiTextureType_DIFFUSE) {
+			if (pMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor) != aiReturn_SUCCESS) {
+				aiColor = aiColor4D(1.0, 1.0, 1.0, 1.0);
+				std::cerr << "Error getting color for material of type " + std::to_string(type) << std::endl;
+			}
+		}
+		else if (type == aiTextureType_SPECULAR) {
+			if (pMaterial->Get(AI_MATKEY_COLOR_SPECULAR, aiColor) != aiReturn_SUCCESS) {
+				aiColor = aiColor4D(1.0, 1.0, 1.0, 1.0);
+				// Logger::error("Error getting color for material of type " + std::to_string(textureType));
+			}
+		}
+		else if (type == aiTextureType_AMBIENT) {
+			if (pMaterial->Get(AI_MATKEY_COLOR_AMBIENT, aiColor) != aiReturn_SUCCESS) {
+				aiColor = aiColor4D(1.0, 1.0, 1.0, 1.0);
+				// Logger::error("Error getting color for material of type " + std::to_string(textureType));
+			}
+		}
+		else if (type == aiTextureType_HEIGHT) {
+			aiColor = aiColor4D(0.0, 0.0, 0.0, 0.0);
+		}
+		else if (type == aiTextureType_NORMALS) {
+			aiColor = aiColor4D(0.0, 0.0, 0.0, 0.0);
+		}
+
+		else {
+			std::cerr << "Unable to extract color from texture type " + std::to_string(type) << std::endl;
+		}
+		glm::vec4 color = { aiColor.r, aiColor.g, aiColor.b, aiColor.a };
+
+
+		
 		for (int i = 0; i < pMaterial->GetTextureCount(type); i++) {
 			aiString path;
 			if (pMaterial->GetTexture(type, i, &path, NULL, NULL, NULL, NULL, NULL) == aiReturn_SUCCESS) {
 				std::string p(path.data);
-				if (p.substr(0, 2) == ".\\") {
-					p = p.substr(2, p.size() - 2);
+
+				// embedded texture
+				if (auto assimpTexture = scene->GetEmbeddedTexture(path.C_Str())) {
+					std::string texturePath = path.C_Str();
+					//rm.addTexture(texturePath,texture)
+
+					// add texture embedded into model file
+					auto buffer = reinterpret_cast<unsigned char*>(assimpTexture->pcData);
+					int len = assimpTexture->mHeight == 0 ? static_cast<int>(assimpTexture->mWidth) : static_cast<int>(
+						assimpTexture->mWidth * assimpTexture->mHeight);
+					
+						Texture texture = Texture(p, ConvertTextureType(type), buffer, len);
+						//Project::getResourceManager()->storeTextureData(dreamTexture, textureFileGUID);
+
+						if (!mScene->getRegistry().try_get<MaterialComponent>(entity)) {
+							mScene->getRegistry().emplace<MaterialComponent>(entity);
+						}
+
+						MaterialComponent& materialComp = mScene->getRegistry().get<MaterialComponent>(entity);
+
+						materialComp.isEmbedded = true;
+						materialComp.shininess = shininess;
+						if (type == aiTextureType_DIFFUSE) {
+							materialComp.diffuseTextures.push_back(texture);
+						}
+						else if (type == aiTextureType_SPECULAR) {
+							materialComp.specularTexture = texture;
+						}
+						else if (type == aiTextureType_HEIGHT) {
+							materialComp.heightTexture = texture;
+						}
+						else if (type == aiTextureType_NORMALS) {
+							materialComp.normalTexture = texture;
+						}
+						else if (type == aiTextureType_AMBIENT) {
+							materialComp.ambientTexture = texture;
+						}
+						else {
+							std::cerr << "Unable to handle getting embedded texture of this type" << std::endl;
+						}
 				}
-				std::string fullPath = directory + "\\" + p;
-				Texture texture(fullPath, ConvertTextureType(type));
-				rm.addTexture(p,texture);
-				//textures[targetIndex] = texture;
+				else {
+					// regular texture file
+					std::string texturePath = std::filesystem::path(directory).parent_path().append(path.C_Str()).string();
+					Texture texture;
+					// add texture stored in an external image file
+					if (!rm.getTexture(texturePath).isValid()) {
+						texture = Texture(texturePath, ConvertTextureType(type));
+						rm.addTexture(texturePath, texture);
+					}
+					else {
+						texture = rm.getTexture(path.C_Str());
+					}
+
+					if (!mScene->getRegistry().try_get<MaterialComponent>(entity)) {
+						mScene->getRegistry().emplace<MaterialComponent>(entity);
+					}
+
+					MaterialComponent& materialComp = mScene->getRegistry().get<MaterialComponent>(entity);
+
+					materialComp.isEmbedded = true;
+					materialComp.shininess = shininess;
+					if (type == aiTextureType_DIFFUSE) {
+						materialComp.diffuseTextures.push_back(texture);
+					}
+					else if (type == aiTextureType_SPECULAR) {
+						materialComp.specularTexture = texture;
+					}
+					else if (type == aiTextureType_HEIGHT) {
+						materialComp.heightTexture = texture;
+					}
+					else if (type == aiTextureType_NORMALS) {
+						materialComp.normalTexture = texture;
+					}
+					else if (type == aiTextureType_AMBIENT) {
+						materialComp.ambientTexture = texture;
+					}
+					else {
+						std::cerr << "Unable to handle getting embedded texture of this type" << std::endl;
+					}
+				}
 			}
 		}
-	}
 
-	void RenderSystem::getTexturesOfType(aiTextureType type, aiMaterial* const& pMaterial, std::vector<Texture>& vecToAdd) 
-	{
-		int count = 0;
-		for (int i = 0; i < pMaterial->GetTextureCount(type); i++) {
-			aiString path;
-			if (pMaterial->GetTexture(type, i, &path, NULL, NULL, NULL, NULL, NULL) == aiReturn_SUCCESS) {
-				std::string p(path.data);
-				if (p.substr(0, 2) == ".\\") {
-					p = p.substr(2, p.size() - 2);
-				}
-
-				auto texture = rm.getTexture(p);
-				texture.setType(ConvertTextureType(type));
-				if (texture) {
-					vecToAdd.push_back(texture);
-				}
-
-				count++;
-			}
+		if (!mScene->getRegistry().try_get<MaterialComponent>(entity)) {
+			mScene->getRegistry().emplace<MaterialComponent>(entity);
 		}
-		std::cout << "Successfully loaded " << count << " textures of type " << ConvertTextureType(type) << std::endl;
+
+		if (type == aiTextureType_DIFFUSE) {
+			mScene->getRegistry().get<MaterialComponent>(entity).diffuseColor = color;
+		}
+		else if (type == aiTextureType_SPECULAR) {
+			mScene->getRegistry().get<MaterialComponent>(entity).specularColor = color;
+		}
+		else if (type == aiTextureType_AMBIENT) {
+			mScene->getRegistry().get<MaterialComponent>(entity).ambientColor = color;
+		}
+
+		//if (p.substr(0, 2) == ".\\") {
+		//	p = p.substr(2, p.size() - 2);
+		//}
+		//std::string fullPath = directory + "\\" + p;
+		//Texture texture(fullPath, ConvertTextureType(type));
+		//rm.addTexture(p, texture);
+		//textures[targetIndex] = texture;
 	}
+
+	//void RenderSystem::getTexturesOfType(aiTextureType type, aiMaterial* const& pMaterial, std::vector<Texture>& vecToAdd) 
+	//{
+	//	int count = 0;
+	//	for (int i = 0; i < pMaterial->GetTextureCount(type); i++) {
+	//		aiString path;
+	//		if (pMaterial->GetTexture(type, i, &path, NULL, NULL, NULL, NULL, NULL) == aiReturn_SUCCESS) {
+	//			std::string p(path.data);
+	//			if (p.substr(0, 2) == ".\\") {
+	//				p = p.substr(2, p.size() - 2);
+	//			}
+
+	//			auto texture = rm.getTexture(p);
+	//			texture.setType(ConvertTextureType(type));
+	//			if (texture) {
+	//				vecToAdd.push_back(texture);
+	//			}
+
+	//			count++;
+	//		}
+	//	}
+	//	std::cout << "Successfully loaded " << count << " textures of type " << ConvertTextureType(type) << std::endl;
+	//}
 
 	void RenderSystem::bindSiblings(entt::registry& registry, entt::entity curr, entt::entity& prev)
 	{
@@ -416,7 +550,7 @@ namespace ToyEngine {
 		prev = curr;
 	}
 
-	entt::entity RenderSystem::processNode(aiNode* node, const aiScene* scene, entt::registry& registry, entt::entity parent, std::vector<Texture>& textures)
+	entt::entity RenderSystem::processNode(aiNode* node, const aiScene* scene, entt::registry& registry, entt::entity parent, std::vector<Texture>& textures, const string& directory)
 	{
 		auto& parentTransform = registry.get<TransformComponent>(parent);
 
@@ -437,7 +571,7 @@ namespace ToyEngine {
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
-			auto child = processMesh(mesh, scene, registry, entity, textures);
+			auto child = processMesh(mesh, scene, registry, entity, textures, directory);
 
 			//bindSiblings(registry, child, prev);
 
@@ -448,7 +582,7 @@ namespace ToyEngine {
 		// then do the same for each of its children
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
-			auto child = processNode(node->mChildren[i], scene, registry, entity, textures);
+			auto child = processNode(node->mChildren[i], scene, registry, entity, textures, directory);
 
 			//bindSiblings(registry, child, prev);
 
@@ -458,7 +592,7 @@ namespace ToyEngine {
 		return entity;
 	}
 
-	entt::entity RenderSystem::processMesh(aiMesh* mesh, const aiScene* scene, entt::registry& registry, entt::entity parent, std::vector<Texture>& textures)
+	entt::entity RenderSystem::processMesh(aiMesh* mesh, const aiScene* scene, entt::registry& registry, entt::entity parent, std::vector<Texture>& textures, const string& directory)
 	{
 		auto& parenTransform = registry.get<TransformComponent>(parent);
 
@@ -497,6 +631,9 @@ namespace ToyEngine {
 				vec.x = mesh->mTextureCoords[0][i].x;
 				vec.y = mesh->mTextureCoords[0][i].y;
 				vertex.TexCoords = vec;
+			}
+
+			if (mesh->HasTangentsAndBitangents()) {
 				// tangent
 				vector.x = mesh->mTangents[i].x;
 				vector.y = mesh->mTangents[i].y;
@@ -508,8 +645,11 @@ namespace ToyEngine {
 				vector.z = mesh->mBitangents[i].z;
 				vertex.Bitangent = vector;
 			}
-			else
-				vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+
+			for (int j = 0; j < MAX_BONE_INFLUENCE; j++) {
+				vertex.mBoneIDs[j] = -1;
+				vertex.mWeights[j] = 0.0f;
+			}
 
 			vertices.push_back(vertex);
 		}
@@ -529,13 +669,13 @@ namespace ToyEngine {
 		if (mesh->mMaterialIndex >= 0)
 		{
 			aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
-
 			// RN we only want to get ambient diffuse and specualr texture
-			getTexturesOfType(aiTextureType_AMBIENT, mat, texturesToAdd);
-			getTexturesOfType(aiTextureType_DIFFUSE, mat, texturesToAdd);
-			getTexturesOfType(aiTextureType_SPECULAR, mat, texturesToAdd);
-			getTexturesOfType(aiTextureType_NORMALS, mat, texturesToAdd);
-			getTexturesOfType(aiTextureType_HEIGHT, mat, texturesToAdd);
+			setupTextureOfType(entity, aiTextureType_AMBIENT, mat, directory, scene);
+			setupTextureOfType(entity, aiTextureType_DIFFUSE, mat, directory, scene);
+			setupTextureOfType(entity, aiTextureType_SPECULAR, mat, directory, scene);
+			setupTextureOfType(entity, aiTextureType_HEIGHT, mat, directory, scene);
+			setupTextureOfType(entity, aiTextureType_NORMALS, mat, directory, scene);
+
 		}
 
 		// TODO USE ACTIVE SHADER
@@ -554,7 +694,6 @@ namespace ToyEngine {
 		auto& transformComp = registry.emplace<TransformComponent>(entity);
 		transformComp.addParentTransform(parenTransform);
 		auto& meshComp = registry.emplace<MeshComponent>(entity, vertices, indices , shaderPtr, hasNormal, hasTexture);
-		auto& materialComp = registry.emplace<MaterialComponent>(entity, texturesToAdd);
 		auto& relationComp = registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());
 
 		if (std::string(mesh->mName.C_Str()).size()) {

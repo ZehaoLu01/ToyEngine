@@ -20,7 +20,7 @@ namespace ToyEngine {
 		return *this;
 	}
 
-	void Texture::load(){
+	void Texture::loadFromPath(){
 		try {
 			if (mPath == "") {
 				throw("Invalid texture path: " + mPath);
@@ -68,6 +68,56 @@ namespace ToyEngine {
 		catch (const std::string& err) {
 			std::cerr << err << std::endl;
 		}	
+	}
+
+	void Texture::loadFromBuf(stbi_uc const* buffer, int len)
+	{
+		try {
+			int channels = 0;
+
+			stbi_set_flip_vertically_on_load(true);
+			unsigned char* textureData = stbi_load_from_memory(buffer, len, &mWidth, &mHeight, &channels, 0);
+			
+			mSourceFormat = convertChannelsToFormat(channels);
+			mInternalFormat = convertChannelsToFormat(channels);
+
+			glGenTextures(1, &mTextureIndex);
+			glBindTexture(GL_TEXTURE_2D, mTextureIndex);
+			// Add more texture here.
+
+
+			//Configuration
+			//=================================================================================
+			// what if the texture coordinate is over 1.0?
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+			// For GL_CLAMP_TO_BORDER
+			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+			//float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+			//glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+			//=================================================================================
+			// filter
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			//=================================================================================
+
+			if (textureData) {
+
+				glTexImage2D(GL_TEXTURE_2D, 0, mInternalFormat, mWidth, mHeight, 0, mSourceFormat, GL_UNSIGNED_BYTE, textureData);
+				glGenerateMipmap(GL_TEXTURE_2D);
+
+				stbi_image_free(textureData);
+			}
+			else {
+				std::cerr << "????????????????" << std::endl;
+			}
+		}
+		catch (const std::string& err) {
+			std::cerr << err << std::endl;
+		}
 	}
 
 	std::string Texture::getTypeName() {
