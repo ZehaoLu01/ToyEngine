@@ -464,52 +464,63 @@ namespace ToyEngine {
 
 		entt::entity entity =  registry.create();
 
-		VertexDataPtr verticesPtr = std::make_shared<VertexData>();
-		IndexDataPtr indicesPtr = std::make_shared<IndexData>();
+		std::vector<Vertex> vertices;
+		vector<unsigned int> indices;
 
 		bool hasNormal = false;
 		bool hasTexture = false;
 
+		// walk through each of the mesh's vertices
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
-			//TODO: extract a "VertexData" struct
-
-			// process vertex positions, normals and texture coordinates
-			//...
-			verticesPtr->push_back(mesh->mVertices[i].x);
-			verticesPtr->push_back(mesh->mVertices[i].y);
-			verticesPtr->push_back(mesh->mVertices[i].z);
-
-			verticesPtr->push_back(mesh->mNormals[i].x);
-			verticesPtr->push_back(mesh->mNormals[i].y);
-			verticesPtr->push_back(mesh->mNormals[i].z);
-
-			if (mesh->HasTextureCoords(0)) // does the mesh contain texture coordinates?
+			Vertex vertex;
+			glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
+			// positions
+			vector.x = mesh->mVertices[i].x;
+			vector.y = mesh->mVertices[i].y;
+			vector.z = mesh->mVertices[i].z;
+			vertex.Position = vector;
+			// normals
+			if (mesh->HasNormals())
 			{
-				hasTexture = true;
-				verticesPtr->push_back(mesh->mTextureCoords[0][i].x);
-				verticesPtr->push_back(mesh->mTextureCoords[0][i].y);
+				vector.x = mesh->mNormals[i].x;
+				vector.y = mesh->mNormals[i].y;
+				vector.z = mesh->mNormals[i].z;
+				vertex.Normal = vector;
 			}
-			else {
-				verticesPtr->push_back(0);
-				verticesPtr->push_back(0);
+			// texture coordinates
+			if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+			{
+				glm::vec2 vec;
+				// a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't
+				// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
+				vec.x = mesh->mTextureCoords[0][i].x;
+				vec.y = mesh->mTextureCoords[0][i].y;
+				vertex.TexCoords = vec;
+				// tangent
+				vector.x = mesh->mTangents[i].x;
+				vector.y = mesh->mTangents[i].y;
+				vector.z = mesh->mTangents[i].z;
+				vertex.Tangent = vector;
+				// bitangent
+				vector.x = mesh->mBitangents[i].x;
+				vector.y = mesh->mBitangents[i].y;
+				vector.z = mesh->mBitangents[i].z;
+				vertex.Bitangent = vector;
 			}
+			else
+				vertex.TexCoords = glm::vec2(0.0f, 0.0f);
 
-			verticesPtr->push_back(mesh->mTangents[i].x);
-			verticesPtr->push_back(mesh->mTangents[i].y);
-			verticesPtr->push_back(mesh->mTangents[i].z);
-
-			verticesPtr->push_back(mesh->mBitangents[i].x);
-			verticesPtr->push_back(mesh->mBitangents[i].y);
-			verticesPtr->push_back(mesh->mBitangents[i].z);
+			vertices.push_back(vertex);
 		}
 
-		// process indices
+		// now walk through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
 		for (unsigned int i = 0; i < mesh->mNumFaces; i++)
 		{
 			aiFace face = mesh->mFaces[i];
+			// retrieve all indices of the face and store them in the indices vector
 			for (unsigned int j = 0; j < face.mNumIndices; j++)
-				indicesPtr->push_back(face.mIndices[j]);
+				indices.push_back(face.mIndices[j]);
 		}
 		
 		std::vector<Texture> texturesToAdd;
@@ -542,7 +553,7 @@ namespace ToyEngine {
 
 		auto& transformComp = registry.emplace<TransformComponent>(entity);
 		transformComp.addParentTransform(parenTransform);
-		auto& meshComp = registry.emplace<MeshComponent>(entity, verticesPtr,indicesPtr,shaderPtr, hasNormal, hasTexture);
+		auto& meshComp = registry.emplace<MeshComponent>(entity, vertices, indices , shaderPtr, hasNormal, hasTexture);
 		auto& materialComp = registry.emplace<MaterialComponent>(entity, texturesToAdd);
 		auto& relationComp = registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());
 

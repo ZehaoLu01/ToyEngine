@@ -6,13 +6,6 @@
 #include <string>
 #include <memory>
 namespace ToyEngine {
-	using VertexDataElementType = float;
-	using VertexData = std::vector<VertexDataElementType>;
-	using VertexDataPtr = std::shared_ptr<VertexData>;
-
-	using IndexDataElementType = unsigned int;
-	using IndexData = std::vector<IndexDataElementType>;
-	using IndexDataPtr = std::shared_ptr<IndexData>;
 
 	enum TextureType {
 		Ambient,

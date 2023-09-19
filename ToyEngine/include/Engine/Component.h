@@ -11,11 +11,19 @@
 
 
 namespace ToyEngine {
+    #define MAX_BONE_INFLUENCE 4
 
     struct Vertex {
         glm::vec3 Position;
         glm::vec3 Normal;
         glm::vec2 TexCoords;
+        glm::vec3 Tangent;
+        // bitangent
+        glm::vec3 Bitangent;
+        //bone indexes which will influence this vertex
+        int mBoneIDs[MAX_BONE_INFLUENCE];
+        //weights from each bone
+        float mWeights[MAX_BONE_INFLUENCE];
     };
 
     struct MeshComponent {
@@ -31,13 +39,13 @@ namespace ToyEngine {
         bool hasTexture = false;
 
         // Vertex data includes coordinate, normal and 
-        MeshComponent(VertexDataPtr vertexDataPtr, IndexDataPtr indicesPtr, std::shared_ptr<Shader> shaderInput, bool hasNormal = true, bool hasTexture = true) :shader(shaderInput), hasNormal(hasNormal), hasTexture(hasTexture) {
+        MeshComponent(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, std::shared_ptr<Shader> shaderInput, bool hasNormal = true, bool hasTexture = true) :shader(shaderInput), hasNormal(hasNormal), hasTexture(hasTexture) {
             try {
                 //if (!hasNormal || !hasTexture) {
                //    throw std::invalid_argument("vertex data without texture or normal is not support currrently");
                //}
 
-                vertexSize = indicesPtr->size();
+                vertexSize = vertices.size();
 
                 // generate 1 Vertex Array Object
                 // Used to remember subsequent vertex attribute calls.
@@ -59,22 +67,34 @@ namespace ToyEngine {
                 glBindVertexArray(VAOIndex);
 
                 glBindBuffer(GL_ARRAY_BUFFER, VBOIndex);
-                glBufferData(GL_ARRAY_BUFFER, vertexDataPtr->size() * sizeof(VertexDataElementType), vertexDataPtr->data(), GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
 
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOIndex);
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesPtr->size() * sizeof(IndexDataElementType), indicesPtr->data(), GL_STATIC_DRAW);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), &indices[0], GL_STATIC_DRAW);
 
-                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)0);
+                // Vertex position
+                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
                 glEnableVertexAttribArray(0);
-                glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(3 * sizeof(float)));
+                //Vertex normal
+                glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float)));
                 glEnableVertexAttribArray(1);
-                glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(6 * sizeof(float)));
+                //vertex texture coords
+                glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(6 * sizeof(float)));
                 glEnableVertexAttribArray(2);
-                glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(8 * sizeof(float)));
+                //vertex tangent
+                glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(8 * sizeof(float)));
                 glEnableVertexAttribArray(3);
-                glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(11 * sizeof(float)));
+                //vertex bitangent
+                glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(11 * sizeof(float)));
                 glEnableVertexAttribArray(4);
+                // ids
+                glEnableVertexAttribArray(5);
+                glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, mBoneIDs));
 
+                // weights
+                glEnableVertexAttribArray(6);
+                glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, mWeights));
+                glBindVertexArray(0);
 
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
 
