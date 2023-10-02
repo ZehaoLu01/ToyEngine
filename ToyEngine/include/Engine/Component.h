@@ -73,19 +73,19 @@ namespace ToyEngine {
                 glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), &indices[0], GL_STATIC_DRAW);
 
                 // Vertex position
-                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Position));
                 glEnableVertexAttribArray(0);
                 //Vertex normal
-                glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float)));
+                glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
                 glEnableVertexAttribArray(1);
                 //vertex texture coords
-                glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(6 * sizeof(float)));
+                glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
                 glEnableVertexAttribArray(2);
                 //vertex tangent
-                glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(8 * sizeof(float)));
+                glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
                 glEnableVertexAttribArray(3);
                 //vertex bitangent
-                glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(11 * sizeof(float)));
+                glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
                 glEnableVertexAttribArray(4);
                 // ids
                 glEnableVertexAttribArray(5);
@@ -97,8 +97,6 @@ namespace ToyEngine {
                 glBindVertexArray(0);
 
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-                glBindVertexArray(0);
             }
             catch (...) {
                 std::cerr << "Something went wrong when creating Mesh Component!!!" << std::endl;
