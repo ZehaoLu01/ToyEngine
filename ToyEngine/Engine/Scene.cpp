@@ -27,9 +27,9 @@ namespace ToyEngine {
             RenderSystem::instance.drawMesh(transform, mesh, texture);
         }
 
-        RenderSystem::instance.drawImGuiMenu();
-
         RenderSystem::instance.drawLightingCube();
+
+        RenderSystem::instance.drawImGuiMenu();
 
         RenderSystem::instance.afterDraw();
     }
