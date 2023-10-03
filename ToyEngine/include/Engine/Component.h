@@ -250,7 +250,7 @@ namespace ToyEngine {
         float linear = 0.09f;
         float quadratic = 0.032f;
 
-        unsigned int VBO, VAO;
+        unsigned int VBO = -1, VAO = -1;
 
         void setLightType(std::string newLightType) {
             this->type = newLightType;

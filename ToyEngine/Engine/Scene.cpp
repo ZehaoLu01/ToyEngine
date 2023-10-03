@@ -7,12 +7,12 @@
 #include <Engine/Component.h>
 
 namespace ToyEngine {
-    void MyScene::update()
+    void Scene::update()
     {
         processRendering();
     }
 
-    void MyScene::processRendering()
+    void Scene::processRendering()
     {
         auto view = mRegistry.view<MeshComponent, TransformComponent, MaterialComponent>();
 
@@ -34,13 +34,13 @@ namespace ToyEngine {
         RenderSystem::instance.afterDraw();
     }
 
-    void MyScene::init()
+    void Scene::init()
     {
         mRootEntity = mRegistry.create();
         auto transform = mRegistry.emplace<TransformComponent>(mRootEntity);
     }
 
-    std::tuple<std::vector<entt::entity>, std::vector<entt::entity>, std::vector<entt::entity>> MyScene::getLightEntities() {
+    std::tuple<std::vector<entt::entity>, std::vector<entt::entity>, std::vector<entt::entity>> Scene::getLightEntities() {
         // get all entities in the ecs that have a light component
         auto entityHandles = mRegistry.view<LightComponent>();
         std::vector<entt::entity> directionalLights, pointLights, spotLights;
@@ -67,7 +67,7 @@ namespace ToyEngine {
         return { directionalLights, pointLights, spotLights };
     }
 
-    void MyScene::addPointLight()
+    void Scene::addPointLight()
     {
         auto entity = mRegistry.create();
         mRegistry.emplace<LightComponent>(entity, "point");
@@ -76,7 +76,7 @@ namespace ToyEngine {
         mRegistry.emplace<RelationComponent>(entity);
     }
 
-    void MyScene::addPointLight(glm::vec3 pos, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic) {
+    void Scene::addPointLight(glm::vec3 pos, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic) {
         auto entity = mRegistry.create();
         mRegistry.emplace<LightComponent>(entity, "point", ambient, diffuse, specular, constant, linear, quadratic);
         mRegistry.emplace<TransformComponent>(entity, pos, glm::vec3{.0f,.0f,.0f}, glm::vec3{ .0f,.0f,.0f });

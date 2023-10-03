@@ -133,3 +133,15 @@ std::string ToyEngine::RenderHelper::getTextureTypeString(aiTextureType type)
 		
 	
 }
+
+GLenum ToyEngine::RenderHelper::convertChannelsToFormat(unsigned int channels)
+{
+	GLenum format = GL_NONE;
+	if (channels == 1)
+		format = GL_RED;
+	else if (channels == 3)
+		format = GL_RGB;
+	else if (channels == 4)
+		format = GL_RGBA;
+	return format;
+}

@@ -12,7 +12,7 @@ namespace ui {
 	class PropertiesScreenModel: public ScreenModel, public std::enable_shared_from_this<PropertiesScreenModel> {
 
 	public:
-		ui::PropertiesScreenModel(std::shared_ptr<ToyEngine::MyScene> scene);
+		ui::PropertiesScreenModel(std::shared_ptr<ToyEngine::Scene> scene);
 
 
 		glm::vec3 getPosition() {
@@ -61,7 +61,7 @@ namespace ui {
 		}
 
 	private:
-		std::shared_ptr<ToyEngine::MyScene> mScene;
+		std::shared_ptr<ToyEngine::Scene> mScene;
 		
 
 	};

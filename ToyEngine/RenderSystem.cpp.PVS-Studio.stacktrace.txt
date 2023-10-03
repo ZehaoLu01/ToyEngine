@@ -1,0 +1,34 @@
+This file was created because PVS-Studio encountered an unexpected error.
+It contains a list of addresses in the analyzer process that will allow us to trace the problem.
+Please send this file to our support so that we can fix it.
+
+PVS-Studio version: 7.26.74187.388
+Base address: 00007FF702090000
+#0   Object "", at 00007FF7021CB31D, in  ?? 
+#1   Object "", at 00007FF702261B03, in  ?? 
+#2   Object "", at 00007FF702587475, in  ?? 
+#3   Object "", at 00007FF702252837, in  ?? 
+#4   Object "", at 00007FF7025870DC, in  ?? 
+#5   Object "", at 00007FF702254DC5, in  ?? 
+#6   Object "", at 00007FF7028A3B29, in  ?? 
+#7   Object "", at 00007FF7021E81F2, in  ?? 
+#8   Object "", at 00007FF702585CD0, in  ?? 
+#9   Object "", at 00007FF702228382, in  ?? 
+#10  Object "", at 00007FF70225079C, in  ?? 
+#11  Object "", at 00007FF7028A22ED, in  ?? 
+#12  Object "", at 00007FF702584D2D, in  ?? 
+#13  Object "", at 00007FF702262CB6, in  ?? 
+#14  Object "", at 00007FF70253B03B, in  ?? 
+#15  Object "", at 00007FF70225079C, in  ?? 
+#16  Object "", at 00007FF70253F911, in  ?? 
+#17  Object "", at 00007FF702222D36, in  ?? 
+#18  Object "", at 00007FF70253C50D, in  ?? 
+#19  Object "", at 00007FF70253C6B0, in  ?? 
+#20  Object "", at 00007FF70221EEF1, in  ?? 
+#21  Object "", at 00007FF7020C359B, in  ?? 
+#22  Object "", at 00007FF7020C1EF4, in  ?? 
+#23  Object "", at 00007FF7020B25A2, in  ?? 
+#24  Object "", at 00007FF7020912C7, in  ?? 
+#25  Object "", at 00007FF7028DBB70, in  ?? 
+#26  Object "", at 00007FF86B93257D, in BaseThreadInitThunk
+

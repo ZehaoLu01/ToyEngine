@@ -10,13 +10,13 @@
 
 
 namespace ToyEngine {
-	class MyScene {
+	class Scene {
 		public:
 			void init();
 
 			void update();
 			void processRendering();
-			MyScene() = default;
+			Scene() = default;
 
 			entt::registry& getRegistry() {
 				return mRegistry;

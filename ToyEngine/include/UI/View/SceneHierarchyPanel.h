@@ -13,13 +13,13 @@ namespace ui {
 	{
 		public:
 			SceneHierarchyPanel() = default;
-			SceneHierarchyPanel(std::shared_ptr<ToyEngine::MyScene> context) {
+			SceneHierarchyPanel(std::shared_ptr<ToyEngine::Scene> context) {
 				SetContext(context);
 			}
-			SceneHierarchyPanel(std::shared_ptr<ToyEngine::MyScene> context, std::shared_ptr<SceneHierarchyController> controller):mController(controller) {
+			SceneHierarchyPanel(std::shared_ptr<ToyEngine::Scene> context, std::shared_ptr<SceneHierarchyController> controller):mController(controller) {
 				SetContext(context);
 			}
-			SceneHierarchyPanel(std::shared_ptr<ToyEngine::MyScene> context, std::shared_ptr<SceneHierarchyController> controller, std::function<void(entt::entity)> onSelect) :SceneHierarchyPanel(context,controller){
+			SceneHierarchyPanel(std::shared_ptr<ToyEngine::Scene> context, std::shared_ptr<SceneHierarchyController> controller, std::function<void(entt::entity)> onSelect) :SceneHierarchyPanel(context,controller){
 				mSelectEntityCallback = onSelect;
 			}
 
@@ -35,7 +35,7 @@ namespace ui {
 			void setOnSelectCallBack(std::function<void(entt::entity)>);
 
 		private:
-			void SetContext(const std::shared_ptr<ToyEngine::MyScene> scene) {
+			void SetContext(const std::shared_ptr<ToyEngine::Scene> scene) {
 					mScene = scene;
 			}
 
@@ -44,7 +44,7 @@ namespace ui {
 
 		private:
 			entt::entity mSelectionContext=entt::null;
-			std::shared_ptr<ToyEngine::MyScene> mScene;
+			std::shared_ptr<ToyEngine::Scene> mScene;
 			std::shared_ptr<SceneHierarchyController> mController;
 			std::function<void(entt::entity)> mSelectEntityCallback;
 	};

@@ -31,7 +31,7 @@ namespace ui
 
 		static ImGuiMenu& getInstance();
 
-		void setupControllers(std::shared_ptr<ToyEngine::MyScene> scene);
+		void setupControllers(std::shared_ptr<ToyEngine::Scene> scene);
 
 		ImGuiMenu(ImGuiMenu const&) = delete;
 		void operator=(ImGuiMenu const&) = delete;
@@ -47,7 +47,7 @@ namespace ui
 		SceneHierarchyPanel mHierarchyPanel;
 		PropertiesScreen mPropertiesScreen;
 
-		std::shared_ptr<ToyEngine::MyScene> mContext;
+		std::shared_ptr<ToyEngine::Scene> mContext;
 		std::vector<std::shared_ptr<Controller>> mScreenControllers;
 	};
 

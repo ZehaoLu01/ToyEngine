@@ -2,6 +2,8 @@
 #include "Resource/Texture.h"
 #include "glad/glad.h"
 #include <Resource/StbImageLoader.h>
+#include <Utils/Logger.h>
+#include <Utils/RenderHelper.h>
 
 namespace ToyEngine {
 	Texture::Texture(const Texture& other): mPath(other.mPath), mWidth(other.mWidth),mHeight(other.mHeight),mInternalFormat(other.mInternalFormat), mSourceFormat(other.mSourceFormat), mMipmapLevel(other.mMipmapLevel), mTextureIndex(other.mTextureIndex), mTextureType(other.mTextureType)
@@ -28,8 +30,8 @@ namespace ToyEngine {
 			int channels = 0;
 			auto textureData = StbImageLoader::getImageFrom(mPath, &mWidth, &mHeight, &channels, flip);
 
-			mSourceFormat = convertChannelsToFormat(channels);
-			mInternalFormat = convertChannelsToFormat(channels);
+			mSourceFormat = RenderHelper::convertChannelsToFormat(channels);
+			mInternalFormat = RenderHelper::convertChannelsToFormat(channels);
 
 			glGenTextures(1, &mTextureIndex);
 			glBindTexture(GL_TEXTURE_2D, mTextureIndex);
@@ -54,32 +56,23 @@ namespace ToyEngine {
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			//=================================================================================
 
-			if (textureData) {
-
-				glTexImage2D(GL_TEXTURE_2D, 0, mInternalFormat, mWidth, mHeight, 0, mSourceFormat, GL_UNSIGNED_BYTE, textureData);
-				glGenerateMipmap(GL_TEXTURE_2D);
-
-				stbi_image_free(textureData);
-			}
-			else {
-				std::cerr << "????????????????" << std::endl;
-			}
+			glTexImage2D(GL_TEXTURE_2D, 0, mInternalFormat, mWidth, mHeight, 0, mSourceFormat, GL_UNSIGNED_BYTE, textureData);
+			glGenerateMipmap(GL_TEXTURE_2D);
 		}
 		catch (const std::string& err) {
 			std::cerr << err << std::endl;
 		}	
 	}
 
-	void Texture::loadFromBuf(stbi_uc const* buffer, int len)
+	void Texture::loadFromBuf(stbi_uc const* buffer, int len, bool shouldFlip)
 	{
 		try {
 			int channels = 0;
 
-			stbi_set_flip_vertically_on_load(true);
-			unsigned char* textureData = stbi_load_from_memory(buffer, len, &mWidth, &mHeight, &channels, 0);
+			auto textureData = StbImageLoader::getImageFrom(buffer, len, shouldFlip, mWidth, mHeight, channels);
 			
-			mSourceFormat = convertChannelsToFormat(channels);
-			mInternalFormat = convertChannelsToFormat(channels);
+			mSourceFormat = RenderHelper::convertChannelsToFormat(channels);
+			mInternalFormat = RenderHelper::convertChannelsToFormat(channels);
 
 			glGenTextures(1, &mTextureIndex);
 			glBindTexture(GL_TEXTURE_2D, mTextureIndex);
@@ -104,22 +97,20 @@ namespace ToyEngine {
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			//=================================================================================
 
-			if (textureData) {
+			glTexImage2D(GL_TEXTURE_2D, 0, mInternalFormat, mWidth, mHeight, 0, mSourceFormat, GL_UNSIGNED_BYTE, textureData);
+			glGenerateMipmap(GL_TEXTURE_2D);
 
-				glTexImage2D(GL_TEXTURE_2D, 0, mInternalFormat, mWidth, mHeight, 0, mSourceFormat, GL_UNSIGNED_BYTE, textureData);
-				glGenerateMipmap(GL_TEXTURE_2D);
-
-				stbi_image_free(textureData);
-			}
-			else {
-				std::cerr << "????????????????" << std::endl;
-			}
+			stbi_image_free(textureData);
 		}
 		catch (const std::string& err) {
 			std::cerr << err << std::endl;
 		}
+		catch (const std::exception& e) {
+			Logger::DEBUG_WARNING(e.what());
+		}
 	}
 
+	// TODO: Move it to render helper.
 	std::string Texture::getTypeName() {
 		switch (mTextureType)
 		{
@@ -142,16 +133,5 @@ namespace ToyEngine {
 			std::cerr << "TextureType string is not defined";
 			return "";
 		}
-	}
-
-	GLenum Texture::convertChannelsToFormat(unsigned int channels) {
-		GLenum format = GL_NONE;
-		if (channels == 1)
-			format = GL_RED;
-		else if (channels == 3)
-			format = GL_RGB;
-		else if (channels == 4)
-			format = GL_RGBA;
-		return format;
 	}
 }

@@ -26,7 +26,7 @@ namespace ui {
 	
 	class FileExplorer {
 	public:
-		FileExplorer(std::shared_ptr<FileExplorerController> controller, std::shared_ptr<ToyEngine::MyScene> scene);
+		FileExplorer(std::shared_ptr<FileExplorerController> controller, std::shared_ptr<ToyEngine::Scene> scene);
 		FileExplorer()=default;
 		FileExplorer(const FileExplorer& explorer) = default;
 		FileExplorer& operator=(const FileExplorer&) = default;
@@ -48,7 +48,7 @@ namespace ui {
 		unsigned char* mFileThumbnail;
 		std::shared_ptr<FileExplorerController> mController;
 
-		std::shared_ptr<ToyEngine::MyScene> mScene;
+		std::shared_ptr<ToyEngine::Scene> mScene;
 	};
 
 }

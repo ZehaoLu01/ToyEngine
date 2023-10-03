@@ -74,7 +74,7 @@ namespace ui{
 		return instance;
 	}
 
-	void ImGuiMenu::setupControllers(std::shared_ptr<ToyEngine::MyScene> scene)
+	void ImGuiMenu::setupControllers(std::shared_ptr<ToyEngine::Scene> scene)
 	{
 		mHierarchyContorller = std::make_shared<SceneHierarchyController>(std::make_unique<SceneHierarchyModel>(scene->getRegistry()));
 		mPropertiesScreenController = std::make_shared<PropertiesScreenController>(std::make_unique<PropertiesScreenModel>(scene));

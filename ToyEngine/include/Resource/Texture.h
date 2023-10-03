@@ -32,8 +32,8 @@ namespace ToyEngine {
 			loadFromPath(flip);
 		}
 
-		Texture(std::string path, TextureType type, stbi_uc const* buffer, int len):mPath(path),mTextureType(type) {
-			loadFromBuf(buffer, len);
+		Texture(std::string path, TextureType type, stbi_uc const* buffer, int len, bool flip):mPath(path),mTextureType(type) {
+			loadFromBuf(buffer, len, flip);
 		}
 
 		Texture(const Texture& other);
@@ -77,7 +77,7 @@ namespace ToyEngine {
 		GLenum convertChannelsToFormat(unsigned int channels);
 
 		void loadFromPath(bool flip);
-		void loadFromBuf(stbi_uc const* buffer, int len);
+		void loadFromBuf(stbi_uc const* buffer, int len, bool shouldFlip);
 
 		int mWidth=-1;
 		int mHeight=-1;

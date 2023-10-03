@@ -29,7 +29,7 @@ namespace ToyEngine{
 			void drawImGuiMenu();
 			void drawLightingCube();
 			void initGrid();
-			void init(WindowPtr window, std::shared_ptr<Camera> camera, std::shared_ptr<MyScene> scene);
+			void init(WindowPtr window, std::shared_ptr<Camera> camera, std::shared_ptr<Scene> scene);
 			void setupImGUI();
 			entt::entity loadModel(std::string path, std::string modelName, entt::registry& registry, entt::entity parent);
 
@@ -55,13 +55,15 @@ namespace ToyEngine{
 			entt::entity processNode(aiNode* node, const aiScene* scene, entt::registry& registry, entt::entity parent, std::vector<Texture>& textures, const string& directory);
 			entt::entity processMesh(aiMesh* mesh, const aiScene* scene, entt::registry& registry, entt::entity parent, std::vector<Texture>& textures, const string& directory);
 
+			aiColor4D getColorFromMaterialOfType(const aiTextureType type, const aiMaterial* const pMaterial);
+
 			GLuint mGridVBOIndex;
 			GLuint mGridVAOIndex;
 			std::shared_ptr<Shader> mGridShader;
 			std::shared_ptr<Shader> mActiveShader;
 			std::shared_ptr<Shader> mLightCubeShader;
 
-			std::shared_ptr<MyScene> mScene;
+			std::shared_ptr<Scene> mScene;
 
 			glm::vec3 mGridLineColor = glm::vec3(255, 0, 0);
 			

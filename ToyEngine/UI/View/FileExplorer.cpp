@@ -1,14 +1,19 @@
 #include "UI/View/FileExplorer.h"
 
 namespace ui {
+
+	// constants
+	static const std::string FILE_ICON_PATH = "Resources\\Images\\file.png";
+	static const std::string FOLDER_ICON_PATH = "Resources\\Images\\folder.png";
+
 	FileExplorer::FileExplorer(std::shared_ptr<FileExplorerController> controller, 
-		std::shared_ptr<ToyEngine::MyScene>scene):mScene(scene),mController(controller)
+		std::shared_ptr<ToyEngine::Scene>scene):mScene(scene),mController(controller)
 	{
 		int width = 0;
 		int height = 0;
 		int channel = 0;
-		mFileThumbnailTexture = std::make_shared<ToyEngine::Texture>("Resources\\Images\\file.png",ToyEngine::TextureType::Diffuse, true);
-		mFolderThumbnailTexture = std::make_shared<ToyEngine::Texture>("Resources\\Images\\folder.png", ToyEngine::TextureType::Diffuse, true);
+		mFileThumbnailTexture = std::make_shared<ToyEngine::Texture>(FILE_ICON_PATH, ToyEngine::TextureType::Diffuse, true);
+		mFolderThumbnailTexture = std::make_shared<ToyEngine::Texture>(FOLDER_ICON_PATH , ToyEngine::TextureType::Diffuse, true);
 	}
 
 	void FileExplorer::render() {

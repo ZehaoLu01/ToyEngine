@@ -51,7 +51,7 @@ namespace ToyEngine{
 
 		mMainCameraPtr = std::make_shared<Camera>(glm::vec3(0.0f, 10.0f, 10.0f));
         
-        mActiveScene = std::make_shared<MyScene>();
+        mActiveScene = std::make_shared<Scene>();
         mActiveScene->init();
 
 		RenderSystem::instance.init(mWindow, mMainCameraPtr, mActiveScene);

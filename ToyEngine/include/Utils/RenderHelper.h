@@ -9,6 +9,8 @@ namespace ToyEngine {
 		static TextureType ConvertTextureType(aiTextureType type);
 
 		static std::string getTextureTypeString(aiTextureType);
+
+		static GLenum convertChannelsToFormat(unsigned int channels);
 	};
 
 }
