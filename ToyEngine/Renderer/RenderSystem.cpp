@@ -27,6 +27,7 @@
 #include <Renderer/Line.h>
 #include <UI/Controller/PropertiesScreenController.h>
 #include <Utils/Logger.h>
+#include <Utils/RenderHelper.h>
 
 #define SELF_ROTATION 0
 #define NUM_OF_TEXTURE_TYPE 3
@@ -334,7 +335,7 @@ namespace ToyEngine {
 
 	void RenderSystem::setupTextureOfType(entt::entity entity, aiTextureType type, aiMaterial* const& pMaterial, const std::string& directory, const aiScene* scene)
 	{
-		Logger::DEBUG_INFO("Start setup textures of type" )
+		Logger::DEBUG_INFO("Start setup textures of type: " + RenderHelper::getTextureTypeString(type));
 		float shininess = 20.f;
 		if (AI_SUCCESS != aiGetMaterialFloat(pMaterial, AI_MATKEY_SHININESS, &shininess)) {
 			shininess = 20.f;
@@ -392,7 +393,7 @@ namespace ToyEngine {
 					int len = assimpTexture->mHeight == 0 ? static_cast<int>(assimpTexture->mWidth) : static_cast<int>(
 						assimpTexture->mWidth * assimpTexture->mHeight);
 					
-						Texture texture = Texture(p, ConvertTextureType(type), buffer, len);
+						Texture texture = Texture(p, RenderHelper::ConvertTextureType(type), buffer, len);
 						//Project::getResourceManager()->storeTextureData(dreamTexture, textureFileGUID);
 
 						if (!mScene->getRegistry().try_get<MaterialComponent>(entity)) {
@@ -483,7 +484,7 @@ namespace ToyEngine {
 		//	p = p.substr(2, p.size() - 2);
 		//}
 		//std::string fullPath = directory + "\\" + p;
-		//Texture texture(fullPath, ConvertTextureType(type));
+		//Texture texture(fullPath, RenderHelper::ConvertTextureType(type));
 		//rm.addTexture(p, texture);
 		//textures[targetIndex] = texture;
 	}
@@ -500,7 +501,7 @@ namespace ToyEngine {
 	//			}
 
 	//			auto texture = rm.getTexture(p);
-	//			texture.setType(ConvertTextureType(type));
+	//			texture.setType(RenderHelper::ConvertTextureType(type));
 	//			if (texture) {
 	//				vecToAdd.push_back(texture);
 	//			}
@@ -508,7 +509,7 @@ namespace ToyEngine {
 	//			count++;
 	//		}
 	//	}
-	//	std::cout << "Successfully loaded " << count << " textures of type " << ConvertTextureType(type) << std::endl;
+	//	std::cout << "Successfully loaded " << count << " textures of type " << RenderHelper::ConvertTextureType(type) << std::endl;
 	//}
 
 	void RenderSystem::bindSiblings(entt::registry& registry, entt::entity curr, entt::entity& prev)
@@ -718,67 +719,5 @@ namespace ToyEngine {
 			shader->setUniform(prefix + ".cutOff", glm::cos(glm::radians(lightComponent.cutOff)));
 			shader->setUniform(prefix + ".outerCutOff", glm::cos(glm::radians(lightComponent.outerCutOff)));
 		}
-	}
-
-	TextureType RenderSystem::ConvertTextureType(aiTextureType type)
-	{
-		switch (type)
-		{
-		case aiTextureType_NONE:
-			break;
-		case aiTextureType_DIFFUSE:
-			return TextureType::Diffuse;
-			break;
-		case aiTextureType_SPECULAR:
-			return TextureType::Specular;
-			break;
-		case aiTextureType_AMBIENT:
-			return TextureType::Ambient;
-			break;
-		case aiTextureType_EMISSIVE:
-			break;
-		case aiTextureType_HEIGHT:
-			return TextureType::Height;
-			break;
-		case aiTextureType_NORMALS:
-			return TextureType::Normal;
-			break;
-		case aiTextureType_SHININESS:
-			break;
-		case aiTextureType_OPACITY:
-			break;
-		case aiTextureType_DISPLACEMENT:
-			break;
-		case aiTextureType_LIGHTMAP:
-			break;
-		case aiTextureType_REFLECTION:
-			break;
-		case aiTextureType_BASE_COLOR:
-			break;
-		case aiTextureType_NORMAL_CAMERA:
-			break;
-		case aiTextureType_EMISSION_COLOR:
-			break;
-		case aiTextureType_METALNESS:
-			break;
-		case aiTextureType_DIFFUSE_ROUGHNESS:
-			break;
-		case aiTextureType_AMBIENT_OCCLUSION:
-			break;
-		case aiTextureType_SHEEN:
-			break;
-		case aiTextureType_CLEARCOAT:
-			break;
-		case aiTextureType_TRANSMISSION:
-			break;
-		case aiTextureType_UNKNOWN:
-			break;
-		case _aiTextureType_Force32Bit:
-			break;
-		default:
-			break;
-		}
-		std::cerr << "Unknown texture type: " << type << std::endl;
-		return TextureType::UNKNOWN;
 	}
 }

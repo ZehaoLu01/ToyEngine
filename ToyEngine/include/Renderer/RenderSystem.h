@@ -54,7 +54,6 @@ namespace ToyEngine{
 			void bindSiblings(entt::registry& registry, entt::entity curr, entt::entity& prev);
 			entt::entity processNode(aiNode* node, const aiScene* scene, entt::registry& registry, entt::entity parent, std::vector<Texture>& textures, const string& directory);
 			entt::entity processMesh(aiMesh* mesh, const aiScene* scene, entt::registry& registry, entt::entity parent, std::vector<Texture>& textures, const string& directory);
-			TextureType ConvertTextureType(aiTextureType type);
 
 			GLuint mGridVBOIndex;
 			GLuint mGridVAOIndex;
