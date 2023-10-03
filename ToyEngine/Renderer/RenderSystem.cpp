@@ -622,8 +622,6 @@ namespace ToyEngine {
 				indices.push_back(face.mIndices[j]);
 		}
 		
-		std::vector<Texture> texturesToAdd;
-
 		// process material
 		if (mesh->mMaterialIndex >= 0)
 		{
@@ -653,7 +651,6 @@ namespace ToyEngine {
 		auto& transformComp = registry.emplace<TransformComponent>(entity);
 		transformComp.addParentTransform(parenTransform);
 		auto& meshComp = registry.emplace<MeshComponent>(entity, vertices, indices , shaderPtr, hasNormal, hasTexture);
-		auto& materialComp = registry.emplace<MaterialComponent>(entity, texturesToAdd);
 		auto& relationComp = registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());
 
 		if (std::string(mesh->mName.C_Str()).size()) {
