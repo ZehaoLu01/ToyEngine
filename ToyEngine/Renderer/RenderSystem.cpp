@@ -106,83 +106,101 @@ namespace ToyEngine {
 
 	void RenderSystem::drawMesh(const TransformComponent& transform, const MeshComponent& mesh, MaterialComponent material)
 	{	
-		mesh.shader->use();
+		try {
+			mesh.shader->use();
 
-		//unsigned int diffuseMap = mMissingTextureDiffuse.getTextureIndex();
-		//unsigned int specularMap = mMissingTextureSpecular.getTextureIndex();
+			//unsigned int diffuseMap = mMissingTextureDiffuse.getTextureIndex();
+			//unsigned int specularMap = mMissingTextureSpecular.getTextureIndex();
 
-	/*	for (int i = 0; i < textures.size(); i++)
-		{
-			if (textures[i].getTextureType() == TextureType::Diffuse) {
-				diffuseMap = textures[i].getTextureIndex();
+		/*	for (int i = 0; i < textures.size(); i++)
+			{
+				if (textures[i].getTextureType() == TextureType::Diffuse) {
+					diffuseMap = textures[i].getTextureIndex();
+				}
+				if (textures[i].getTextureType() == TextureType::Specular) {
+					diffuseMap = textures[i].getTextureIndex();
+				}
+			}*/
+			glActiveTexture(GL_TEXTURE0);
+
+			if (!material.diffuseTextures.empty()) {
+				// bind diffuse map
+				//TODO: Use multiple textures
+				glBindTexture(GL_TEXTURE_2D, material.diffuseTextures[0].getTextureIndex());
 			}
-			if (textures[i].getTextureType() == TextureType::Specular) {
-				diffuseMap = textures[i].getTextureIndex();
+			else {
+				glBindTexture(GL_TEXTURE_2D, mMissingTextureDiffuse.getTextureIndex());
+				//throw(std::overflow_error("Attempting to access the first diffuse map but there is no diffuse texture."));
 			}
-		}*/
 
-		// bind diffuse map
-		glActiveTexture(GL_TEXTURE0);
-		//TODO: Use multiple textures
-		glBindTexture(GL_TEXTURE_2D, material.diffuseTextures[0].getTextureIndex());
+			glActiveTexture(GL_TEXTURE1);
+			if (material.specularTexture.isValid()) {
+				// bind specular map
+				glBindTexture(GL_TEXTURE_2D, material.specularTexture.getTextureIndex());
+			}
+			else {
+				glBindTexture(GL_TEXTURE_2D, mMissingTextureSpecular.getTextureIndex());
+				//throw(std::overflow_error("Attempting to bind invalid specular map."));
+			}
 
-		// bind specular map
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, material.specularTexture.getTextureIndex());
 
-		// bind texture maps
-		mesh.shader->setUniform("material.diffuse", 0);
-		mesh.shader->setUniform("material.specular", 1);
-		mesh.shader->setUniform("material.shininess", material.shininess);
+			// bind texture maps
+			mesh.shader->setUniform("material.diffuse", 0);
+			mesh.shader->setUniform("material.specular", 1);
+			mesh.shader->setUniform("material.shininess", material.shininess);
 
-		glActiveTexture(GL_TEXTURE0);
+			glActiveTexture(GL_TEXTURE0);
 
-		applyLighting(mesh.shader.get());
+			applyLighting(mesh.shader.get());
 
-		auto model = glm::mat4(1.0f);
+			auto model = glm::mat4(1.0f);
 
-		glm::vec3 worldPos = transform.getWorldPos();
-		glm::vec3 worldRot =  transform.getWorldRotation();
-		glm::vec3 worldScale = transform.getWorldScale();
+			glm::vec3 worldPos = transform.getWorldPos();
+			glm::vec3 worldRot = transform.getWorldRotation();
+			glm::vec3 worldScale = transform.getWorldScale();
 
-		if (SELF_ROTATION) {
-			// rotation need to be improved
-			auto model_rotate = glm::rotate(model, (float)glfwGetTime() * glm::radians(40.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-			auto model_translate = glm::translate(model, worldPos);
-			model = model_translate * model_rotate;
+			if (SELF_ROTATION) {
+				// rotation need to be improved
+				auto model_rotate = glm::rotate(model, (float)glfwGetTime() * glm::radians(40.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+				auto model_translate = glm::translate(model, worldPos);
+				model = model_translate * model_rotate;
+			}
+			else {
+				auto model_translate = glm::translate(model, worldPos);
+				auto model_rotate = glm::rotate(glm::mat4(1.0f), glm::radians(worldRot.x), glm::vec3(1.0f, 0.0f, 0.0f));
+				model_rotate = glm::rotate(model_rotate, glm::radians(worldRot.y), glm::vec3(0.0f, 1.0f, 0.0f));
+				model_rotate = glm::rotate(model_rotate, glm::radians(worldRot.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
+				model = glm::scale(model_translate * model_rotate, worldScale);
+			}
+			mesh.shader->setUniform("model", model);
+
+			auto view = glm::mat4(1.0f);
+			// note that we're translating the scene in the reverse direction of where we want to move
+			view = mCamera->GetViewMatrix();
+			//view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
+			mesh.shader->setUniform("view", view);
+			mesh.shader->setUniform("viewPos", mCamera->Position);
+
+			mesh.shader->setUniform("normalMat", glm::transpose(glm::inverse(view * model)));
+
+			auto projection = glm::mat4(1);
+			projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
+			mesh.shader->setUniform("projection", projection);
+
+			glBindVertexArray(mesh.VAOIndex);
+			glDrawElements(GL_TRIANGLES, mesh.vertexSize, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+
+			// Clear texture binding so that current binding will not affect other meshes.
+			for (int i = 0; i < 5; i++)
+			{
+				glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
 		}
-		else {
-			auto model_translate = glm::translate(model, worldPos);
-			auto model_rotate = glm::rotate(glm::mat4(1.0f), glm::radians(worldRot.x), glm::vec3(1.0f, 0.0f, 0.0f));
-			model_rotate = glm::rotate(model_rotate, glm::radians(worldRot.y), glm::vec3(0.0f, 1.0f, 0.0f));
-			model_rotate = glm::rotate(model_rotate, glm::radians(worldRot.z), glm::vec3(0.0f, 0.0f, 1.0f));
-
-			model = glm::scale(model_translate * model_rotate, worldScale);
-		}
-		mesh.shader->setUniform("model", model);
-
-		auto view = glm::mat4(1.0f);
-		// note that we're translating the scene in the reverse direction of where we want to move
-		view = mCamera->GetViewMatrix();
-		//view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
-		mesh.shader->setUniform("view", view);
-		mesh.shader->setUniform("viewPos", mCamera->Position);
-
-		mesh.shader->setUniform("normalMat", glm::transpose(glm::inverse(view * model)));
-
-		auto projection = glm::mat4(1);
-		projection = glm::perspective(glm::radians(mCamera->mZoom), 1920.0f / 1080.0f, 0.1f, 100.0f);
-		mesh.shader->setUniform("projection", projection);
-
-		glBindVertexArray(mesh.VAOIndex);
-		glDrawElements(GL_TRIANGLES, mesh.vertexSize, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-
-		// Clear texture binding so that current binding will not affect other meshes.
-		for (int i = 0; i < 5; i++)
-		{
-			glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
-			glBindTexture(GL_TEXTURE_2D, 0);
+		catch (std::overflow_error err) {
+			Logger::DEBUG_ERROR(err.what());
 		}
 	}
 
