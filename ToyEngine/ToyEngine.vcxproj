@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="a.cpp" />
     <ClCompile Include="Engine\Scene.cpp" />
+    <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="UI\View\PropertiesScreen.cpp" />
     <ClCompile Include="Renderer\Resource\ResourceManager.cpp" />
     <ClCompile Include="UI\Controller\FileExplorerController.cpp" />
@@ -370,6 +371,7 @@
     <ClInclude Include="include\UI\View\SceneHierarchyPanel.h" />
     <ClInclude Include="include\Resource\ResourceManager.h" />
     <ClInclude Include="include\UI\View\PropertiesScreen.h" />
+    <ClInclude Include="include\Utils\Logger.h" />
     <ClInclude Include="submodule\FileExplorer\imfilebrowser.h" />
   </ItemGroup>
   <ItemGroup>
