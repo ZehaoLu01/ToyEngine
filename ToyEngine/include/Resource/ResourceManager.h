@@ -10,6 +10,8 @@ namespace ToyEngine{
 	class ResourceManager
 	{
 	public:
+		
+		// Get textrue according to path relative to resource folder.
 		Texture getTexture(const string& fileName) {
 			if (tMap.find(fileName) == tMap.end()) {
 				return Texture();

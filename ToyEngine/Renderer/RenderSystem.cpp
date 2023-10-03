@@ -124,11 +124,11 @@ namespace ToyEngine {
 		// bind diffuse map
 		glActiveTexture(GL_TEXTURE0);
 		//TODO: Use multiple textures
-		glBindTexture(GL_TEXTURE_2D, material.diffuseTextures[0]);
+		glBindTexture(GL_TEXTURE_2D, material.diffuseTextures[0].getTextureIndex());
 
 		// bind specular map
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, material.specularTexture);
+		glBindTexture(GL_TEXTURE_2D, material.specularTexture.getTextureIndex());
 
 		// bind texture maps
 		mesh.shader->setUniform("material.diffuse", 0);
@@ -443,7 +443,10 @@ namespace ToyEngine {
 					else {
 						Logger::DEBUG_INFO("Texture path found in resource manager. Use the texture from resource manager");
 
-						texture = rm.getTexture(path.C_Str());
+						texture = rm.getTexture(texturePath);
+						if (!texture.isValid()) {
+							Logger::DEBUG_WARNING("Texture with path: " + std::string(path.C_Str()) + " is not loaded properly.");
+						}
 					}
 
 					if (!mScene->getRegistry().try_get<MaterialComponent>(entity)) {
