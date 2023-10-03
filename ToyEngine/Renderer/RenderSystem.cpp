@@ -349,19 +349,20 @@ namespace ToyEngine {
 		if (type == aiTextureType_DIFFUSE) {
 			if (pMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor) != aiReturn_SUCCESS) {
 				aiColor = aiColor4D(1.0, 1.0, 1.0, 1.0);
-				std::cerr << "Error getting color for material of type " + std::to_string(type) << std::endl;
+				Logger::DEBUG_ERROR("Error getting color for material of type " + std::to_string(type));
 			}
 		}
 		else if (type == aiTextureType_SPECULAR) {
 			if (pMaterial->Get(AI_MATKEY_COLOR_SPECULAR, aiColor) != aiReturn_SUCCESS) {
 				aiColor = aiColor4D(1.0, 1.0, 1.0, 1.0);
-				// Logger::error("Error getting color for material of type " + std::to_string(textureType));
+				Logger::DEBUG_ERROR("Error getting color for material of type " + std::to_string(type));
+
 			}
 		}
 		else if (type == aiTextureType_AMBIENT) {
 			if (pMaterial->Get(AI_MATKEY_COLOR_AMBIENT, aiColor) != aiReturn_SUCCESS) {
 				aiColor = aiColor4D(1.0, 1.0, 1.0, 1.0);
-				// Logger::error("Error getting color for material of type " + std::to_string(textureType));
+				Logger::DEBUG_ERROR("Error getting color for material of type " + std::to_string(type));
 			}
 		}
 		else if (type == aiTextureType_HEIGHT) {
@@ -377,7 +378,7 @@ namespace ToyEngine {
 		glm::vec4 color = { aiColor.r, aiColor.g, aiColor.b, aiColor.a };
 
 
-		
+		Logger::DEBUG_INFO("Have " + std::to_string(pMaterial->GetTextureCount(type))+ " " + RenderHelper::getTextureTypeString(type) + " textures in total");
 		for (int i = 0; i < pMaterial->GetTextureCount(type); i++) {
 			aiString path;
 			if (pMaterial->GetTexture(type, i, &path, NULL, NULL, NULL, NULL, NULL) == aiReturn_SUCCESS) {
@@ -385,6 +386,8 @@ namespace ToyEngine {
 
 				// embedded texture
 				if (auto assimpTexture = scene->GetEmbeddedTexture(path.C_Str())) {
+					Logger::DEBUG_INFO("The" + RenderHelper::getTextureTypeString(type) + " texture " + std::to_string(i) + " is an embedded texture.");
+
 					std::string texturePath = path.C_Str();
 					//rm.addTexture(texturePath,texture)
 
@@ -426,13 +429,20 @@ namespace ToyEngine {
 				else {
 					// regular texture file
 					std::string texturePath = std::filesystem::path(directory).parent_path().append(path.C_Str()).string();
+					
+					Logger::DEBUG_INFO("The " + RenderHelper::getTextureTypeString(type) + " texture " + std::to_string(i) + " is a regular texture.");
+					Logger::DEBUG_INFO("Texture Path: " + texturePath);
+
 					Texture texture;
 					// add texture stored in an external image file
 					if (!rm.getTexture(texturePath).isValid()) {
-						texture = Texture(texturePath, ConvertTextureType(type));
+						Logger::DEBUG_INFO("Texture path not found in resource manager.");
+						texture = Texture(texturePath, RenderHelper::ConvertTextureType(type));
 						rm.addTexture(texturePath, texture);
 					}
 					else {
+						Logger::DEBUG_INFO("Texture path found in resource manager. Use the texture from resource manager");
+
 						texture = rm.getTexture(path.C_Str());
 					}
 
@@ -460,7 +470,7 @@ namespace ToyEngine {
 						materialComp.ambientTexture = texture;
 					}
 					else {
-						std::cerr << "Unable to handle getting embedded texture of this type" << std::endl;
+						Logger::DEBUG_ERROR("Unable to handle getting embedded texture of this type");
 					}
 				}
 			}
