@@ -5,7 +5,12 @@ namespace ToyEngine {
 
 	class Logger
 	{
-		static void DEBUG(std::string& msg);
+	public:
+		static void DEBUG_INFO(std::string msg);
+
+		static void DEBUG_WARNING(std::string msg);
+
+		static void DEBUG_ERROR(std::string msg);
 	};
 
 }

@@ -26,6 +26,7 @@
 #include "UI/View/ImGuiMenu.h"
 #include <Renderer/Line.h>
 #include <UI/Controller/PropertiesScreenController.h>
+#include <Utils/Logger.h>
 
 #define SELF_ROTATION 0
 #define NUM_OF_TEXTURE_TYPE 3
@@ -333,6 +334,7 @@ namespace ToyEngine {
 
 	void RenderSystem::setupTextureOfType(entt::entity entity, aiTextureType type, aiMaterial* const& pMaterial, const std::string& directory, const aiScene* scene)
 	{
+		Logger::DEBUG_INFO("Start setup textures of type" )
 		float shininess = 20.f;
 		if (AI_SUCCESS != aiGetMaterialFloat(pMaterial, AI_MATKEY_SHININESS, &shininess)) {
 			shininess = 20.f;
@@ -369,7 +371,7 @@ namespace ToyEngine {
 		}
 
 		else {
-			std::cerr << "Unable to extract color from texture type " + std::to_string(type) << std::endl;
+			Logger::DEBUG_ERROR("Unable to extract color from texture type" + std::to_string(type));
 		}
 		glm::vec4 color = { aiColor.r, aiColor.g, aiColor.b, aiColor.a };
 
@@ -417,7 +419,7 @@ namespace ToyEngine {
 							materialComp.ambientTexture = texture;
 						}
 						else {
-							std::cerr << "Unable to handle getting embedded texture of this type" << std::endl;
+							Logger::DEBUG_ERROR("Unable to handle getting embedded texture of this type");
 						}
 				}
 				else {
