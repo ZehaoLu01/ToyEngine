@@ -1,7 +1,8 @@
 #include "UI/View/FileExplorer.h"
 
 namespace ui {
-	FileExplorer::FileExplorer(std::shared_ptr<FileExplorerController> controller, std::shared_ptr<ToyEngine::MyScene>scene):mScene(scene),mController(controller)
+	FileExplorer::FileExplorer(std::shared_ptr<FileExplorerController> controller, 
+		std::shared_ptr<ToyEngine::MyScene>scene):mScene(scene),mController(controller)
 	{
 		int width = 0;
 		int height = 0;
@@ -46,7 +47,8 @@ namespace ui {
 	{
 		GLuint index = mFolderThumbnailTexture->getTextureIndex();
 		ImGui::PushStyleColor(ImGuiCol_Button, FILE_BACKGROUND_COLOR);
-		if (ImageButton(i.path().string().c_str(), (void*)(intptr_t)index, { DEFAULT_THUMBNAIL_WIDTH ,DEFAULT_THUMBNAIL_WIDTH }, { 0, 1 }, { 1, 0 }, { 1.0f, 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f })) {
+		if (ImageButton(i.path().string().c_str(), (void*)(intptr_t)index, 
+			{ DEFAULT_THUMBNAIL_WIDTH ,DEFAULT_THUMBNAIL_WIDTH }, { 0, 1 }, { 1, 0 }, { 1.0f, 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f })) {
 			mCurrentDirectory = i.path();
 			render();
 		}
@@ -56,12 +58,13 @@ namespace ui {
 		GLuint index = mFileThumbnailTexture->getTextureIndex();
 		//https://github.com/ocornut/imgui/issues/4216
 		ImGui::PushStyleColor(ImGuiCol_Button, FILE_BACKGROUND_COLOR);
-		if (ImageButton(i.path().string().c_str(), (void*)(intptr_t)index, { DEFAULT_THUMBNAIL_WIDTH ,DEFAULT_THUMBNAIL_WIDTH }, { 0, 1 }, { 1, 0 }, { 1.0f, 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f })) {
+		if (ImageButton(i.path().string().c_str(), (void*)(intptr_t)index, 
+			{ DEFAULT_THUMBNAIL_WIDTH ,DEFAULT_THUMBNAIL_WIDTH }, { 0, 1 }, { 1, 0 }, { 1.0f, 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f })) {
 			ViewEvent event(mScene->getRegistry());
 
 			//TODO: query name from user
 			event.name = "onModelFileButtonDown";
-			event.value = "MoedelRoot";
+			event.value = "ModelRoot";
 			event.path = i.path().string();
 			event.viewEventType = ViewEventType::ButtonEvent;
 			event.parentEntity = mScene->getRootEntity();

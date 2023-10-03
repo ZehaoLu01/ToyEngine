@@ -180,8 +180,22 @@ namespace ToyEngine {
     };
 
     struct MaterialComponent {
-        std::vector<Texture> textures;
-        MaterialComponent(std::vector<Texture> textures) :textures(textures) {};
+        bool isEmbedded = false;
+
+        float shininess = 20.0f;
+        // diffuse color and textures
+        std::vector<Texture> diffuseTextures;
+        glm::vec4 diffuseColor = { 1, 1, 1, 1 };
+        // specular color and textures
+        Texture specularTexture;
+        glm::vec4 specularColor = { 1, 1, 1, 1 };
+        // height texture
+        Texture heightTexture;
+        // normal texture
+        Texture normalTexture;
+        // ambient texture
+        Texture ambientTexture;
+        glm::vec4 ambientColor = { 1, 1, 1, 1 };
     };
 
     struct RelationComponent {
