@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <Resource/Texture.h>
 #include <Renderer/Shader.h>
-
+#include <Utils/Logger.h>
 
 namespace ToyEngine {
     #define MAX_BONE_INFLUENCE 4
@@ -99,7 +99,7 @@ namespace ToyEngine {
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
             }
             catch (...) {
-                std::cerr << "Something went wrong when creating Mesh Component!!!" << std::endl;
+                Logger::DEBUG_ERROR("Something went wrong when creating Mesh Component!!!");
             }
 
         }

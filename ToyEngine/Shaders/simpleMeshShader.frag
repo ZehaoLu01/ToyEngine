@@ -95,7 +95,7 @@ void main()
 
     //testing
     //vec3 test = texture(material.specular, TexCoords).xyz;
-    //FragColor = vec4(viewDir, 1.0);
+    //FragColor = vec4(TexCoords, 0.0, 1.0);
 }
 
 // calculates the color when using a directional light.

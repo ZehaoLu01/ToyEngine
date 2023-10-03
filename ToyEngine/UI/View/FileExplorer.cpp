@@ -7,8 +7,8 @@ namespace ui {
 		int width = 0;
 		int height = 0;
 		int channel = 0;
-		mFileThumbnailTexture = std::make_shared<ToyEngine::Texture>("Resources\\Images\\file.png",ToyEngine::TextureType::Diffuse);
-		mFolderThumbnailTexture = std::make_shared<ToyEngine::Texture>("Resources\\Images\\folder.png", ToyEngine::TextureType::Diffuse);
+		mFileThumbnailTexture = std::make_shared<ToyEngine::Texture>("Resources\\Images\\file.png",ToyEngine::TextureType::Diffuse, true);
+		mFolderThumbnailTexture = std::make_shared<ToyEngine::Texture>("Resources\\Images\\folder.png", ToyEngine::TextureType::Diffuse, true);
 	}
 
 	void FileExplorer::render() {

@@ -137,9 +137,7 @@ namespace ToyEngine {
 
 		glActiveTexture(GL_TEXTURE0);
 
-
 		applyLighting(mesh.shader.get());
-
 
 		auto model = glm::mat4(1.0f);
 
@@ -267,8 +265,8 @@ namespace ToyEngine {
 
 		mLightCubeShader = std::make_shared<Shader>("Shaders/lightingShader.vert", "Shaders/lightingShader.frag");
 
-		mMissingTextureDiffuse = Texture("Resources\\Images\\missing_texture_diffuse.png", ToyEngine::TextureType::Diffuse);
-		mMissingTextureSpecular = Texture("Resources\\Images\\missing_texture_specular.png", ToyEngine::TextureType::Specular);
+		mMissingTextureDiffuse = Texture("Resources\\Images\\missing_texture_diffuse.png", ToyEngine::TextureType::Diffuse, false);
+		mMissingTextureSpecular = Texture("Resources\\Images\\missing_texture_specular.png", ToyEngine::TextureType::Specular, false);
 	}
 
 	void RenderSystem::setupImGUI()
@@ -289,7 +287,7 @@ namespace ToyEngine {
 	entt::entity RenderSystem::loadModel(std::string path, std::string modelName, entt::registry& registry, entt::entity parent)
 	{
 		Assimp::Importer import;
-		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
+		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
 
 		// TODO: What if the model has already been loaded before?
 
@@ -397,7 +395,10 @@ namespace ToyEngine {
 						assimpTexture->mWidth * assimpTexture->mHeight);
 					
 						Texture texture = Texture(p, RenderHelper::ConvertTextureType(type), buffer, len);
-						//Project::getResourceManager()->storeTextureData(dreamTexture, textureFileGUID);
+
+						if (!texture.isValid()) {
+							Logger::DEBUG_WARNING("Texture with path: " + std::string(path.C_Str()) + " is not loaded properly.");
+						}
 
 						if (!mScene->getRegistry().try_get<MaterialComponent>(entity)) {
 							mScene->getRegistry().emplace<MaterialComponent>(entity);
@@ -437,7 +438,7 @@ namespace ToyEngine {
 					// add texture stored in an external image file
 					if (!rm.getTexture(texturePath).isValid()) {
 						Logger::DEBUG_INFO("Texture path not found in resource manager.");
-						texture = Texture(texturePath, RenderHelper::ConvertTextureType(type));
+						texture = Texture(texturePath, RenderHelper::ConvertTextureType(type), false);
 						rm.addTexture(texturePath, texture);
 					}
 					else {

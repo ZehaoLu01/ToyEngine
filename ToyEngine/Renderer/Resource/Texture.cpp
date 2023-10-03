@@ -20,13 +20,13 @@ namespace ToyEngine {
 		return *this;
 	}
 
-	void Texture::loadFromPath(){
+	void Texture::loadFromPath(bool flip){
 		try {
 			if (mPath == "") {
 				throw("Invalid texture path: " + mPath);
 			}
 			int channels = 0;
-			auto textureData = StbImageLoader::getImageFrom(mPath, &mWidth, &mHeight, &channels);
+			auto textureData = StbImageLoader::getImageFrom(mPath, &mWidth, &mHeight, &channels, flip);
 
 			mSourceFormat = convertChannelsToFormat(channels);
 			mInternalFormat = convertChannelsToFormat(channels);
