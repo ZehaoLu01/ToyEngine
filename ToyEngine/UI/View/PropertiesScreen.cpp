@@ -5,16 +5,25 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <UI/Controller/PropertiesScreenController.h>
+#include <UI/View/ImGuiManager.h>
 
 
 namespace ui {
 	void PropertiesScreen::render() {
-		renderObjectPropertyMenu();
+		ImGui::Begin("Renderer Settings", nullptr, ImGuiWindowFlags_NoMove);
+
+		if (mContext->selectedEntity != entt::null) {
+			renderObjectPropertyMenu();
+		}
+
+		renderCreateLightingMenu();
+
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::End();
 	}
 
 	void PropertiesScreen::renderObjectPropertyMenu()
 	{
-		ImGui::Begin("Renderer Settings", nullptr, ImGuiWindowFlags_NoMove);
 
 		if (ImGui::CollapsingHeader("Object properties")) {
 			drawPositionProps();
@@ -23,16 +32,16 @@ namespace ui {
 
 			drawScaleProps();
 		}
+	}
 
+	void PropertiesScreen::renderCreateLightingMenu()
+	{
 		if (ImGui::CollapsingHeader("Lighting properties")) {
 			drawCreatePointLightProps();
 		}
 		if (ImGui::CollapsingHeader("Directional lighting")) {
 			drawCreateDirectionalLightProps();
 		}
-
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::End();
 	}
 
 	void PropertiesScreen::drawPositionProps() {
@@ -55,7 +64,7 @@ namespace ui {
 
 			ImGui::EndTable();
 
-			ViewEvent event(mContext->getRegistry());
+			ViewEvent event(mScene->getRegistry());
 			event.viewEventType = ViewEventType::InputEvent;
 			event.name = "properties.position";
 			event.valueType = BindingValueType::Vec3;
@@ -89,7 +98,7 @@ namespace ui {
 
 			ImGui::EndTable();
 
-			ViewEvent event(mContext->getRegistry());
+			ViewEvent event(mScene->getRegistry());
 			event.viewEventType = ViewEventType::InputEvent;
 			event.name = "properties.rotation";
 			event.valueType = BindingValueType::Vec3;
@@ -121,7 +130,7 @@ namespace ui {
 
 			ImGui::EndTable();
 
-			ViewEvent event(mContext->getRegistry());
+			ViewEvent event(mScene->getRegistry());
 			event.viewEventType = ViewEventType::InputEvent;
 			event.name = "properties.scale";
 			event.valueType = BindingValueType::Vec3;
@@ -224,7 +233,7 @@ namespace ui {
 		}
 
 		if (ImGui::Button("Add directional light")) {
-			ViewEvent event(mContext->getRegistry());
+			ViewEvent event(mScene->getRegistry());
 			event.viewEventType = ViewEventType::ButtonEvent;
 			event.name = "onCreateDirctionalLightButtonDown";
 			event.vectorGroup = { directional_light_direction, directional_light_ambient, directional_light_diffuse, directional_light_specular };
@@ -331,7 +340,7 @@ namespace ui {
 		}
 
 		if (ImGui::Button("Add light cube")) {
-			ViewEvent event(mContext->getRegistry());
+			ViewEvent event(mScene->getRegistry());
 			event.viewEventType = ViewEventType::ButtonEvent;
 			event.name = "onCreatePointLightButtonDown";
 			event.vectorGroup = { point_light_position,point_light_ambient, point_light_diffuse, point_light_specular };

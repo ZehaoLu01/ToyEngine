@@ -22,6 +22,10 @@ namespace ui
 	class PropertiesScreenController;
 	class SceneHierarchyController;
 
+	struct ImGuiContext {
+		entt::entity selectedEntity = entt::null;
+	};
+
 	class ImGuiManager
 	{
 	public:
@@ -47,7 +51,8 @@ namespace ui
 		SceneHierarchyPanel mHierarchyPanel;
 		PropertiesScreen mPropertiesScreen;
 
-		std::shared_ptr<ToyEngine::Scene> mContext;
+		ImGuiContext mContext;
+		std::shared_ptr<ToyEngine::Scene> mScene;
 		std::vector<std::shared_ptr<Controller>> mScreenControllers;
 	};
 

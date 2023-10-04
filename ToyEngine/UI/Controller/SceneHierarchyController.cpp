@@ -11,6 +11,7 @@ namespace ui {
 		return mSceneHierarchyModel->getTagNames();
 	}
 
+	//TODO Remove this?
 	void SceneHierarchyController::onSelectionChange(entt::entity entity)
 	{
 		std::cout << "SceneHierarchyController select entity: " << mRegistry.get<ToyEngine::TagComponent>(entity).name << std::endl;

@@ -1,9 +1,15 @@
 #include "UI/View/SceneHierarchyPanel.h"
+#include "UI/View/ImGuiManager.h"
 #include<queue>
 
 namespace ui {
 	using ToyEngine::TagComponent;
 	using ToyEngine::RelationComponent;
+
+	SceneHierarchyPanel::SceneHierarchyPanel(std::shared_ptr<ToyEngine::Scene> scene, ImGuiContext* context, std::shared_ptr<SceneHierarchyController> controller, std::function<void(entt::entity)> onSelect) :SceneHierarchyPanel(scene, context, controller)
+	{
+		mSelectEntityCallback = onSelect;
+	}
 
 	void SceneHierarchyPanel::render()
 	{
@@ -30,9 +36,14 @@ namespace ui {
 			};
 
 			if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-				mSelectionContext = entt::null;
+				setSelected(entt::null);
 		}
 		ImGui::End();
+	}
+
+	entt::entity SceneHierarchyPanel::getSelectedEntity() const
+	{
+		return mContext->selectedEntity;
 	}
 
 	void SceneHierarchyPanel::hierarchyTraversal(entt::registry& registry, entt::entity head)
@@ -44,7 +55,7 @@ namespace ui {
 
 		auto tag = currentTagComp.name;
 
-		ImGuiTreeNodeFlags flags = ((mSelectionContext == head) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+		ImGuiTreeNodeFlags flags = ((mContext->selectedEntity == head) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 		if (currentRelationComp.children.size() == 0) {
 			flags |= ImGuiTreeNodeFlags_Leaf;
@@ -55,8 +66,7 @@ namespace ui {
 
 		if (ImGui::IsItemClicked())
 		{
-			mSelectionContext = head;
-			mSelectEntityCallback(head);
+			setSelected(head);
 		}
 
 		if (opened)
@@ -67,5 +77,11 @@ namespace ui {
 			// TreeDepth--
 			ImGui::TreePop();
 		}
+	}
+
+	void SceneHierarchyPanel::setSelected(entt::entity entity)
+	{
+		mSelectEntityCallback(entity);
+		mContext->selectedEntity = entity;
 	}
 }

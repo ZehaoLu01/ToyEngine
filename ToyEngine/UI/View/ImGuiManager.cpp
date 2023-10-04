@@ -88,11 +88,12 @@ namespace ui{
 			controller->init();
 		}
 
-		mContext = scene;
+		mScene = scene;
 
-		mPropertiesScreen = PropertiesScreen(mContext, mPropertiesScreenController);
-		mHierarchyPanel = SceneHierarchyPanel(scene, mHierarchyContorller, [](entt::entity entity) {
-			ViewEvent event(ImGuiManager::getInstance().mContext->getRegistry());
+		mPropertiesScreen = PropertiesScreen(scene, &mContext, mPropertiesScreenController);
+		mHierarchyPanel = SceneHierarchyPanel(scene, &mContext, mHierarchyContorller, [](entt::entity entity) {
+			// On selected
+			ViewEvent event(ImGuiManager::getInstance().mScene->getRegistry());
 			event.viewEventType = ViewEventType::ButtonEvent;
 			event.name = "changeSelectionButtonDown";
 			event.value = std::to_string((uint32_t)entity);
