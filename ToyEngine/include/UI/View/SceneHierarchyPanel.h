@@ -27,11 +27,9 @@ namespace ui {
 
 			entt::entity getSelectedEntity() const { return mSelectionContext; }
 
-			void SetSelectedEntity(entt::entity entity) {
+			void setSelectedEntity(entt::entity entity) {
 				mSelectionContext = entity;
 			}
-
-			void setOnSelectCallBack(std::function<void(entt::entity)>);
 
 		private:
 			void SetContext(const std::shared_ptr<ToyEngine::Scene> scene) {

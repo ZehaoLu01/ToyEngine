@@ -316,14 +316,14 @@ namespace ToyEngine {
 
 		auto child = processNode(scene->mRootNode, scene, registry, entity, textures, directory);
 		//TODO: PRE, NEXT
-		auto& relation = registry.emplace<RelationComponent>(entity, parent, std::make_shared<std::vector<entt::entity>>());
+		auto& relation = registry.emplace<RelationComponent>(entity, parent, std::vector<entt::entity>());
 		if (modelName.size() == 0) {
 			registry.emplace<TagComponent>(entity, "default model");
 		}
 		else {
 			registry.emplace<TagComponent>(entity, modelName);
 		}
-		relation.children->push_back(child);
+		relation.children.push_back(child);
 		return entity;
 	}
 
@@ -492,7 +492,7 @@ namespace ToyEngine {
 		
 		std::shared_ptr<std::vector<Vertex>> verticesPtr;
 		std::shared_ptr<std::vector<unsigned int>> indicesPtr;
-		auto& relation = registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());
+		auto& relation = registry.emplace<RelationComponent>(entity, parent, vector<entt::entity>());
 		auto& tag = registry.emplace<TagComponent>(entity, std::string(node->mName.C_Str()));
 		auto& transform = registry.emplace<TransformComponent>(entity);
 		transform.addParentTransform(parentTransform);
@@ -510,7 +510,7 @@ namespace ToyEngine {
 			//bindSiblings(registry, child, prev);
 
 			//prev = child;
-			relation.children->push_back(child);
+			relation.children.push_back(child);
 		}
 
 		// then do the same for each of its children
@@ -521,7 +521,7 @@ namespace ToyEngine {
 			//bindSiblings(registry, child, prev);
 
 			//prev = child;
-			relation.children->push_back(child);
+			relation.children.push_back(child);
 		}
 		return entity;
 	}
@@ -604,7 +604,7 @@ namespace ToyEngine {
 		auto& transformComp = registry.emplace<TransformComponent>(entity);
 		transformComp.addParentTransform(parenTransform);
 		auto& meshComp = registry.emplace<MeshComponent>(entity, vertices, indices , simpleMeshShader, hasNormal, hasTexture);
-		auto& relationComp = registry.emplace<RelationComponent>(entity, parent, std::make_shared<vector<entt::entity>>());
+		auto& relationComp = registry.emplace<RelationComponent>(entity, parent, vector<entt::entity>());
 
 		if (std::string(mesh->mName.C_Str()).size()) {
 			registry.emplace<TagComponent>(entity, std::string(mesh->mName.C_Str()));

@@ -35,10 +35,6 @@ namespace ui {
 		ImGui::End();
 	}
 
-
-	void SceneHierarchyPanel::setOnSelectCallBack(std::function<void(entt::entity)>)
-	{
-	}
 	void SceneHierarchyPanel::hierarchyTraversal(entt::registry& registry, entt::entity head)
 	{
 		if (head == entt::null) {
@@ -50,6 +46,10 @@ namespace ui {
 
 		ImGuiTreeNodeFlags flags = ((mSelectionContext == head) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
+		if (currentRelationComp.children.size() == 0) {
+			flags |= ImGuiTreeNodeFlags_Leaf;
+		}
+
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)head, flags, tag.c_str());
 
 		if (ImGui::IsItemClicked())
@@ -65,7 +65,7 @@ namespace ui {
 			//if (opened)
 			//	ImGui::TreePop();
 			//ImGui::TreePop();
-			for (const auto child : *currentRelationComp.children) {
+			for (const auto child : currentRelationComp.children) {
 				hierarchyTraversal(registry, child);
 			}
 			ImGui::TreePop();

@@ -40,7 +40,7 @@ namespace ui{
 		bool p_open = true;
 
 		ImGui::ShowDemoWindow(&p_open);
-
+		
 		mPropertiesScreen.render();
 
 		mHierarchyPanel.render();
