@@ -85,6 +85,15 @@ namespace ui {
 		//if (entity != entt::null) {
 		//	mSelectEntityCallback(entity);
 		//}
+		std::string name;
+		if (entity == entt::null) {
+			name = "null";
+		}
+		else {
+			name = mScene->getRegistry().get<TagComponent>(entity).name;
+		}
+
+		ToyEngine::Logger::DEBUG_INFO("Selected node: " + name);
 		mContext->selectedEntity = entity;
 	}
 }
