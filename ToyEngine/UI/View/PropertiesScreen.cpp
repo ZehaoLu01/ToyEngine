@@ -10,7 +10,7 @@
 
 namespace ui {
 	void PropertiesScreen::render() {
-		ImGui::Begin("Renderer Settings", nullptr, ImGuiWindowFlags_NoMove);
+		ImGui::Begin("Renderer Settings", nullptr);
 
 		if (mContext->selectedEntity != entt::null) {
 			renderObjectPropertyMenu();
@@ -147,9 +147,9 @@ namespace ui {
 	{
 		// temp value
 		static glm::vec3 directional_light_direction({ 0.0f, 0.0f, 0.0f });
-		static glm::vec3 directional_light_ambient = { 1.0f, 1.0f, 1.0f };
-		static glm::vec3 directional_light_diffuse = { 1.0f, 1.0f, 1.0f };
-		static glm::vec3 directional_light_specular = { 1.0f, 1.0f, 1.0f };
+		static glm::vec3 directional_light_ambient = { 0.0f, 0.0f, 0.0f };
+		static glm::vec3 directional_light_diffuse = { 0.0f, 0.0f, 0.0f };
+		static glm::vec3 directional_light_specular = { 0.0f, 0.0f, 0.0f };
 
 		static float constant = 1.0f;
 		static float linear = 0.09f;
@@ -165,55 +165,13 @@ namespace ui {
 		}
 
 		ImGui::Text("Ambient");
-		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
-			ImGui::TableNextColumn();
-			ImGui::Text("x: ");
-			ImGui::DragFloat("##value x", &directional_light_ambient.x, 0.1f);
-
-			ImGui::TableNextColumn();
-			ImGui::Text("y: ");
-			ImGui::DragFloat("##value y", &directional_light_ambient.y, 0.1f);
-
-			ImGui::TableNextColumn();
-			ImGui::Text("z: ");
-			ImGui::DragFloat("##value z", &directional_light_ambient.z, 0.1f);
-
-			ImGui::EndTable();
-		}
+		ImGui::ColorEdit4("directional##1", (float*)&directional_light_ambient, ImGuiColorEditFlags_DisplayRGB);
 
 		ImGui::Text("Diffuse");
-		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
-			ImGui::TableNextColumn();
-			ImGui::Text("x: ");
-			ImGui::DragFloat("##value x", &directional_light_diffuse.x, 0.1f);
-
-			ImGui::TableNextColumn();
-			ImGui::Text("y: ");
-			ImGui::DragFloat("##value y", &directional_light_diffuse.y, 0.1f);
-
-			ImGui::TableNextColumn();
-			ImGui::Text("z: ");
-			ImGui::DragFloat("##value z", &directional_light_diffuse.z, 0.1f);
-
-			ImGui::EndTable();
-		}
+		ImGui::ColorEdit4("directional##2", (float*)&directional_light_diffuse, ImGuiColorEditFlags_DisplayRGB);
 
 		ImGui::Text("Specular");
-		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
-			ImGui::TableNextColumn();
-			ImGui::Text("x: ");
-			ImGui::DragFloat("##value x", &directional_light_specular.x, 0.1f);
-
-			ImGui::TableNextColumn();
-			ImGui::Text("y: ");
-			ImGui::DragFloat("##value y", &directional_light_specular.y, 0.1f);
-
-			ImGui::TableNextColumn();
-			ImGui::Text("z: ");
-			ImGui::DragFloat("##value z", &directional_light_specular.z, 0.1f);
-
-			ImGui::EndTable();
-		}
+		ImGui::ColorEdit4("directional##3", (float*)&directional_light_specular, ImGuiColorEditFlags_DisplayRGB);
 
 		ImGui::Text("Coefficients");
 		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
@@ -246,9 +204,9 @@ namespace ui {
 	{
 		// temp value
 		static glm::vec3 point_light_position = { .0f,.0f,.0f };
-		static glm::vec3 point_light_ambient = { 1.0f, 1.0f, 1.0f };
-		static glm::vec3 point_light_diffuse = { 1.0f, 1.0f, 1.0f };
-		static glm::vec3 point_light_specular = { 1.0f, 1.0f, 1.0f };
+		static glm::vec3 point_light_ambient = { 0.0f, 0.0f, 0.0f };
+		static glm::vec3 point_light_diffuse = { 0.0f, 0.0f, 0.0f };
+		static glm::vec3 point_light_specular = { 0.0f, 0.0f, 0.0f };
 
 		static float constant = 1.0f;
 		static float linear = 0.09f;
@@ -272,55 +230,13 @@ namespace ui {
 		}
 
 		ImGui::Text("Ambient");
-		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
-			ImGui::TableNextColumn();
-			ImGui::Text("x: ");
-			ImGui::DragFloat("##value x", &point_light_ambient.x, 0.1f);
-
-			ImGui::TableNextColumn();
-			ImGui::Text("y: ");
-			ImGui::DragFloat("##value y", &point_light_ambient.y, 0.1f);
-
-			ImGui::TableNextColumn();
-			ImGui::Text("z: ");
-			ImGui::DragFloat("##value z", &point_light_ambient.z, 0.1f);
-
-			ImGui::EndTable();
-		}
+		ImGui::ColorEdit4("point##1", (float*)&point_light_ambient, ImGuiColorEditFlags_DisplayRGB);
 
 		ImGui::Text("Diffuse");
-		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
-			ImGui::TableNextColumn();
-			ImGui::Text("x: ");
-			ImGui::DragFloat("##value x", &point_light_diffuse.x, 0.1f);
-
-			ImGui::TableNextColumn();
-			ImGui::Text("y: ");
-			ImGui::DragFloat("##value y", &point_light_diffuse.y, 0.1f);
-
-			ImGui::TableNextColumn();
-			ImGui::Text("z: ");
-			ImGui::DragFloat("##value z", &point_light_diffuse.z, 0.1f);
-
-			ImGui::EndTable();
-		}
+		ImGui::ColorEdit4("point##2", (float*)&point_light_diffuse, ImGuiColorEditFlags_DisplayRGB);
 
 		ImGui::Text("Specular");
-		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
-			ImGui::TableNextColumn();
-			ImGui::Text("x: ");
-			ImGui::DragFloat("##value x", &point_light_specular.x, 0.1f);
-
-			ImGui::TableNextColumn();
-			ImGui::Text("y: ");
-			ImGui::DragFloat("##value y", &point_light_specular.y, 0.1f);
-
-			ImGui::TableNextColumn();
-			ImGui::Text("z: ");
-			ImGui::DragFloat("##value z", &point_light_specular.z, 0.1f);
-
-			ImGui::EndTable();
-		}
+		ImGui::ColorEdit4("point##3", (float*)&point_light_specular, ImGuiColorEditFlags_DisplayRGB);
 
 		ImGui::Text("Coefficients");
 		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
