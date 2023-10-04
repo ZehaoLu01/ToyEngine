@@ -8,7 +8,7 @@
 #include <assimp/postprocess.h>
 #include "Resource/Texture.h"
 #include "Renderer/Shader.h"
-#include "UI/View/ImGuiMenu.h"
+#include "UI/View/ImGuiManager.h"
 #include "../../submodule/FileExplorer/imfilebrowser.h"
 #include "Engine/Component.h"
 #include <entt/entity/registry.hpp>
@@ -26,7 +26,7 @@ namespace ToyEngine{
 			void drawGridLine();
 			void drawCoordinateIndicator(glm::vec3 position);
 			void drawMesh(const TransformComponent& transform, const MeshComponent& mesh, MaterialComponent textures);
-			void drawImGuiMenu();
+			void drawImGuiManager();
 			void drawPointLight();
 			void initGrid();
 			void init(WindowPtr window, std::shared_ptr<Camera> camera, std::shared_ptr<Scene> scene);

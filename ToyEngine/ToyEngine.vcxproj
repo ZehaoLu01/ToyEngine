@@ -42,7 +42,7 @@
     <ClCompile Include="UI\ImGUI\imgui_widgets.cpp" />
     <ClCompile Include="UI\Model\PropertiesScreenModel.cpp" />
     <ClCompile Include="UI\View\FileExplorer.cpp" />
-    <ClCompile Include="UI\View\ImGuiMenu.cpp" />
+    <ClCompile Include="UI\View\ImGuiManager.cpp" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
     <ClCompile Include="Renderer\Camera.cpp" />
     <ClCompile Include="Renderer\Resource\ImageLoader.cpp" />
@@ -71,7 +71,7 @@
     <ClInclude Include="include\UI\Controller\SceneHierarchyController.h" />
     <ClInclude Include="include\UI\Model\SceneHierarchyModel.h" />
     <ClInclude Include="include\UI\View\FileExplorer.h" />
-    <ClInclude Include="include\UI\View\ImGuiMenu.h" />
+    <ClInclude Include="include\UI\View\ImGuiManager.h" />
     <ClInclude Include="include\imconfig.h" />
     <ClInclude Include="include\imgui.h" />
     <ClInclude Include="include\imgui_impl_glfw.h" />

@@ -1,8 +1,8 @@
-#include "UI/View/ImGuiMenu.h"
+#include "UI/View/ImGuiManager.h"
 #include <glm/gtx/string_cast.hpp>
 
 namespace ui{
-	void ImGuiMenu::tick()
+	void ImGuiManager::tick()
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		// must enable docking before using docking!
@@ -60,21 +60,21 @@ namespace ui{
 		mFileExplorerController->tick();
 	}
 
-	void ImGuiMenu::renderLoggingMenu()
+	void ImGuiManager::renderLoggingMenu()
 	{
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
 		mFileExplorer.render();
 	}
 
-	ImGuiMenu& ImGuiMenu::getInstance()
+	ImGuiManager& ImGuiManager::getInstance()
 	{
-		static ImGuiMenu instance; // Guaranteed to be destroyed.
+		static ImGuiManager instance; // Guaranteed to be destroyed.
 		// Instantiated on first use.
 		return instance;
 	}
 
-	void ImGuiMenu::setupControllers(std::shared_ptr<ToyEngine::Scene> scene)
+	void ImGuiManager::setupControllers(std::shared_ptr<ToyEngine::Scene> scene)
 	{
 		mHierarchyContorller = std::make_shared<SceneHierarchyController>(std::make_unique<SceneHierarchyModel>(scene->getRegistry()));
 		mPropertiesScreenController = std::make_shared<PropertiesScreenController>(std::make_unique<PropertiesScreenModel>(scene));
@@ -92,12 +92,12 @@ namespace ui{
 
 		mPropertiesScreen = PropertiesScreen(mContext, mPropertiesScreenController);
 		mHierarchyPanel = SceneHierarchyPanel(scene, mHierarchyContorller, [](entt::entity entity) {
-			ViewEvent event(ImGuiMenu::getInstance().mContext->getRegistry());
+			ViewEvent event(ImGuiManager::getInstance().mContext->getRegistry());
 			event.viewEventType = ViewEventType::ButtonEvent;
 			event.name = "changeSelectionButtonDown";
 			event.value = std::to_string((uint32_t)entity);
 
-			for (auto controller : ImGuiMenu::getInstance().mScreenControllers) {
+			for (auto controller : ImGuiManager::getInstance().mScreenControllers) {
 				controller->addViewEvent(event);
 			}
 			}
@@ -106,7 +106,7 @@ namespace ui{
 
 	}
 
-	ImGuiMenu::ImGuiMenu()
+	ImGuiManager::ImGuiManager()
 	{
 	}
 }

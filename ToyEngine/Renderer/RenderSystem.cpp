@@ -23,7 +23,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include "UI/View/ImGuiMenu.h"
+#include "UI/View/ImGuiManager.h"
 #include <Renderer/Line.h>
 #include <UI/Controller/PropertiesScreenController.h>
 #include <Utils/Logger.h>
@@ -192,9 +192,9 @@ namespace ToyEngine {
 		}
 	}
 
-	void RenderSystem::drawImGuiMenu()
+	void RenderSystem::drawImGuiManager()
 	{
-		ui::ImGuiMenu::getInstance().tick();
+		ui::ImGuiManager::getInstance().tick();
 	}
 
 	void RenderSystem::drawPointLight()
@@ -267,7 +267,7 @@ namespace ToyEngine {
 
 		//ImGui
 		setupImGUI();
-		ui::ImGuiMenu::getInstance().setupControllers(scene);
+		ui::ImGuiManager::getInstance().setupControllers(scene);
 
 		mLightCubeShader = std::make_shared<Shader>("Shaders/lightingShader.vert", "Shaders/lightingShader.frag");
 

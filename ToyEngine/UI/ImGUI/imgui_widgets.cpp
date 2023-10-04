@@ -6832,7 +6832,7 @@ void ImGui::Value(const char* prefix, float v, const char* float_format)
 //-------------------------------------------------------------------------
 // [SECTION] MenuItem, BeginMenu, EndMenu, etc.
 //-------------------------------------------------------------------------
-// - ImGuiMenuColumns [Internal]
+// - ImGuiManagerColumns [Internal]
 // - BeginMenuBar()
 // - EndMenuBar()
 // - BeginMainMenuBar()
@@ -6844,7 +6844,7 @@ void ImGui::Value(const char* prefix, float v, const char* float_format)
 //-------------------------------------------------------------------------
 
 // Helpers for internal use
-void ImGuiMenuColumns::Update(float spacing, bool window_reappearing)
+void ImGuiManagerColumns::Update(float spacing, bool window_reappearing)
 {
     if (window_reappearing)
         memset(Widths, 0, sizeof(Widths));
@@ -6855,7 +6855,7 @@ void ImGuiMenuColumns::Update(float spacing, bool window_reappearing)
     NextTotalWidth = 0;
 }
 
-void ImGuiMenuColumns::CalcNextTotalWidth(bool update_offsets)
+void ImGuiManagerColumns::CalcNextTotalWidth(bool update_offsets)
 {
     ImU16 offset = 0;
     bool want_spacing = false;
@@ -6876,7 +6876,7 @@ void ImGuiMenuColumns::CalcNextTotalWidth(bool update_offsets)
     NextTotalWidth = offset;
 }
 
-float ImGuiMenuColumns::DeclColumns(float w_icon, float w_label, float w_shortcut, float w_mark)
+float ImGuiManagerColumns::DeclColumns(float w_icon, float w_label, float w_shortcut, float w_mark)
 {
     Widths[0] = ImMax(Widths[0], (ImU16)w_icon);
     Widths[1] = ImMax(Widths[1], (ImU16)w_label);
@@ -7106,7 +7106,7 @@ bool ImGui::BeginMenuEx(const char* label, const char* icon, bool enabled)
     PushID(label);
     if (!enabled)
         BeginDisabled();
-    const ImGuiMenuColumns* offsets = &window->DC.MenuColumns;
+    const ImGuiManagerColumns* offsets = &window->DC.MenuColumns;
     bool pressed;
 
     // We use ImGuiSelectableFlags_NoSetKeyOwner to allow down on one menu item, move, up on another.
@@ -7304,7 +7304,7 @@ bool ImGui::MenuItemEx(const char* label, const char* icon, const char* shortcut
 
     // We use ImGuiSelectableFlags_NoSetKeyOwner to allow down on one menu item, move, up on another.
     const ImGuiSelectableFlags selectable_flags = ImGuiSelectableFlags_SelectOnRelease | ImGuiSelectableFlags_NoSetKeyOwner | ImGuiSelectableFlags_SetNavIdOnHover;
-    const ImGuiMenuColumns* offsets = &window->DC.MenuColumns;
+    const ImGuiManagerColumns* offsets = &window->DC.MenuColumns;
     if (window->DC.LayoutType == ImGuiLayoutType_Horizontal)
     {
         // Mimic the exact layout spacing of BeginMenu() to allow MenuItem() inside a menu bar, which is a little misleading but may be useful

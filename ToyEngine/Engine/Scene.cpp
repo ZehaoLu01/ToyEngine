@@ -29,7 +29,7 @@ namespace ToyEngine {
 
         RenderSystem::instance.drawPointLight();
 
-        RenderSystem::instance.drawImGuiMenu();
+        RenderSystem::instance.drawImGuiManager();
 
         RenderSystem::instance.afterDraw();
     }

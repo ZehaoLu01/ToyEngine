@@ -22,21 +22,21 @@ namespace ui
 	class PropertiesScreenController;
 	class SceneHierarchyController;
 
-	class ImGuiMenu
+	class ImGuiManager
 	{
 	public:
 		void tick();
 
 		void renderLoggingMenu();
 
-		static ImGuiMenu& getInstance();
+		static ImGuiManager& getInstance();
 
 		void setupControllers(std::shared_ptr<ToyEngine::Scene> scene);
 
-		ImGuiMenu(ImGuiMenu const&) = delete;
-		void operator=(ImGuiMenu const&) = delete;
+		ImGuiManager(ImGuiManager const&) = delete;
+		void operator=(ImGuiManager const&) = delete;
 	private:
-		ImGuiMenu();
+		ImGuiManager();
 
 		std::shared_ptr<PropertiesScreenController> mPropertiesScreenController;
 		std::shared_ptr<SceneHierarchyController> mHierarchyContorller;

@@ -49,7 +49,8 @@ namespace ui {
 		if (currentRelationComp.children.size() == 0) {
 			flags |= ImGuiTreeNodeFlags_Leaf;
 		}
-
+		
+		// TreeDepth++
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)head, flags, tag.c_str());
 
 		if (ImGui::IsItemClicked())
@@ -60,14 +61,10 @@ namespace ui {
 
 		if (opened)
 		{
-			//ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-			//bool opened = ImGui::TreeNodeEx((void*)9817239, flags, tag.c_str());
-			//if (opened)
-			//	ImGui::TreePop();
-			//ImGui::TreePop();
 			for (const auto child : currentRelationComp.children) {
 				hierarchyTraversal(registry, child);
 			}
+			// TreeDepth--
 			ImGui::TreePop();
 		}
 	}
