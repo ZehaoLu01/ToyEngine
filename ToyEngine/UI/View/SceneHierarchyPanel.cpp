@@ -81,7 +81,10 @@ namespace ui {
 
 	void SceneHierarchyPanel::setSelected(entt::entity entity)
 	{
-		mSelectEntityCallback(entity);
+		//TODO: remove this because I don't think I should make copies of one state everywhere!
+		//if (entity != entt::null) {
+		//	mSelectEntityCallback(entity);
+		//}
 		mContext->selectedEntity = entity;
 	}
 }
