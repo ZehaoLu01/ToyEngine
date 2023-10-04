@@ -90,7 +90,7 @@ namespace ui{
 
 		mScene = scene;
 
-		mPropertiesScreen = PropertiesScreen(scene, &mContext, mPropertiesScreenController);
+		mPropertiesScreen = InspectorScreen(scene, &mContext, mPropertiesScreenController);
 		mHierarchyPanel = SceneHierarchyPanel(scene, &mContext, mHierarchyContorller, [](entt::entity entity) {
 			// On selected
 			ViewEvent event(ImGuiManager::getInstance().mScene->getRegistry());

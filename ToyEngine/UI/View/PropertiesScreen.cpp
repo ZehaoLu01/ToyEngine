@@ -9,7 +9,7 @@
 
 
 namespace ui {
-	void PropertiesScreen::render() {
+	void InspectorScreen::render() {
 		ImGui::Begin("Renderer Settings", nullptr);
 
 		if (mContext->selectedEntity != entt::null) {
@@ -22,7 +22,7 @@ namespace ui {
 		ImGui::End();
 	}
 
-	void PropertiesScreen::renderObjectPropertyMenu()
+	void InspectorScreen::renderObjectPropertyMenu()
 	{
 
 		if (ImGui::CollapsingHeader("Object properties")) {
@@ -34,17 +34,17 @@ namespace ui {
 		}
 	}
 
-	void PropertiesScreen::renderCreateLightingMenu()
+	void InspectorScreen::renderCreateLightingMenu()
 	{
-		if (ImGui::CollapsingHeader("Lighting properties")) {
+		if (ImGui::CollapsingHeader("Create point light")) {
 			drawCreatePointLightProps();
 		}
-		if (ImGui::CollapsingHeader("Directional lighting")) {
+		if (ImGui::CollapsingHeader("Create directional light")) {
 			drawCreateDirectionalLightProps();
 		}
 	}
 
-	void PropertiesScreen::drawPositionProps() {
+	void InspectorScreen::drawPositionProps() {
 		glm::vec3 oldPositionVal = mPropertiesScreenController->getVec("properties.position");
 		glm::vec3 newPositionVal = oldPositionVal;
 
@@ -76,7 +76,7 @@ namespace ui {
 		}
 	}
 
-	void PropertiesScreen::drawRotationProps()
+	void InspectorScreen::drawRotationProps()
 	{
 		glm::vec3 oldRotationVal = mPropertiesScreenController->getVec("properties.rotation");
 		glm::vec3 newRotationVal = oldRotationVal;
@@ -110,7 +110,7 @@ namespace ui {
 		}
 	}
 
-	void PropertiesScreen::drawScaleProps()
+	void InspectorScreen::drawScaleProps()
 	{
 		glm::vec3 oldScaleVal = mPropertiesScreenController->getVec("properties.scale");
 		glm::vec3 newScaleVal = oldScaleVal;
@@ -136,14 +136,13 @@ namespace ui {
 			event.valueType = BindingValueType::Vec3;
 			event.value = getVec3String(newScaleVal);
 
-
 			if (oldScaleVal != newScaleVal) {
 				mPropertiesScreenController->addViewEvent(event);
 			}
 		}
 	}
 
-	void PropertiesScreen::drawCreateDirectionalLightProps()
+	void InspectorScreen::drawCreateDirectionalLightProps()
 	{
 		// temp value
 		static glm::vec3 directional_light_direction({ 0.0f, 0.0f, 0.0f });
@@ -200,7 +199,7 @@ namespace ui {
 		}
 	}
 
-	void PropertiesScreen::drawCreatePointLightProps()
+	void InspectorScreen::drawCreatePointLightProps()
 	{
 		// temp value
 		static glm::vec3 point_light_position = { .0f,.0f,.0f };
@@ -265,7 +264,7 @@ namespace ui {
 		}
 	}
 
-	std::string PropertiesScreen::getVec3String(glm::vec3 vec) {
+	std::string InspectorScreen::getVec3String(glm::vec3 vec) {
 		std::stringstream ss;
 		ss << vec.x << "," << vec.y << "," << vec.z;
 		return ss.str();

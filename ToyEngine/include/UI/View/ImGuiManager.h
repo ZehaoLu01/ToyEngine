@@ -49,7 +49,7 @@ namespace ui
 		std::shared_ptr<ImGui::FileBrowser> mFileBrowser;
 		FileExplorer mFileExplorer;
 		SceneHierarchyPanel mHierarchyPanel;
-		PropertiesScreen mPropertiesScreen;
+		InspectorScreen mPropertiesScreen;
 
 		ImGuiContext mContext;
 		std::shared_ptr<ToyEngine::Scene> mScene;

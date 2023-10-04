@@ -8,11 +8,11 @@ namespace ui {
 	struct ImGuiContext;
 	using ToyEngine::Scene;
 
-	class PropertiesScreen
+	class InspectorScreen
 	{
 	public:
-		PropertiesScreen() = default;
-		PropertiesScreen(std::shared_ptr<ToyEngine::Scene> scene, ImGuiContext* context, std::shared_ptr<PropertiesScreenController> controller) :mScene(scene), mPropertiesScreenController(controller), mContext(context) {};
+		InspectorScreen() = default;
+		InspectorScreen(std::shared_ptr<ToyEngine::Scene> scene, ImGuiContext* context, std::shared_ptr<PropertiesScreenController> controller) :mScene(scene), mPropertiesScreenController(controller), mContext(context) {};
 		void render();
 	private:
 		void renderObjectPropertyMenu();
