@@ -27,7 +27,7 @@ namespace ToyEngine {
             RenderSystem::instance.drawMesh(transform, mesh, texture);
         }
 
-        RenderSystem::instance.drawLightingCube();
+        RenderSystem::instance.drawPointLight();
 
         RenderSystem::instance.drawImGuiMenu();
 
@@ -83,4 +83,14 @@ namespace ToyEngine {
         mRegistry.emplace<TagComponent>(entity, "pointLight");
         mRegistry.emplace<RelationComponent>(entity);
     }
+
+    void Scene::addDirectionalLight(glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic)
+    {
+        auto entity = mRegistry.create();
+        mRegistry.emplace<LightComponent>(entity, "directional", ambient, diffuse, specular, constant, linear, quadratic);
+        mRegistry.emplace<TransformComponent>(entity, glm::vec3{.0f, .0f, .0f}, glm::vec3{ .0f,.0f,.0f }, glm::vec3{ .0f,.0f,.0f });
+        mRegistry.emplace<TagComponent>(entity, "directional light");
+        mRegistry.emplace<RelationComponent>(entity);
+    }
+
 }

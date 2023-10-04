@@ -24,7 +24,10 @@ namespace ui {
 		}
 
 		if (ImGui::CollapsingHeader("Lighting properties")) {
-			drawLightProps();
+			drawCreatePointLightProps();
+		}
+		if (ImGui::CollapsingHeader("Directional lighting")) {
+			drawCreateDirectionalLightProps();
 		}
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
@@ -130,7 +133,117 @@ namespace ui {
 		}
 	}
 
-	void PropertiesScreen::drawLightProps()
+	void PropertiesScreen::drawCreateDirectionalLightProps()
+	{
+		// temp value
+		static glm::vec3 directional_light_direction = { -1.0f,-1.0f,-1.0f };
+		static glm::vec3 directional_light_ambient = { 1.0f, 1.0f, 1.0f };
+		static glm::vec3 directional_light_diffuse = { 1.0f, 1.0f, 1.0f };
+		static glm::vec3 directional_light_specular = { 1.0f, 1.0f, 1.0f };
+
+		static float constant = 1.0f;
+		static float linear = 0.09f;
+		static float quadratic = 0.032f;
+
+		ImGui::Text("Direction");
+		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
+			ImGui::TableNextColumn();
+			ImGui::Text("x: ");
+			ImGui::DragFloat("##value x", &directional_light_direction.x, 0.1f);
+
+			ImGui::TableNextColumn();
+			ImGui::Text("y: ");
+			ImGui::DragFloat("##value y", &directional_light_direction.y, 0.1f);
+
+			ImGui::TableNextColumn();
+			ImGui::Text("z: ");
+			ImGui::DragFloat("##value z", &directional_light_direction.z, 0.1f);
+
+			ImGui::EndTable();
+		}
+
+		ImGui::Text("Ambient");
+		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
+			ImGui::TableNextColumn();
+			ImGui::Text("x: ");
+			ImGui::DragFloat("##value x", &directional_light_ambient.x, 0.1f);
+
+			ImGui::TableNextColumn();
+			ImGui::Text("y: ");
+			ImGui::DragFloat("##value y", &directional_light_ambient.y, 0.1f);
+
+			ImGui::TableNextColumn();
+			ImGui::Text("z: ");
+			ImGui::DragFloat("##value z", &directional_light_ambient.z, 0.1f);
+
+			ImGui::EndTable();
+		}
+
+		ImGui::Text("Diffuse");
+		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
+			ImGui::TableNextColumn();
+			ImGui::Text("x: ");
+			ImGui::DragFloat("##value x", &directional_light_diffuse.x, 0.1f);
+
+			ImGui::TableNextColumn();
+			ImGui::Text("y: ");
+			ImGui::DragFloat("##value y", &directional_light_diffuse.y, 0.1f);
+
+			ImGui::TableNextColumn();
+			ImGui::Text("z: ");
+			ImGui::DragFloat("##value z", &directional_light_diffuse.z, 0.1f);
+
+			ImGui::EndTable();
+		}
+
+		ImGui::Text("Specular");
+		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
+			ImGui::TableNextColumn();
+			ImGui::Text("x: ");
+			ImGui::DragFloat("##value x", &directional_light_specular.x, 0.1f);
+
+			ImGui::TableNextColumn();
+			ImGui::Text("y: ");
+			ImGui::DragFloat("##value y", &directional_light_specular.y, 0.1f);
+
+			ImGui::TableNextColumn();
+			ImGui::Text("z: ");
+			ImGui::DragFloat("##value z", &directional_light_specular.z, 0.1f);
+
+			ImGui::EndTable();
+		}
+
+		ImGui::Text("Coefficients");
+		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
+			ImGui::TableNextColumn();
+			ImGui::Text("constants: ");
+			ImGui::DragFloat("##value x", &constant, 0.1f);
+
+			ImGui::TableNextColumn();
+			ImGui::Text("linear: ");
+			ImGui::DragFloat("##value y", &linear, 0.1f);
+
+			ImGui::TableNextColumn();
+			ImGui::Text("quadratic: ");
+			ImGui::DragFloat("##value z", &quadratic, 0.1f);
+
+			ImGui::EndTable();
+		}
+
+		if (ImGui::Button("Add directional light")) {
+			ViewEvent event(mContext->getRegistry());
+			event.viewEventType = ViewEventType::ButtonEvent;
+			event.name = "onCreateDirectionalLightButtonDown";
+			event.vectorGroup = { directional_light_direction,directional_light_ambient, directional_light_diffuse, directional_light_specular };
+			event.floatGroup = { constant, linear, quadratic };
+			mPropertiesScreenController->addViewEvent(event);
+		}
+
+		//static quat qRot = quat(1.f, 0.f, 0.f, 0.f);
+		//ImGui::gizmo3D("##gizmo1", qRot /*, size,  mode */);
+	}
+
+	void PropertiesScreen::drawCreatePointLightProps()
 	{
 		// temp value
 		static glm::vec3 point_light_position = { .0f,.0f,.0f };
@@ -141,7 +254,6 @@ namespace ui {
 		static float constant = 1.0f;
 		static float linear = 0.09f;
 		static float quadratic = 0.032f;
-
 
 		ImGui::Text("Position");
 		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
@@ -231,7 +343,7 @@ namespace ui {
 		if (ImGui::Button("Add light cube")) {
 			ViewEvent event(mContext->getRegistry());
 			event.viewEventType = ViewEventType::ButtonEvent;
-			event.name = "onCreateLightCubeButtonDown";
+			event.name = "onCreatePointLightButtonDown";
 			event.vectorGroup = { point_light_position,point_light_ambient, point_light_diffuse, point_light_specular };
 			event.floatGroup = {constant, linear, quadratic};
 			mPropertiesScreenController->addViewEvent(event);

@@ -18,7 +18,8 @@ namespace ui {
 		void drawPositionProps();
 		void drawRotationProps();
 		void drawScaleProps();
-		void drawLightProps();
+		void drawCreatePointLightProps();
+		void drawCreateDirectionalLightProps();
 
 		std::string getVec3String(glm::vec3 vec);
 

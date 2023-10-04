@@ -6,7 +6,6 @@
 #include <memory>
 #include <imgui.h>
 #include <Engine/Component.h>
-#include <imgui_internal.h>
 #include <UI/Controller/SceneHierarchyController.h>
 namespace ui {
 	class SceneHierarchyPanel

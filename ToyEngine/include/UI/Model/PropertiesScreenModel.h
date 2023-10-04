@@ -52,12 +52,17 @@ namespace ui {
 			}
 		}
 
-		void addLightCube() {
+		void addPointLight() {
 			mScene->addPointLight();
 		}
 
-		void addLightCube(glm::vec3 pos, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic) {
+		void addPointLight(glm::vec3 pos, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic) {
 			mScene->addPointLight(pos, ambient, diffuse, specular, constant, linear, quadratic);
+		}
+
+
+		void addDirectionalLight(glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic) {
+			mScene->addDirectionalLight(direction, ambient, diffuse, specular, constant, linear, quadratic);
 		}
 
 	private:

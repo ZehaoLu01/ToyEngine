@@ -197,7 +197,7 @@ namespace ToyEngine {
 		ui::ImGuiMenu::getInstance().tick();
 	}
 
-	void RenderSystem::drawLightingCube()
+	void RenderSystem::drawPointLight()
 	{
 		mLightCubeShader->use();
 
