@@ -1,5 +1,6 @@
 #include <UI/View/PropertiesScreen.h>
 #include <glm/fwd.hpp>
+#include <ImGuIZMO/imGuIZMOquat.h>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -136,7 +137,7 @@ namespace ui {
 	void PropertiesScreen::drawCreateDirectionalLightProps()
 	{
 		// temp value
-		static glm::vec3 directional_light_direction = { -1.0f,-1.0f,-1.0f };
+		static glm::vec3 directional_light_direction({ 0.0f, 0.0f, 0.0f });
 		static glm::vec3 directional_light_ambient = { 1.0f, 1.0f, 1.0f };
 		static glm::vec3 directional_light_diffuse = { 1.0f, 1.0f, 1.0f };
 		static glm::vec3 directional_light_specular = { 1.0f, 1.0f, 1.0f };
@@ -146,20 +147,12 @@ namespace ui {
 		static float quadratic = 0.032f;
 
 		ImGui::Text("Direction");
-		if (ImGui::BeginTable("axis", 3, ImGuiTableFlags_Borders)) {
-			ImGui::TableNextColumn();
-			ImGui::Text("x: ");
-			ImGui::DragFloat("##value x", &directional_light_direction.x, 0.1f);
-
-			ImGui::TableNextColumn();
-			ImGui::Text("y: ");
-			ImGui::DragFloat("##value y", &directional_light_direction.y, 0.1f);
-
-			ImGui::TableNextColumn();
-			ImGui::Text("z: ");
-			ImGui::DragFloat("##value z", &directional_light_direction.z, 0.1f);
-
-			ImGui::EndTable();
+		// I assume, for a vec3, a direction starting from origin, so if you use a vec3 to identify
+		// a light spot toward origin need to change direction
+		// or explicitly
+		vec3 vgmLightDir = { directional_light_direction.x, directional_light_direction.y, directional_light_direction.z };
+		if (ImGui::gizmo3D("##Dir1", vgmLightDir, 300, imguiGizmo::modeDirection)) {
+			directional_light_direction = { vgmLightDir.x, vgmLightDir.y, vgmLightDir.z };
 		}
 
 		ImGui::Text("Ambient");
@@ -233,14 +226,11 @@ namespace ui {
 		if (ImGui::Button("Add directional light")) {
 			ViewEvent event(mContext->getRegistry());
 			event.viewEventType = ViewEventType::ButtonEvent;
-			event.name = "onCreateDirectionalLightButtonDown";
-			event.vectorGroup = { directional_light_direction,directional_light_ambient, directional_light_diffuse, directional_light_specular };
+			event.name = "onCreateDirctionalLightButtonDown";
+			event.vectorGroup = { directional_light_direction, directional_light_ambient, directional_light_diffuse, directional_light_specular };
 			event.floatGroup = { constant, linear, quadratic };
 			mPropertiesScreenController->addViewEvent(event);
 		}
-
-		//static quat qRot = quat(1.f, 0.f, 0.f, 0.f);
-		//ImGui::gizmo3D("##gizmo1", qRot /*, size,  mode */);
 	}
 
 	void PropertiesScreen::drawCreatePointLightProps()

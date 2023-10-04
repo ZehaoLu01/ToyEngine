@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="a.cpp" />
     <ClCompile Include="Engine\Scene.cpp" />
+    <ClCompile Include="UI\View\imGuIZMOquat.cpp" />
     <ClCompile Include="Utils\RenderHelper.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="UI\View\PropertiesScreen.cpp" />
@@ -58,6 +59,11 @@
     <ClCompile Include="Renderer\Resource\STB_image_implementation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\ImGuIZMO\imGuIZMOquat.h" />
+    <ClInclude Include="include\ImGuIZMO\vgConfig.h" />
+    <ClInclude Include="include\ImGuIZMO\vGizmo.h" />
+    <ClInclude Include="include\ImGuIZMO\vGizmoMath.h" />
+    <ClInclude Include="include\ImGuIZMO\vgMath.h" />
     <ClInclude Include="include\UI\Controller\FileExplorerController.h" />
     <ClInclude Include="include\Engine\Component.h" />
     <ClInclude Include="include\Engine\Scene.h" />

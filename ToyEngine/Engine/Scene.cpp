@@ -88,7 +88,8 @@ namespace ToyEngine {
     {
         auto entity = mRegistry.create();
         mRegistry.emplace<LightComponent>(entity, "directional", ambient, diffuse, specular, constant, linear, quadratic);
-        mRegistry.emplace<TransformComponent>(entity, glm::vec3{.0f, .0f, .0f}, glm::vec3{ .0f,.0f,.0f }, glm::vec3{ .0f,.0f,.0f });
+        // Use rotation to imply light direction.
+        mRegistry.emplace<TransformComponent>(entity, glm::vec3{.0f, .0f, .0f}, direction, glm::vec3{ .0f,.0f,.0f });
         mRegistry.emplace<TagComponent>(entity, "directional light");
         mRegistry.emplace<RelationComponent>(entity);
     }

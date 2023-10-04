@@ -89,7 +89,7 @@ namespace ui {
 					ToyEngine::Logger::DEBUG_ERROR("Create Light Cube Button invalid event arguments.");
 				}
 
-				sharedThis->mPropertiesScreenModel->addPointLight(vectors[0], vectors[1], vectors[2], vectors[3], floats[0], floats[1], floats[2]);
+				sharedThis->mPropertiesScreenModel->addDirectionalLight(vectors[0], vectors[1], vectors[2], vectors[3], floats[0], floats[1], floats[2]);
 			}
 			});
 	}
