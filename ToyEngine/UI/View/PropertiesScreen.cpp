@@ -12,7 +12,7 @@ namespace ui {
 	void InspectorScreen::render() {
 		ImGui::Begin("Renderer Settings", nullptr);
 
-		if (mContext->selectedEntity != entt::null) {
+		if (mContext->getSelectedEntity() != entt::null) {
 			renderObjectPropertyMenu();
 		}
 

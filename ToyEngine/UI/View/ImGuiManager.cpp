@@ -89,6 +89,7 @@ namespace ui{
 		}
 
 		mScene = scene;
+		mContext.setScene(scene);
 
 		mPropertiesScreen = InspectorScreen(scene, &mContext, mPropertiesScreenController);
 		mHierarchyPanel = SceneHierarchyPanel(scene, &mContext, mHierarchyContorller, [](entt::entity entity) {

@@ -43,7 +43,7 @@ namespace ui {
 
 	entt::entity SceneHierarchyPanel::getSelectedEntity() const
 	{
-		return mContext->selectedEntity;
+		return mContext->getSelectedEntity();
 	}
 
 	void SceneHierarchyPanel::hierarchyTraversal(entt::registry& registry, entt::entity head)
@@ -55,7 +55,7 @@ namespace ui {
 
 		auto tag = currentTagComp.name;
 
-		ImGuiTreeNodeFlags flags = ((mContext->selectedEntity == head) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+		ImGuiTreeNodeFlags flags = ((mContext->getSelectedEntity() == head) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 		if (currentRelationComp.children.size() == 0) {
 			flags |= ImGuiTreeNodeFlags_Leaf;
@@ -63,6 +63,25 @@ namespace ui {
 		
 		// TreeDepth++
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)head, flags, tag.c_str());
+		if (ImGui::BeginPopupContextItem()) // <-- This is using IsItemHovered()
+		{
+			// Select tree node if it is right clicked.
+			if (mContext->getSelectedEntity() != head) {
+				mContext->setSelectedEntity(head);
+			}
+
+			if (ImGui::MenuItem("Delete entity")) {
+				entt::entity selected = mContext->getSelectedEntity();
+
+				ViewEvent event(mScene->getRegistry());
+				event.viewEventType = ViewEventType::ButtonEvent;
+				event.name = "onDeleteEnittyButtonDown";
+				event.value = std::to_string(static_cast<int>(selected));
+				mController->addViewEvent(event);
+
+			}
+			ImGui::EndPopup();
+		}
 
 		if (ImGui::IsItemClicked())
 		{
@@ -85,15 +104,7 @@ namespace ui {
 		//if (entity != entt::null) {
 		//	mSelectEntityCallback(entity);
 		//}
-		std::string name;
-		if (entity == entt::null) {
-			name = "null";
-		}
-		else {
-			name = mScene->getRegistry().get<TagComponent>(entity).name;
-		}
 
-		ToyEngine::Logger::DEBUG_INFO("Selected node: " + name);
-		mContext->selectedEntity = entity;
+		mContext->setSelectedEntity(entity);
 	}
 }

@@ -13,7 +13,6 @@ namespace ui {
 
 	private:
 		virtual void onSelectionChange(entt::entity) override;
-
 		
 		std::unique_ptr<ui::PropertiesScreenModel> mPropertiesScreenModel;
 	

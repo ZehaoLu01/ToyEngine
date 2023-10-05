@@ -9,6 +9,7 @@
 #include <Resource/Texture.h>
 #include <Renderer/Shader.h>
 #include <Utils/Logger.h>
+#include <list>
 
 namespace ToyEngine {
     #define MAX_BONE_INFLUENCE 4
@@ -204,9 +205,9 @@ namespace ToyEngine {
         entt::entity prev = entt::null;
 
         //TODO: don't use shared_ptr
-        std::vector<entt::entity> children;
-        RelationComponent(entt::entity parent, std::vector<entt::entity> children) :parent(parent), children(children) {};
-        RelationComponent(entt::entity parent, std::vector<entt::entity> children, entt::entity prev, entt::entity next) :parent(parent), children(children), prev(prev), next(next) {};
+        std::list<entt::entity> children;
+        RelationComponent(entt::entity parent, std::list<entt::entity> children) :parent(parent), children(children) {};
+        RelationComponent(entt::entity parent, std::list<entt::entity> children, entt::entity prev, entt::entity next) :parent(parent), children(children), prev(prev), next(next) {};
 
         RelationComponent() = default;
     };

@@ -22,8 +22,37 @@ namespace ui
 	class PropertiesScreenController;
 	class SceneHierarchyController;
 
-	struct ImGuiContext {
-		entt::entity selectedEntity = entt::null;
+	class ImGuiContext {
+	public:
+		void setSelectedEntity(entt::entity entity) {
+			std::string name;
+
+			if (entity == entt::null) {
+				name = "null";
+			}
+			else if(mScene){
+				name = mScene->getRegistry().get<ToyEngine::TagComponent>(entity).name;
+			}
+			else {
+				ToyEngine::Logger::DEBUG_ERROR("ImGuiContext is not initailized using scene");
+				return;
+			}
+			ToyEngine::Logger::DEBUG_INFO("Selected " + name);
+
+			mSelectedEntity = entity;
+		}
+
+		entt::entity getSelectedEntity() {
+			return mSelectedEntity;
+		}
+
+		void setScene(std::shared_ptr<Scene>scene ) {
+			mScene = scene;
+		}
+
+	private:
+		entt::entity mSelectedEntity = entt::null;
+		std::shared_ptr<Scene> mScene;
 	};
 
 	class ImGuiManager

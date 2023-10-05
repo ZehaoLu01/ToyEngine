@@ -9,13 +9,13 @@ namespace ui {
 	public:
 		SceneHierarchyController(std::unique_ptr<ui::SceneHierarchyModel>&& model);
 
-		virtual void registerBindings() override {
-		
-		};
+		virtual void registerBindings() override;
 
 		std::vector<std::string> getTagNames();
 
 		virtual void onSelectionChange(entt::entity) override;
+
+		void destroyEntityRecursively(entt::entity entity);
 
 	private:
 		std::unique_ptr<ui::SceneHierarchyModel> mSceneHierarchyModel;
