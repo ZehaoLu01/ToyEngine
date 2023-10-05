@@ -273,6 +273,15 @@ namespace ToyEngine {
 
 		mMissingTextureDiffuse = Texture("Resources\\Images\\missing_texture_diffuse.png", ToyEngine::TextureType::Diffuse, false);
 		mMissingTextureSpecular = Texture("Resources\\Images\\missing_texture_specular.png", ToyEngine::TextureType::Specular, false);
+
+		mSkyBox = SkyBox({
+				   "Resources/Images/skybox/right.jpg",
+				   "Resources/Images/skybox/left.jpg",
+				   "Resources/Images/skybox/top.jpg",
+				   "Resources/Images/skybox/bottom.jpg",
+				   "Resources/Images/skybox/front.jpg",
+				   "Resources/Images/skybox/back.jpg"
+			}, camera);
 	}
 
 	void RenderSystem::setupImGUI()

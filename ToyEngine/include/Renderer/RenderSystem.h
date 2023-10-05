@@ -14,6 +14,7 @@
 #include <entt/entity/registry.hpp>
 #include "../Engine/Scene.h"
 #include <Resource/ResourceManager.h>
+#include <Renderer/SkyBox.h>
 
 
 namespace ToyEngine{
@@ -40,6 +41,10 @@ namespace ToyEngine{
 			void applyLighting(Shader* shader);
 
 			static RenderSystem instance;
+
+			void drawSkyBox() {
+				mSkyBox.render();
+			}
 
 		private:
 			WindowPtr mWindow;
@@ -71,6 +76,8 @@ namespace ToyEngine{
 
 			Texture mMissingTextureDiffuse;
 			Texture mMissingTextureSpecular;
+
+			SkyBox mSkyBox;
 	};
 }
 

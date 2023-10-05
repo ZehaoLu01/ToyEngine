@@ -29,6 +29,8 @@ namespace ToyEngine {
 
         RenderSystem::instance.drawPointLight();
 
+        RenderSystem::instance.drawSkyBox();
+
         RenderSystem::instance.drawImGuiManager();
 
         RenderSystem::instance.afterDraw();

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="a.cpp" />
     <ClCompile Include="Engine\Scene.cpp" />
+    <ClCompile Include="Renderer\Resource\SkyBox.cpp" />
     <ClCompile Include="UI\View\imGuIZMOquat.cpp" />
     <ClCompile Include="Utils\RenderHelper.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
@@ -380,6 +381,7 @@
     <ClInclude Include="include\UI\View\PropertiesScreen.h" />
     <ClInclude Include="include\Utils\Logger.h" />
     <ClInclude Include="include\Utils\RenderHelper.h" />
+    <ClInclude Include="include\Renderer\SkyBox.h" />
     <ClInclude Include="submodule\FileExplorer\imfilebrowser.h" />
   </ItemGroup>
   <ItemGroup>
