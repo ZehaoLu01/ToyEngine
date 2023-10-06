@@ -1,20 +1,20 @@
 #pragma once
 #include <memory>
 #include"UI/Controller/Controller.h"
-#include <UI/Model/PropertiesScreenModel.h>
+#include <UI/Model/InspectorPanelModel.h>
 
 namespace ui {
-	class PropertiesScreenController: public Controller
+	class InspectorPanelController: public Controller
 	{
 	public:
-		PropertiesScreenController(std::unique_ptr<PropertiesScreenModel>&& model);
+		InspectorPanelController(std::unique_ptr<InspectorPanelModel>&& model);
 
 		virtual void registerBindings() override;
 
 	private:
 		virtual void onSelectionChange(entt::entity) override;
 		
-		std::unique_ptr<ui::PropertiesScreenModel> mPropertiesScreenModel;
+		std::unique_ptr<ui::InspectorPanelModel> mInspectorPanelModel;
 	
 		entt::registry& mRegistry;
 	};

@@ -8,7 +8,7 @@
 #include <Engine/Component.h>
 #include <UI/Controller/SceneHierarchyController.h>
 namespace ui {
-	struct ImGuiContext;
+	class ImGuiContext;
 	class SceneHierarchyPanel
 	{
 		public:

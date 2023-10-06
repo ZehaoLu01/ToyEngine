@@ -13,13 +13,14 @@
 #include "imgui_impl_opengl3.h"
 #include <iostream>
 #include <sstream>
-#include <UI/Controller/PropertiesScreenController.h>
 #include <UI/View/SceneHierarchyPanel.h>
-#include "PropertiesScreen.h"
+#include <UI/View/InspectorPanel.h>
+#include <UI/Controller/InspectorPanelController.h>
+
 
 namespace ui
 {
-	class PropertiesScreenController;
+	class InspectorPanelController;
 	class SceneHierarchyController;
 
 	class ImGuiContext {
@@ -46,13 +47,17 @@ namespace ui
 			return mSelectedEntity;
 		}
 
-		void setScene(std::shared_ptr<Scene>scene ) {
+		void setScene(std::shared_ptr<ToyEngine::Scene>scene ) {
 			mScene = scene;
+		}
+
+		entt::registry& getRegistry() {
+			return mScene->getRegistry();
 		}
 
 	private:
 		entt::entity mSelectedEntity = entt::null;
-		std::shared_ptr<Scene> mScene;
+		std::shared_ptr<ToyEngine::Scene> mScene;
 	};
 
 	class ImGuiManager
@@ -71,14 +76,14 @@ namespace ui
 	private:
 		ImGuiManager();
 
-		std::shared_ptr<PropertiesScreenController> mPropertiesScreenController;
+		std::shared_ptr<InspectorPanelController> mInspectorPanelController;
 		std::shared_ptr<SceneHierarchyController> mHierarchyContorller;
 		std::shared_ptr<FileExplorerController> mFileExplorerController;
 
 		std::shared_ptr<ImGui::FileBrowser> mFileBrowser;
 		FileExplorer mFileExplorer;
 		SceneHierarchyPanel mHierarchyPanel;
-		InspectorScreen mPropertiesScreen;
+		InspectorPanel mInspectorPanel;
 
 		ImGuiContext mContext;
 		std::shared_ptr<ToyEngine::Scene> mScene;

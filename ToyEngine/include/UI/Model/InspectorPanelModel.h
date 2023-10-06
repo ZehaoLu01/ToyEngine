@@ -9,10 +9,10 @@
 #include <Engine/Scene.h>
 
 namespace ui {
-	class PropertiesScreenModel: public ScreenModel, public std::enable_shared_from_this<PropertiesScreenModel> {
+	class InspectorPanelModel: public ScreenModel, public std::enable_shared_from_this<InspectorPanelModel> {
 
 	public:
-		ui::PropertiesScreenModel(std::shared_ptr<ToyEngine::Scene> scene);
+		ui::InspectorPanelModel(std::shared_ptr<ToyEngine::Scene> scene);
 
 
 		glm::vec3 getPosition() {

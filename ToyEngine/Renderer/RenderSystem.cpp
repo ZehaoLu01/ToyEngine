@@ -25,7 +25,7 @@
 #include "imgui_impl_opengl3.h"
 #include "UI/View/ImGuiManager.h"
 #include <Renderer/Line.h>
-#include <UI/Controller/PropertiesScreenController.h>
+#include <UI/Controller/InspectorPanelController.h>
 #include <Utils/Logger.h>
 #include <Utils/RenderHelper.h>
 

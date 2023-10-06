@@ -85,6 +85,8 @@ namespace ui {
 
 		if (ImGui::IsItemClicked())
 		{
+			//TODO:remove selected state from the screen model
+			mSelectEntityCallback(head);
 			setSelected(head);
 		}
 

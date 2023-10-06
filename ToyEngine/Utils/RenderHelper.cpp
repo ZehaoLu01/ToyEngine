@@ -1,5 +1,6 @@
 #include "Utils/RenderHelper.h"
 #include <Utils/Logger.h>
+#include <sstream>
 
 ToyEngine::TextureType ToyEngine::RenderHelper::ConvertTextureType(aiTextureType type)
 {
@@ -144,4 +145,11 @@ GLenum ToyEngine::RenderHelper::convertChannelsToFormat(unsigned int channels)
 	else if (channels == 4)
 		format = GL_RGBA;
 	return format;
+}
+
+
+std::string ToyEngine::RenderHelper::getVec3String(glm::vec3 vec) {
+	std::stringstream ss;
+	ss << vec.x << "," << vec.y << "," << vec.z;
+	return ss.str();
 }

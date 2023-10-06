@@ -20,12 +20,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="a.cpp" />
+    <ClCompile Include="UI\View\CreatePointLightPanelItem.cpp" />
+    <ClCompile Include="UI\View\TransfromPanelItem.cpp" />
+    <ClCompile Include="UI\View\PointLightPropsPanelItem.cpp" />
+    <ClCompile Include="UI\View\DirectionalLightPropsPanelItem.cpp" />
+    <ClCompile Include="UI\View\CreateDirectionalLightPanelItem.cpp" />
     <ClCompile Include="Engine\Scene.cpp" />
+    <ClCompile Include="UI\View\LightPanelItem.cpp" />
+    <ClCompile Include="UI\View\PanelItem.cpp" />
     <ClCompile Include="Renderer\Resource\SkyBox.cpp" />
     <ClCompile Include="UI\View\imGuIZMOquat.cpp" />
     <ClCompile Include="Utils\RenderHelper.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
-    <ClCompile Include="UI\View\PropertiesScreen.cpp" />
+    <ClCompile Include="UI\View\InspectorPanel.cpp" />
     <ClCompile Include="Renderer\Resource\ResourceManager.cpp" />
     <ClCompile Include="UI\Controller\FileExplorerController.cpp" />
     <ClCompile Include="UI\Controller\SceneHierarchyController.cpp" />
@@ -60,6 +67,9 @@
     <ClCompile Include="Renderer\Resource\STB_image_implementation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\UI\View\CreatePointLightPanelItem.h" />
+    <ClInclude Include="include\UI\View\DirectionalLightPropsPanelItem.h" />
+    <ClInclude Include="include\UI\View\CreateDirectionalLightPanelItem.h" />
     <ClInclude Include="include\ImGuIZMO\imGuIZMOquat.h" />
     <ClInclude Include="include\ImGuIZMO\vgConfig.h" />
     <ClInclude Include="include\ImGuIZMO\vGizmo.h" />
@@ -373,16 +383,20 @@
     <ClInclude Include="include\Renderer\Shader.h" />
     <ClInclude Include="include\Resource\Texture.h" />
     <ClInclude Include="include\Resource\StbImageLoader.h" />
-    <ClInclude Include="include\UI\Model\PropertiesScreenModel.h" />
+    <ClInclude Include="include\UI\Model\InspectorPanelModel.h" />
     <ClInclude Include="include\UI\Model\ScreenModel.h" />
-    <ClInclude Include="include\UI\Controller\PropertiesScreenController.h" />
+    <ClInclude Include="include\UI\Controller\InspectorPanelController.h" />
     <ClInclude Include="include\UI\View\SceneHierarchyPanel.h" />
     <ClInclude Include="include\Resource\ResourceManager.h" />
-    <ClInclude Include="include\UI\View\PropertiesScreen.h" />
+    <ClInclude Include="include\UI\View\InspectorPanel.h" />
     <ClInclude Include="include\Utils\Logger.h" />
     <ClInclude Include="include\Utils\RenderHelper.h" />
     <ClInclude Include="include\Renderer\SkyBox.h" />
+    <ClInclude Include="include\UI\View\PanelItem.h" />
+    <ClInclude Include="include\UI\View\LightPanelItem.h" />
+    <ClInclude Include="include\UI\View\PointLightPropsPanelItem.h" />
     <ClInclude Include="submodule\FileExplorer\imfilebrowser.h" />
+    <ClInclude Include="include\UI\View\TransfromPanelItem.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fs.glsl" />

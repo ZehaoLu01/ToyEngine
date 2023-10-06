@@ -1,27 +1,27 @@
-#include "UI/Controller/PropertiesScreenController.h"
+#include "UI/Controller/InspectorPanelController.h"
 #include "Renderer/RenderSystem.h"
 namespace ui {
-	PropertiesScreenController::PropertiesScreenController(std::unique_ptr<PropertiesScreenModel>&& model): mPropertiesScreenModel(std::move(model)), mRegistry(mPropertiesScreenModel->getRegistry())
+	InspectorPanelController::InspectorPanelController(std::unique_ptr<InspectorPanelModel>&& model): mInspectorPanelModel(std::move(model)), mRegistry(mInspectorPanelModel->getRegistry())
 	{
 		
 	}
 
-	void PropertiesScreenController::registerBindings()
+	void InspectorPanelController::registerBindings()
 	{
 		auto weakThis = weak_from_this();
 
 		bindVec3("properties.position", 
 			[weakThis]() {
 				if (auto baseSharedThis = weakThis.lock()) {
-					auto sharedThis = std::dynamic_pointer_cast<PropertiesScreenController>(baseSharedThis);
-					return sharedThis->mPropertiesScreenModel->getPosition();
+					auto sharedThis = std::dynamic_pointer_cast<InspectorPanelController>(baseSharedThis);
+					return sharedThis->mInspectorPanelModel->getPosition();
 				}
 				return glm::vec3();
 			}, 
 			[weakThis](glm::vec3 newVal) {
 				if (auto baseSharedThis = weakThis.lock()) {
-					auto sharedThis = std::dynamic_pointer_cast<PropertiesScreenController>(baseSharedThis);
-					sharedThis->mPropertiesScreenModel->setPosition(newVal);
+					auto sharedThis = std::dynamic_pointer_cast<InspectorPanelController>(baseSharedThis);
+					sharedThis->mInspectorPanelModel->setPosition(newVal);
 				}
 			}
 		);
@@ -29,15 +29,15 @@ namespace ui {
 		bindVec3("properties.rotation", 
 			[weakThis]() {
 			if (auto baseSharedThis = weakThis.lock()) {
-				auto sharedThis = std::dynamic_pointer_cast<PropertiesScreenController>(baseSharedThis);
-				return sharedThis->mPropertiesScreenModel->getRotation();
+				auto sharedThis = std::dynamic_pointer_cast<InspectorPanelController>(baseSharedThis);
+				return sharedThis->mInspectorPanelModel->getRotation();
 			}
 			return glm::vec3();
 			},
 			[weakThis](glm::vec3 newVal) {
 				if (auto baseSharedThis = weakThis.lock()) {
-					auto sharedThis = std::dynamic_pointer_cast<PropertiesScreenController>(baseSharedThis);
-					sharedThis->mPropertiesScreenModel->setRotation(newVal);
+					auto sharedThis = std::dynamic_pointer_cast<InspectorPanelController>(baseSharedThis);
+					sharedThis->mInspectorPanelModel->setRotation(newVal);
 				}
 			});
 
@@ -45,57 +45,57 @@ namespace ui {
 			[weakThis]() 
 			{
 			if (auto baseSharedThis = weakThis.lock()) {
-				auto sharedThis = std::dynamic_pointer_cast<PropertiesScreenController>(baseSharedThis);
-				return sharedThis->mPropertiesScreenModel->getScale();
+				auto sharedThis = std::dynamic_pointer_cast<InspectorPanelController>(baseSharedThis);
+				return sharedThis->mInspectorPanelModel->getScale();
 			}
 			return glm::vec3();
 			},
 			[weakThis](glm::vec3 newVal) {
 				if (auto baseSharedThis = weakThis.lock()) {
-					auto sharedThis = std::dynamic_pointer_cast<PropertiesScreenController>(baseSharedThis);
-					sharedThis->mPropertiesScreenModel->setScale(newVal);
+					auto sharedThis = std::dynamic_pointer_cast<InspectorPanelController>(baseSharedThis);
+					sharedThis->mInspectorPanelModel->setScale(newVal);
 				}
 			});
 
 		bindButtonInteractHandler("onCreatePointLightButtonDown", [weakThis](const ViewEvent& event) {
 			if (auto baseSharedThis = weakThis.lock()) {
-				auto sharedThis = std::dynamic_pointer_cast<PropertiesScreenController>(baseSharedThis);
+				auto sharedThis = std::dynamic_pointer_cast<InspectorPanelController>(baseSharedThis);
 				// TODO: improve this.
 				auto& vectors = event.vectorGroup;
 				auto& floats = event.floatGroup;
 				if (vectors.empty()) {	
-					sharedThis->mPropertiesScreenModel->addPointLight();
+					sharedThis->mInspectorPanelModel->addPointLight();
 				}
 
 				if (vectors.size() < 4 || floats.size() < 3) {
 					std::cerr << "Create Point light Button invalid event arguments." << std::endl;
 				}
 
-				sharedThis->mPropertiesScreenModel->addPointLight(vectors[0], vectors[1], vectors[2], vectors[3], floats[0], floats[1], floats[2]);
+				sharedThis->mInspectorPanelModel->addPointLight(vectors[0], vectors[1], vectors[2], vectors[3], floats[0], floats[1], floats[2]);
 			}
 		});
 
 		bindButtonInteractHandler("onCreateDirctionalLightButtonDown", [weakThis](const ViewEvent& event) {
 			if (auto baseSharedThis = weakThis.lock()) {
-				auto sharedThis = std::dynamic_pointer_cast<PropertiesScreenController>(baseSharedThis);
+				auto sharedThis = std::dynamic_pointer_cast<InspectorPanelController>(baseSharedThis);
 				// TODO: improve this.
 				auto& vectors = event.vectorGroup;
 				auto& floats = event.floatGroup;
 				if (vectors.empty()) {
-					sharedThis->mPropertiesScreenModel->addPointLight();
+					sharedThis->mInspectorPanelModel->addPointLight();
 				}
 
 				if (vectors.size() < 4 || floats.size() < 3) {
 					ToyEngine::Logger::DEBUG_ERROR("Create Light Cube Button invalid event arguments.");
 				}
 
-				sharedThis->mPropertiesScreenModel->addDirectionalLight(vectors[0], vectors[1], vectors[2], vectors[3], floats[0], floats[1], floats[2]);
+				sharedThis->mInspectorPanelModel->addDirectionalLight(vectors[0], vectors[1], vectors[2], vectors[3], floats[0], floats[1], floats[2]);
 			}
 			});
 	}
-	void PropertiesScreenController::onSelectionChange(entt::entity entity)
+	void InspectorPanelController::onSelectionChange(entt::entity entity)
 	{
-		mPropertiesScreenModel->setSelectedEntity(entity);
+		mInspectorPanelModel->setSelectedEntity(entity);
 	}
 }
 

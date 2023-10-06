@@ -41,7 +41,7 @@ namespace ui{
 
 		ImGui::ShowDemoWindow(&p_open);
 		
-		mPropertiesScreen.render();
+		mInspectorPanel.render();
 
 		mHierarchyPanel.render();
 
@@ -55,7 +55,7 @@ namespace ui{
 
 
 		// TODO: use parent class (Controller)
-		mPropertiesScreenController->tick();
+		mInspectorPanelController->tick();
 		mHierarchyContorller->tick();
 		mFileExplorerController->tick();
 	}
@@ -77,12 +77,12 @@ namespace ui{
 	void ImGuiManager::setupControllers(std::shared_ptr<ToyEngine::Scene> scene)
 	{
 		mHierarchyContorller = std::make_shared<SceneHierarchyController>(std::make_unique<SceneHierarchyModel>(scene->getRegistry()));
-		mPropertiesScreenController = std::make_shared<PropertiesScreenController>(std::make_unique<PropertiesScreenModel>(scene));
+		mInspectorPanelController = std::make_shared<InspectorPanelController>(std::make_unique<InspectorPanelModel>(scene));
 
 		//TODO: Maybe I should use file explorer model.
 		mFileExplorerController = std::make_shared<FileExplorerController>(scene->getRegistry());
 
-		mScreenControllers = std::vector<std::shared_ptr<Controller>>({mHierarchyContorller,mPropertiesScreenController,mFileExplorerController});
+		mScreenControllers = std::vector<std::shared_ptr<Controller>>({mHierarchyContorller,mInspectorPanelController,mFileExplorerController});
 
 		for (auto controller : mScreenControllers) {
 			controller->init();
@@ -91,7 +91,7 @@ namespace ui{
 		mScene = scene;
 		mContext.setScene(scene);
 
-		mPropertiesScreen = InspectorScreen(scene, &mContext, mPropertiesScreenController);
+		mInspectorPanel = InspectorPanel(scene, &mContext, mInspectorPanelController);
 		mHierarchyPanel = SceneHierarchyPanel(scene, &mContext, mHierarchyContorller, [](entt::entity entity) {
 			// On selected
 			ViewEvent event(ImGuiManager::getInstance().mScene->getRegistry());
@@ -102,10 +102,9 @@ namespace ui{
 			for (auto controller : ImGuiManager::getInstance().mScreenControllers) {
 				controller->addViewEvent(event);
 			}
-			}
+		}
 		);
 		mFileExplorer = FileExplorer(mFileExplorerController, scene);
-
 	}
 
 	ImGuiManager::ImGuiManager()
