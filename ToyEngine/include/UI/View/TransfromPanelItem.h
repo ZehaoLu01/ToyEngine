@@ -8,7 +8,7 @@ namespace ui {
 	{
 	public:
 		using PanelItem::PanelItem;
-		virtual void render();
+		virtual void renderContent();
 
 	private:
 		void drawScaleSetting();

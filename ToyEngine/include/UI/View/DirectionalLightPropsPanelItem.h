@@ -7,7 +7,7 @@ namespace ui{
 	{
 	public:
 		LightPanelItem::LightPanelItem;
-		virtual void render();
+		virtual void renderContent();
 	protected:
 		void drawDirectionSetting();
 

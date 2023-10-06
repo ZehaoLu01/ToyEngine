@@ -1,6 +1,6 @@
 #include <UI/View/PointLightPropsPanelItem.h>
 
-void ui::PointLightPropsPanelItem::render()
+void ui::PointLightPropsPanelItem::renderContent()
 {
 	drawPositionSetting();
 	drawAmbientPicker();

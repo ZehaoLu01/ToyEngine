@@ -7,7 +7,7 @@ namespace ui{
 	{
 	public:
 		PointLightPropsPanelItem::PointLightPropsPanelItem;
-		virtual void render();
+		virtual void renderContent();
 	private:
 		void drawCreatePointLightButton();
 	};

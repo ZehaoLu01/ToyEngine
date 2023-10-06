@@ -13,7 +13,6 @@ namespace ui {
 	class InspectorPanelController;
 	class PanelItem;
 	class ImGuiContext;
-	using PanelItemPredicate = std::function<bool(ImGuiContext*)>;
 
 	class InspectorPanel
 	{
@@ -24,20 +23,20 @@ namespace ui {
 		};
 		void render();
 	private:
-		void renderObjectPropertyMenu();
-		void renderCreateLightingMenu();
-		void drawPositionProps();
-		void drawRotationProps();
-		void drawScaleProps();
+		//void renderObjectPropertyMenu();
+		//void renderCreateLightingMenu();
+		//void drawPositionProps();
+		//void drawRotationProps();
+		//void drawScaleProps();
 		//void drawPointlightProps(bool showCreateButton);
 		//void drawDirectionalLightProps(bool showCreateButton);
 		
 		void registerPanelItems();
 		template<typename T>
-		void registerPanelItem(PanelItemPredicate predicate) {
+		void registerPanelItem(const std::string& name, PanelItemPredicate predicate) {
 			//https://stackoverflow.com/questions/2012950/c-class-template-of-specific-baseclass
 			static_assert(std::is_base_of<PanelItem, T>::value, "Must be derived from PanelItem");
-			panelItems.push_back(std::make_unique<T>(predicate, mInspectorPanelController, mContext));
+			panelItems.push_back(std::make_unique<T>(name, predicate, mInspectorPanelController, mContext));
 		}
 
 		std::shared_ptr<InspectorPanelController> mInspectorPanelController;

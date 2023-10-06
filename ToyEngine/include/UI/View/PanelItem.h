@@ -1,15 +1,28 @@
 #pragma once
 #include <functional>
 #include <entt/entt.hpp>
-#include "ImGuiManager.h"
+#include <string>
+#include <imgui.h>
 
 namespace ui {
+	class ImGuiContext;
+	class Controller;
+	using PanelItemPredicate = std::function<bool(ImGuiContext*)>;
+
 	class PanelItem
 	{
 	public:
-		virtual void render() = 0;
+		void render() {
+			if(ImGui::TreeNode(name.c_str())) {
+				renderContent();
+				ImGui::TreePop();
+			}	
+		}
+		virtual void renderContent() = 0;
+		
 		PanelItem() = delete;
-		PanelItem(std::function<bool(ImGuiContext*)> condition, std::shared_ptr<Controller> controller, ImGuiContext* context);
+		PanelItem(const std::string& name, PanelItemPredicate condition, std::shared_ptr<Controller> controller, ImGuiContext* context);
+		
 		bool shouldRender() {
 			return mCondition(mContext);
 		}
@@ -27,10 +40,11 @@ namespace ui {
 			return std::string(c_str) + std::string(" ") + getIdStr();
 		}
 
-		std::function<bool(ImGuiContext*)> mCondition;
+		PanelItemPredicate mCondition;
 		std::shared_ptr<Controller> mController;
 		ImGuiContext* mContext;
 	private:
+		std::string name;
 		static int counter;
 		int mId;
 	};

@@ -33,7 +33,7 @@ namespace ui {
 	}
 
 	void InspectorPanel::registerPanelItems() {
-		registerPanelItem<TransfromPanelItem>([](ImGuiContext* context) {
+		registerPanelItem<TransfromPanelItem>("Transform", [](ImGuiContext* context) {
 			entt::entity selected = context->getSelectedEntity();
 			if (selected == entt::null) {
 				return false;
@@ -43,7 +43,7 @@ namespace ui {
 			}
 		});
 
-		registerPanelItem<DirectionalLightPropsPanelItem>([](ImGuiContext* context) {
+		registerPanelItem<DirectionalLightPropsPanelItem>("Directional light props", [](ImGuiContext* context) {
 			entt::entity selected = context->getSelectedEntity();
 			if (selected == entt::null) {
 				return false;
@@ -58,7 +58,7 @@ namespace ui {
 		});
 
 
-		registerPanelItem<PointLightPropsPanelItem>([](ImGuiContext* context) {
+		registerPanelItem<PointLightPropsPanelItem>("Point light props", [](ImGuiContext* context) {
 			entt::entity selected = context->getSelectedEntity();
 			if (selected == entt::null) {
 				return false;
@@ -74,11 +74,11 @@ namespace ui {
 
 		//TODO: move create light items to another individual panel.
 
-		registerPanelItem<CreatePointLightPanelItem>([](ImGuiContext*) {
+		registerPanelItem<CreatePointLightPanelItem>("Create point light", [](ImGuiContext*) {
 			return true;
 		});
 
-		registerPanelItem<CreateDirectionalLightPanelItem>([](ImGuiContext*) {
+		registerPanelItem<CreateDirectionalLightPanelItem>("Create directional light", [](ImGuiContext*) {
 			return true;
 		});
 	}

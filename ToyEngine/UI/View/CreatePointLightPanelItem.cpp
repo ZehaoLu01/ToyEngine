@@ -1,9 +1,8 @@
 #include <UI/View/CreatePointLightPanelItem.h>
 
-void ui::CreatePointLightPanelItem::render()
+void ui::CreatePointLightPanelItem::renderContent()
 {
-	
-	PointLightPropsPanelItem::render();
+	PointLightPropsPanelItem::renderContent();
 	drawCreatePointLightButton();
 }
 

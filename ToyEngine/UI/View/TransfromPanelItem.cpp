@@ -1,7 +1,9 @@
 #include <Utils/RenderHelper.h>
 #include <UI/View/TransfromPanelItem.h>
+#include <UI/View/ImGuiManager.h>
+#include <UI/Controller/Controller.h>
 
-void ui::TransfromPanelItem::render()
+void ui::TransfromPanelItem::renderContent()
 {
 	drawPositionSetting();
 	drawRotationSetting();

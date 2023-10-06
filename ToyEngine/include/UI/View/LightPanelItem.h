@@ -1,11 +1,17 @@
 #pragma once
 #include "UI/View/PanelItem.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include <UI/Controller/Controller.h>
+#include <UI/View/ImGuiManager.h>
+
 namespace ui {
     class LightPanelItem :
         public PanelItem
     {
     public:
-        virtual void render() = 0;
+        virtual void renderContent()=0;
         using PanelItem::PanelItem;
     protected:
         void drawAmbientPicker();

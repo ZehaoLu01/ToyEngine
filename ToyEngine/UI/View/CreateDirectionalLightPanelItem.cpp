@@ -1,8 +1,8 @@
 #include <UI/View/CreateDirectionalLightPanelItem.h>
 
-void ui::CreateDirectionalLightPanelItem::render()
+void ui::CreateDirectionalLightPanelItem::renderContent()
 {
-	DirectionalLightPropsPanelItem::render();
+	DirectionalLightPropsPanelItem::renderContent();
 	drawCreateDirectionalLightButton();
 }
 

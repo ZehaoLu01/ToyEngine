@@ -1,7 +1,7 @@
 #include <ImGuIZMO/imGuIZMOquat.h>
 #include <UI/View/DirectionalLightPropsPanelItem.h>
 
-void ui::DirectionalLightPropsPanelItem::render()
+void ui::DirectionalLightPropsPanelItem::renderContent()
 {
 	drawDirectionSetting();
 	drawAmbientPicker();
@@ -16,7 +16,7 @@ void ui::DirectionalLightPropsPanelItem::drawDirectionSetting()
 	// a light spot toward origin need to change direction
 	// or explicitly
 	vec3 vgmLightDir = { mDirection.x, mDirection.y, mDirection.z };
-	if (ImGui::gizmo3D("direction", vgmLightDir, 300, imguiGizmo::modeDirection)) {
+	if (ImGui::gizmo3D("", vgmLightDir, 300, imguiGizmo::modeDirection)) {
 		mDirection = { vgmLightDir.x, vgmLightDir.y, vgmLightDir.z };
 	}
 }

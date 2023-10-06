@@ -5,7 +5,7 @@ namespace ui {
     {
     public:
         DirectionalLightPropsPanelItem::DirectionalLightPropsPanelItem;
-        virtual void render();
+        virtual void renderContent();
     private:
         void drawCreateDirectionalLightButton();
     };

@@ -9,7 +9,7 @@ namespace ui {
 		LightPanelItem::LightPanelItem;
 
 		// Inherited via LightPanelItem
-		virtual void render() override;
+		virtual void renderContent() override;
 	protected:
 		void drawPositionSetting();
 
