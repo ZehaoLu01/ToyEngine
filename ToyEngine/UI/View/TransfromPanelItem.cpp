@@ -44,7 +44,6 @@ void ui::TransfromPanelItem::drawScaleSetting()
 
 void ui::TransfromPanelItem::drawRotationSetting()
 {
-
 	glm::vec3 oldRotationVal = mController->getVec("properties.rotation");
 	glm::vec3 newRotationVal = oldRotationVal;
 
