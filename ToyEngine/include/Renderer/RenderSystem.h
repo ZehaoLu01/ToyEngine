@@ -51,8 +51,6 @@ namespace ToyEngine{
 			std::shared_ptr<Camera> mCamera;
 			std::string mDirectory;
 
-			//testing
-			//std::vector<std::shared_ptr<RenderComponent>> mRenderComponents;
 			std::vector<Texture> mLoadedTextures;
 			float lastFrameTime = 0.0f; 
 			std::vector<float> mGridPoints;

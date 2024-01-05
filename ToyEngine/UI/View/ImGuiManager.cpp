@@ -101,8 +101,7 @@ namespace ui{
 			for (auto controller : ImGuiManager::getInstance().mScreenControllers) {
 				controller->addViewEvent(event);
 			}
-		}
-		);
+		});
 		mFileExplorer = FileExplorer(mFileExplorerController, scene);
 	}
 

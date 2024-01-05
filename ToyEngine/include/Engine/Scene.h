@@ -32,7 +32,7 @@ namespace ToyEngine {
 			void addPointLight(glm::vec3 pos, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic);
 			void addDirectionalLight(glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic);
 
-			//void addModel()
+			void addModel(std::string path, std::string modelName, entt::entity parent);
 		private:
 			entt::registry mRegistry;
 

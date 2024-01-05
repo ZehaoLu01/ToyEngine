@@ -96,4 +96,8 @@ namespace ToyEngine {
         mRegistry.emplace<RelationComponent>(entity);
     }
 
+    void Scene::addModel(std::string path, std::string modelName, entt::entity parent)
+    {
+        RenderSystem::instance.loadModel(path, modelName, mRegistry, parent);
+    }
 }
