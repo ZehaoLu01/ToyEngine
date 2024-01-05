@@ -12,7 +12,7 @@ namespace ui {
 	class InspectorPanelModel: public ScreenModel, public std::enable_shared_from_this<InspectorPanelModel> {
 
 	public:
-		ui::InspectorPanelModel(std::shared_ptr<ToyEngine::Scene> scene);
+		InspectorPanelModel(std::shared_ptr<ToyEngine::Scene> scene);
 
 
 		glm::vec3 getPosition() {

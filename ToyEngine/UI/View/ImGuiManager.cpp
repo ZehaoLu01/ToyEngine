@@ -79,8 +79,7 @@ namespace ui{
 		mHierarchyContorller = std::make_shared<SceneHierarchyController>(std::make_unique<SceneHierarchyModel>(scene->getRegistry()));
 		mInspectorPanelController = std::make_shared<InspectorPanelController>(std::make_unique<InspectorPanelModel>(scene));
 
-		//TODO: Maybe I should use file explorer model.
-		mFileExplorerController = std::make_shared<FileExplorerController>(scene->getRegistry());
+		mFileExplorerController = std::make_shared<FileExplorerController>(std::make_unique<FileExplorerModel>(scene), scene->getRegistry());
 
 		mScreenControllers = std::vector<std::shared_ptr<Controller>>({mHierarchyContorller,mInspectorPanelController,mFileExplorerController});
 

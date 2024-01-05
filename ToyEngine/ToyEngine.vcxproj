@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="a.cpp" />
+    <ClCompile Include="UI\Model\FileExplorerModel.cpp" />
     <ClCompile Include="UI\View\CreatePointLightPanelItem.cpp" />
     <ClCompile Include="UI\View\TransfromPanelItem.cpp" />
     <ClCompile Include="UI\View\PointLightPropsPanelItem.cpp" />
@@ -67,6 +68,7 @@
     <ClCompile Include="Renderer\Resource\STB_image_implementation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\UI\Model\FileExplorerModel.h" />
     <ClInclude Include="include\UI\View\CreatePointLightPanelItem.h" />
     <ClInclude Include="include\UI\View\DirectionalLightPropsPanelItem.h" />
     <ClInclude Include="include\UI\View\CreateDirectionalLightPanelItem.h" />

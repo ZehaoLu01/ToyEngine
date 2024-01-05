@@ -2,7 +2,8 @@
 #include <Renderer/RenderSystem.h>
 
 namespace ui {
-	FileExplorerController::FileExplorerController(entt::registry& registry):mRegistry(registry)
+	FileExplorerController::FileExplorerController(std::unique_ptr<FileExplorerModel> model, entt::registry& registry)
+		:mFileExplorerModel(std::move(model)), mRegistry(registry)
 	{
 	}
 
